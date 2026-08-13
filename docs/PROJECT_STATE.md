@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 5
-Last Updated UTC: 2026-08-13T02:40:00Z
-Coordination Session ID: PAA-CTRL-20260813-03
+State Version: 6
+Last Updated UTC: 2026-08-13T03:30:00Z
+Coordination Session ID: PAA-CTRL-20260813-04
 Git Branch: main
 Git HEAD: 12e541582ee10258652e546bfae206f8c5c7f453 (foundation commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Managed-transfer submission script implemented; Storage Transfer Service API and managed identity are ready, pending explicit approval for narrowly scoped bucket IAM bindings.
+Current Phase Status: Managed-transfer API, identity, manifest and submission script are ready; job submission is blocked because Storage Transfer Service requires bucket-level object list/create permissions, which cannot be constrained to a prefix during service preflight.
 
 ---
 
@@ -37,6 +37,14 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v5 to v6, under coordination session `PAA-CTRL-20260813-04`.
+
+- Approved scoped Storage Transfer IAM was applied and tested. GCP rejected job creation because its preflight requires `storage.objects.list` and `storage.objects.create` at the bucket level; conditional prefix-only bindings do not satisfy that service validation.
+- Set `player-availability-analysis` as the quota project for local ADC and corrected the submission script to call the Storage Transfer REST API with the required quota-project header.
+- Uploaded the checksum-bearing URL list to `gs://paa-data-979927072833/metadata/transfer_manifests/soccermon/zenodo-10033832.tsv`. It is a small control artifact only.
+- No transfer job was created and no SoccerMon archive ZIP has been copied. No 99 GB transfer charge has been incurred.
+- Added `OD-09`: decide between an archive-only bucket, which is recommended, and broadening the transfer service identity to the shared data bucket, which is not approved.
 
 State v4 to v5, under coordination session `PAA-CTRL-20260813-03`.
 
@@ -112,9 +120,9 @@ player-availability-analysis/
 
 ## Current GCP State
 
-**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; SCOPED TRANSFER IAM PENDING APPROVAL.**
+**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; ARCHIVE-BUCKET DECISION PENDING.**
 
-Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. The active project is `player-availability-analysis`; the account and `gs://paa-data-979927072833` were successfully verified. Storage Transfer Service is enabled and its managed identity exists. Scoped Cloud Storage IAM remains pending explicit approval before the managed job can run.
+Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. The active project is `player-availability-analysis`; the account and `gs://paa-data-979927072833` were successfully verified. Storage Transfer Service is enabled and its managed identity exists. Its preflight requires bucket-level object list/create permissions, so an archive-only bucket is proposed rather than broadening the shared data bucket.
 
 ```
 Project ID:      player-availability-analysis
@@ -143,7 +151,7 @@ Unverified: billing budget and alerts, enabled API set, GCS lifecycle rules, IAM
 
 Verified bucket zones: `raw/`, `bronze/`, `silver/`, `gold/`, `metadata/`, `tmp/`.
 
-No archive object, transfer job or processing output has been written by this project. No transfer cost has been incurred.
+The URL-list manifest exists at `gs://paa-data-979927072833/metadata/transfer_manifests/soccermon/zenodo-10033832.tsv`. No archive object, transfer job or processing output has been created. No 99 GB transfer cost has been incurred.
 
 ---
 
@@ -152,7 +160,7 @@ No archive object, transfer job or processing output has been written by this pr
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
 - Immediate source objective: acquire the complete archive through Storage Transfer Service into `raw/source_archives/soccermon/zenodo-10033832/`. `scripts/acquire_soccermon_archive.py` generates a URL list with Zenodo size and MD5 integrity values and submits the managed job only with `--submit`.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
-- **Blocker: Storage Transfer Service is disabled.** The source archive transfer cannot be submitted until the API is enabled and the service agent has the minimum read access to the URL-list object. Resulting GCS location and checksums are unverified (`OD-07`).
+- **Blocker: Storage Transfer Service requires bucket-level list/create permissions for its managed identity.** Prefix-limited access in `paa-data` is not sufficient for the service. Resulting GCS location and checksums are unverified (`OD-07`, `OD-09`).
 - No data ingested. No bronze, silver or gold artefacts exist.
 - No schema audit against real files, so no field-level assertions are made anywhere in this project.
 
@@ -229,6 +237,7 @@ Standing constraints from the architecture baseline, treated as binding:
 | ID | Question | Blocks |
 |----|----------|--------|
 | OD-07 | Confirmed location, licence and SHA-256 checksum of the SoccerMon subjective archive | All ingestion work |
+| OD-09 | Use a dedicated source-archive bucket or broaden Storage Transfer access to the shared `paa-data` bucket | Archive acquisition |
 
 ---
 
@@ -240,27 +249,27 @@ Standing constraints from the architecture baseline, treated as binding:
 - Repository structure intentionally incomplete against doc 18 (`DEC-012`). Deliberate, not drift.
 - `injury_episode_gap_days: 3` is provisional pending EXP-001 and must not be used for a headline result.
 - Git identity is set at repository level rather than inherited from a global configuration.
-- Scoped Cloud Storage IAM for the Storage Transfer managed identity is pending explicit approval. The proposed bindings provide bucket metadata read, URL-list and archive-prefix read, and writes only under `raw/source_archives/soccermon/zenodo-10033832/`.
+- Storage Transfer Service preflight does not accept prefix-conditional `storage.objects.list` and `storage.objects.create` permissions. The tested bindings must be cleaned up or replaced after `OD-09` is resolved.
 
 ---
 
 ## Blockers
 
-1. **Source data provenance unverified (`OD-07`).** The archive transfer has not yet been submitted, so no GCS object location or completed transfer checksum exists. This is the single blocker on the current milestone.
-2. **Scoped transfer IAM is pending approval.** The managed identity needs bucket metadata read, URL-list and archive-prefix read, plus writes only under `raw/source_archives/soccermon/zenodo-10033832/` before job submission.
+1. **Source data provenance unverified (`OD-07`).** The archive transfer has not been created, so no GCS archive object location or completed transfer checksum exists. This is the single blocker on the current milestone.
+2. **Archive bucket decision pending (`OD-09`).** Storage Transfer Service requires bucket-level object list/create. Do not grant this to the shared data bucket without an explicit decision; a dedicated source-archive bucket is recommended.
 
 ---
 
 ## Work In Progress
 
-`scripts/acquire_soccermon_archive.py` is ready to prepare and submit the managed GCS transfer. No transfer job is in flight. No other control session is known to be editing this working tree.
+`scripts/acquire_soccermon_archive.py` is ready to prepare and submit the managed GCS transfer once `OD-09` is resolved. No transfer job is in flight. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Obtain explicit approval for the scoped Storage Transfer IAM bindings.
-2. Run the script without `--submit` to inspect the five-file plan, then with `--submit` to create the one-time managed transfer job. Monitor the job and record its ID.
+1. Resolve `OD-09`: create a dedicated archive-only GCS bucket and grant Storage Transfer Service the required bucket-level roles there, or explicitly approve broad roles on `paa-data`. The dedicated bucket is recommended.
+2. Update the acquisition script with the approved archive bucket, submit the one-time managed transfer job and record its job and operation IDs.
 3. Resolve `OD-07`: register the GCS location, CC BY 4.0 licence, transfer operation result and object checksums in source provenance.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming; confirm budget alerts exist before any processing.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -280,7 +289,7 @@ Standing constraints from the architecture baseline, treated as binding:
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
-| Storage Transfer Service | READY PENDING IAM | API enabled and managed identity created; no bucket IAM, job or archive object yet |
+| Storage Transfer Service | BLOCKED BY IAM DESIGN | API, managed identity, manifest and script verified; no job. Service requires bucket-level list/create rather than prefix-conditional roles |
 | Schema / data-contract tests | Not implemented | Directory exists, no data to contract against |
 | Leakage tests | Not implemented | Directory exists, no features to test |
 | Smoke tests | Not implemented | Directory exists, no pipeline to run |
@@ -296,8 +305,8 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v5, 2026-08-13T02:40:00Z | v5, 2026-08-13T02:40:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-020 | DEC-001 to DEC-020 |
+| `PROJECT_STATE.md` | v6, 2026-08-13T03:30:00Z | v6, 2026-08-13T03:30:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-021 | DEC-001 to DEC-021 |
 
 Status: **SYNCHRONISED**
 

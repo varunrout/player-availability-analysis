@@ -95,13 +95,47 @@ def write_url_list(path: Path, record_id: str, files: list[dict[str, Any]]) -> N
     with path.open("w", encoding="utf-8", newline="") as output:
         writer = csv.writer(output, delimiter="\t", lineterminator="\n")
         writer.writerow(["TsvHttpData-1.0"])
-        for file_metadata in files:
+        for file_metadata in sorted(
+            files,
+            key=lambda entry: zenodo_download_url(record_id, entry["key"]),
+        ):
             writer.writerow(manifest_row(record_id, file_metadata))
 
 
 def run(command: list[str]) -> None:
     print("Running:", " ".join(command))
     subprocess.run(command, check=True)
+
+
+def gcloud_access_token(gcloud_command: str) -> str:
+    return subprocess.check_output(
+        [gcloud_command, "auth", "print-access-token"],
+        text=True,
+    ).strip()
+
+
+def post_json(
+    url: str,
+    payload: dict[str, Any],
+    access_token: str,
+    quota_project: str,
+) -> dict[str, Any]:
+    request = Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "x-goog-user-project": quota_project,
+        },
+        method="POST",
+    )
+    try:
+        with urlopen(request) as response:  # noqa: S310 - fixed Google API endpoint.
+            return json.load(response)
+    except HTTPError as error:
+        details = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Storage Transfer API returned HTTP {error.code}: {details}") from error
 
 
 def main() -> int:
@@ -140,24 +174,37 @@ def main() -> int:
                     f"--project={args.project_id}",
                 ]
             )
-            run(
-                [
-                    args.gcloud_command,
-                    "transfer",
-                    "jobs",
-                    "create",
-                    manifest_uri,
-                    destination_uri,
-                    f"--project={args.project_id}",
-                    "--overwrite-when=never",
-                    "--description=One-time SoccerMon Zenodo archive acquisition",
-                ]
+            access_token = gcloud_access_token(args.gcloud_command)
+            job = post_json(
+                "https://storagetransfer.googleapis.com/v1/transferJobs",
+                {
+                    "projectId": args.project_id,
+                    "description": "One-time SoccerMon Zenodo archive acquisition",
+                    "status": "ENABLED",
+                    "transferSpec": {
+                        "httpDataSource": {"listUrl": manifest_uri},
+                        "gcsDataSink": {
+                            "bucketName": args.bucket,
+                            "path": args.destination_prefix.lstrip("/"),
+                        },
+                        "transferOptions": {"overwriteWhen": "NEVER"},
+                    },
+                },
+                access_token,
+                args.project_id,
             )
-        except subprocess.CalledProcessError as error:
+            operation = post_json(
+                f"https://storagetransfer.googleapis.com/v1/{job['name']}:run",
+                {"projectId": args.project_id},
+                access_token,
+                args.project_id,
+            )
+        except (RuntimeError, URLError, subprocess.CalledProcessError) as error:
             print(f"Transfer job submission failed: {error}", file=sys.stderr)
-            return error.returncode or 1
+            return getattr(error, "returncode", 1) or 1
 
-    print("Transfer job submitted. Inspect it with: gcloud transfer jobs list")
+    print(f"Transfer job created: {job['name']}")
+    print(f"Transfer operation started: {operation['name']}")
     return 0
 
 

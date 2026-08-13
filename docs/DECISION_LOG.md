@@ -578,6 +578,32 @@ Every material state update writes the local file and then replaces the contents
 
 ---
 
+## DEC-021
+
+**Decision ID:** DEC-021
+**Date:** 2026-08-13
+**Status:** PROPOSED
+
+**Context:**
+Storage Transfer Service rejected the approved prefix-conditional bindings on `gs://paa-data-979927072833`. Its preflight requires bucket-level `storage.objects.list` and `storage.objects.create` permissions for the managed transfer identity. Granting those roles without conditions would let the identity access all object names and create objects throughout the shared analytical data bucket.
+
+**Decision:**
+Create a dedicated, archive-only Cloud Storage bucket for the complete SoccerMon source ZIPs and the associated transfer manifest. Grant Storage Transfer Service the required bucket-level roles only on that dedicated bucket. Do not broaden its access to the shared `paa-data` bucket.
+
+**Rationale:**
+An isolated bucket gives the managed transfer service the permissions it requires without exposing bronze, silver, gold, metadata, temporary outputs or future project data. It is a clearer security boundary and keeps raw-archive lifecycle policy separate from analytical datasets.
+
+**Alternatives Considered:**
+Granting Storage Transfer Service unconditional object list/create roles on `paa-data`, not recommended because it broadens access across the shared data lake. Replacing Storage Transfer Service with a workstation-dependent download, rejected because it abandons the managed cloud transfer design. Using a Cloud Run download job, deferred because it introduces compute and restart responsibility where a managed transfer is more suitable.
+
+**Consequences:**
+The acquisition script will target the approved dedicated bucket. `paa-data` remains the analytical lake for bronze, silver, gold, metadata and temporary processing. After successful transfer, the raw ZIPs can be selectively staged into `paa-data` only when a workload needs them.
+
+**Affected Components:** source acquisition, Cloud Storage, IAM, lifecycle policy, cost control
+
+**Supersedes:** none
+**Superseded By:** none
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
