@@ -1,10 +1,10 @@
 # Player Availability Analysis - Project State
 
-State Version: 7
-Last Updated UTC: 2026-08-13T04:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-05
+State Version: 8
+Last Updated UTC: 2026-08-13T05:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-06
 Git Branch: main
-Git HEAD: abc9f4c5506a7afac4e6e34a35a3e0e6737d7d87 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 45a4aac3604faad5b7bc641b9c9ff857318eeb01 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
 Current Phase Status: One-time managed SoccerMon archive transfer is running in GCP. Source ZIPs are being copied directly from Zenodo into the dedicated archive-only bucket.
 
@@ -37,6 +37,14 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v7 to v8, under coordination session `PAA-CTRL-20260813-06`.
+
+- Implemented ingestion foundations only: safe, deterministic ZIP inventory; immutable source-asset provenance; deterministic ingestion-run identities; and generic structural data contracts with reportable quality issues.
+- Added 12 synthetic unit tests covering archive safety, provenance idempotency and contract failures. No SoccerMon archive was extracted, parsed or assumed to contain a particular schema.
+- Restored the repository-local Poetry environment from the committed `poetry.lock` after the prior virtual environment was found incomplete. The restored environment is `C:\Users\USER\Documents\Projects\player-availability-analysis\.venv`.
+- Full quality gate passes: `poetry check --lock`, Ruff lint and format, strict mypy, and pytest (`35 passed`, with one expected ZIP duplicate-name test warning).
+- Latest archive-transfer check: `IN_PROGRESS`; 5 source objects / 99,132,769,855 bytes discovered, with 1 object / 8,255,096,042 bytes copied to the archive bucket.
 
 State v6 to v7, under coordination session `PAA-CTRL-20260813-05`.
 
@@ -101,17 +109,18 @@ player-availability-analysis/
   infra/                      empty
   jobs/                       empty
   notebooks/                  empty
-  scripts/                    empty
+  scripts/                    acquire_soccermon_archive.py
   src/player_availability/
     __init__.py  py.typed
     config/      settings.py, yaml_source.py
     ingestion/   empty
+      archive.py, provenance.py
     schemas/     empty
-    quality/     empty
+    quality/     contracts.py
     utils/       paths.py
   tests/
     conftest.py
-    unit/            test_settings.py (23 tests)
+    unit/            settings, archive, provenance and contract tests (35 tests)
     data_contracts/  empty
     leakage/         empty
     smoke/           empty
@@ -162,7 +171,7 @@ Verified bucket zones: `raw/`, `bronze/`, `silver/`, `gold/`, `metadata/`, `tmp/
 
 Dedicated archive bucket: `gs://paa-source-archives-979927072833` (`europe-west2`, uniform bucket-level access). It contains the live transfer's URL-list manifest and is isolated from the analytical data lake.
 
-Live transfer job: `transferJobs/3472342193733823656`. Live operation: `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. Latest status: `IN_PROGRESS`, with 5 objects and 99,132,769,855 bytes found at source; 1 object and 940,229,866 bytes copied to the sink.
+Live transfer job: `transferJobs/3472342193733823656`. Live operation: `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. Latest status: `IN_PROGRESS`, with 5 objects and 99,132,769,855 bytes found at source; 1 object and 8,255,096,042 bytes copied to the sink.
 
 ---
 
@@ -273,7 +282,7 @@ Standing constraints from the architecture baseline, treated as binding:
 
 ## Work In Progress
 
-One-time Storage Transfer Service job `transferJobs/3472342193733823656` is running. Its live operation is `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. No other control session is known to be editing this working tree.
+One-time Storage Transfer Service job `transferJobs/3472342193733823656` is running. Its live operation is `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. The generic ingestion foundation is complete; data-dependent subjective parsing waits for transfer verification and schema audit. No other control session is known to be editing this working tree.
 
 ---
 
@@ -296,12 +305,13 @@ One-time Storage Transfer Service job `transferJobs/3472342193733823656` is runn
 | Lint (ruff) | PASS | `ruff check src tests jobs`, all checks passed |
 | Format (ruff) | PASS | 13 files already formatted |
 | Type check (mypy strict) | PASS | 16 source files, no issues |
-| Unit tests | PASS | 23 passed |
+| Unit tests | PASS | 35 passed; one expected `zipfile` duplicate-name warning in the archive-safety test |
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
-| Storage Transfer Service | IN PROGRESS | Job `transferJobs/3472342193733823656`; operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886` found 5 source objects totalling 99,132,769,855 bytes; 1 object / 940,229,866 bytes copied |
-| Schema / data-contract tests | Not implemented | Directory exists, no data to contract against |
+| Storage Transfer Service | IN PROGRESS | Job `transferJobs/3472342193733823656`; operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886` found 5 source objects totalling 99,132,769,855 bytes; 1 object / 8,255,096,042 bytes copied |
+| Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
+| Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
 | Smoke tests | Not implemented | Directory exists, no pipeline to run |
 | CI | Not implemented | Gates run locally only |
@@ -316,11 +326,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v7, 2026-08-13T04:00:00Z | v7, 2026-08-13T04:00:00Z |
+| `PROJECT_STATE.md` | v8, 2026-08-13T05:00:00Z | v8, 2026-08-13T05:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-021, with DEC-021 accepted | DEC-001 to DEC-021, with DEC-021 accepted |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `abc9f4c` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `45a4aac` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
