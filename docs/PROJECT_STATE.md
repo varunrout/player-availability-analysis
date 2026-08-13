@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 13
-Last Updated UTC: 2026-08-13T15:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-11
+State Version: 14
+Last Updated UTC: 2026-08-13T16:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-12
 Git Branch: main
-Git HEAD: 0914f3e940b3ebe3c860b0431c6aa209dfafe789 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: e94c7f24fec251fb4472f423ee5a3943f2c8d9b1 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration and silver-domain relations are complete and validated. Injury-report profiling is next.
+Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration, silver relations and injury-episode construction are complete and validated. Player-day cohort construction is next.
 
 ---
 
@@ -37,6 +37,12 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v13 to v14, under coordination session `PAA-CTRL-20260813-12`.
+
+- Accepted `DEC-024`: parse source injury payloads into location/severity components, deduplicate exact same-player/same-date/same-component reports, and merge components by player and raw location across gaps of at most three days. The 1- and 7-day rules remain sensitivity analyses.
+- Profiled 162 source reports: 68 contained multiple location components; six exact duplicate rows exist. The exact-deduplicated component count is 299; sensitivity produces 232/147/101 episodes at 1/3/7-day gaps respectively.
+- Implemented and staged `injury_episodes.parquet` with 147 self-reported episodes and a quality report in the canonical GCS silver/metadata paths. Full quality gate passes: Ruff, strict mypy and pytest (`49 passed`, one expected ZIP duplicate-name warning).
 
 State v12 to v13, under coordination session `PAA-CTRL-20260813-11`.
 
@@ -219,6 +225,7 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - Raw staging is complete at `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`: 19 unchanged source files and `_extraction_manifest.json`, 20 objects / 3,715,017 bytes.
 - Bronze staging is complete at `gs://paa-data-979927072833/bronze/subjective/soccermon/zenodo-10033832/`: five normalised Parquet datasets / 714,336 bytes. The quality report is stored under `metadata/data_quality_reports/`.
 - Silver staging is complete at `gs://paa-data-979927072833/silver/subjective/soccermon/zenodo-10033832/`: player registry, training-load daily, wellness daily, training sessions and preserved event-report relations. No injury episode or label table exists.
+- The same silver prefix now also contains 147 self-reported injury episodes; labels and availability states do not yet exist.
 - BigQuery provenance is registered: run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs` and 19 linked source-file rows in `paa_core.source_files`. The per-member SHA-256 column is deliberately null because only the enclosing ZIP was independently SHA-256 verified; ZIP CRC32 values are retained in source-file notes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
@@ -283,6 +290,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-021 | Dedicated archive-only bucket isolates Storage Transfer Service access |
 | DEC-022 | Normalise verified subjective source layouts by their native grain |
 | DEC-023 | Canonical subjective silver relations preserve daily, session and event grain |
+| DEC-024 | Self-reported injury episodes use raw location and a 3-day gap |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -324,14 +332,14 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Subjective silver relations are complete under `DEC-023`. Next is injury-report duplicate and timing profiling; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
+Subjective injury episodes are complete under `DEC-024`. Next is player-day cohort construction; labels and availability logic have not begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Profile injury report duplicates and timing semantics before proposing episode logic.
-2. Design the injury-episode evidence and sensitivity experiment; do not implement labels until its decision is accepted.
+1. Build the observed player-day cohort and define prediction cut-off assumptions before labels.
+2. Implement leak-safe 3/7/14-day labels and right-censoring rules from `DEC-024` episodes.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -354,6 +362,7 @@ Subjective silver relations are complete under `DEC-023`. Next is injury-report 
 | Subjective bronze normalisation | PASS | 5 Parquet outputs, compact GCS staging, quality report and byte-identical rerun; 44-test quality suite pass |
 | Subjective BigQuery provenance | PASS | One registered ingestion run with 19 linked source files; read-back totals reconcile (27,655 read / 564,940 written) |
 | Subjective silver transformation | PASS | 7 canonical Parquet relations staged in GCS; quality report and 48-test suite pass |
+| Injury-episode construction | PASS | 147 3-day-gap episodes staged in GCS; 1/3/7-day sensitivity documented and 49-test suite pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -370,8 +379,8 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v13, 2026-08-13T15:00:00Z | v13, 2026-08-13T15:00:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-023 | DEC-001 to DEC-023 |
+| `PROJECT_STATE.md` | v14, 2026-08-13T16:00:00Z | v14, 2026-08-13T16:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-024 | DEC-001 to DEC-024 |
 
 Status: **SYNCHRONISED**
 

@@ -660,6 +660,34 @@ Seven compact silver Parquet relations are staged in GCS. The next substantive t
 
 ---
 
+## DEC-024
+
+**Decision ID:** DEC-024
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+SoccerMon injury reports are repeated self-reports. Inspection found 162 raw reports, 68 multi-location reports and six exact duplicate rows. After parsing and exact component-level deduplication, 299 player-date-location-severity components remain. Candidate gap rules yield 232, 147 and 101 episodes at 1, 3 and 7 days respectively.
+
+**Decision:**
+Use a three-day event-free gap as the primary self-reported injury-episode rule. Parse all raw location/severity components, remove exact same-player/same-date/same-component duplicates, and merge reports by player and raw location when the next report is no more than three days after the prior one. Retain the maximum reported severity. Treat one- and seven-day rules as required sensitivity analyses.
+
+**Rationale:**
+Three days matches the existing provisional configuration, removes the observed repeated-report runs without the much stronger compression caused by seven days, and remains explicitly sensitivity-tested. Raw locations are retained because broader anatomical grouping would introduce a separate, unsupported mapping decision.
+
+**Alternatives Considered:**
+One-day gap, which fragments repeated reporting into 232 episodes. Seven-day gap, which compresses to 101 episodes and risks merging distinct events. Severity-specific episodes, rejected because severity can change within one continuing location-specific report sequence.
+
+**Consequences:**
+The primary silver episode table contains 147 self-reported injury episodes. It is suitable for subsequent cohort and label construction, but not medical diagnosis, clearance or causal claims.
+
+**Affected Components:** injury episodes, cohorts, labels, leakage controls, sensitivity analysis
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
