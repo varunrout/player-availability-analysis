@@ -582,7 +582,7 @@ Every material state update writes the local file and then replaces the contents
 
 **Decision ID:** DEC-021
 **Date:** 2026-08-13
-**Status:** PROPOSED
+**Status:** ACCEPTED
 
 **Context:**
 Storage Transfer Service rejected the approved prefix-conditional bindings on `gs://paa-data-979927072833`. Its preflight requires bucket-level `storage.objects.list` and `storage.objects.create` permissions for the managed transfer identity. Granting those roles without conditions would let the identity access all object names and create objects throughout the shared analytical data bucket.
@@ -597,7 +597,7 @@ An isolated bucket gives the managed transfer service the permissions it require
 Granting Storage Transfer Service unconditional object list/create roles on `paa-data`, not recommended because it broadens access across the shared data lake. Replacing Storage Transfer Service with a workstation-dependent download, rejected because it abandons the managed cloud transfer design. Using a Cloud Run download job, deferred because it introduces compute and restart responsibility where a managed transfer is more suitable.
 
 **Consequences:**
-The acquisition script will target the approved dedicated bucket. `paa-data` remains the analytical lake for bronze, silver, gold, metadata and temporary processing. After successful transfer, the raw ZIPs can be selectively staged into `paa-data` only when a workload needs them.
+Created `gs://paa-source-archives-979927072833` in `europe-west2` with uniform bucket-level access. The Storage Transfer managed identity has bucket metadata read, object viewer and object creator roles on that bucket only; all attempted conditional transfer bindings were removed from `paa-data`. The acquisition script now targets the dedicated bucket and one transfer job has been started. `paa-data` remains the analytical lake for bronze, silver, gold, metadata and temporary processing. After successful transfer, the raw ZIPs can be selectively staged into `paa-data` only when a workload needs them.
 
 **Affected Components:** source acquisition, Cloud Storage, IAM, lifecycle policy, cost control
 

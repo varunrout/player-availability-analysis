@@ -21,10 +21,10 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 DEFAULT_PROJECT_ID = "player-availability-analysis"
-DEFAULT_BUCKET = "paa-data-979927072833"
+DEFAULT_BUCKET = "paa-source-archives-979927072833"
 DEFAULT_RECORD_ID = "10033832"
-DEFAULT_DESTINATION_PREFIX = "raw/source_archives/soccermon/zenodo-10033832/"
-DEFAULT_MANIFEST_OBJECT = "metadata/transfer_manifests/soccermon/zenodo-10033832.tsv"
+DEFAULT_DESTINATION_PREFIX = "soccermon/zenodo-10033832/"
+DEFAULT_MANIFEST_OBJECT = "transfer_manifests/soccermon/zenodo-10033832.tsv"
 
 
 def parse_args() -> argparse.Namespace:

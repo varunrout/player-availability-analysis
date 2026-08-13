@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 6
-Last Updated UTC: 2026-08-13T03:30:00Z
-Coordination Session ID: PAA-CTRL-20260813-04
+State Version: 7
+Last Updated UTC: 2026-08-13T04:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-05
 Git Branch: main
-Git HEAD: 12e541582ee10258652e546bfae206f8c5c7f453 (foundation commit; see State Synchronisation Status)
+Git HEAD: 480c803d12fb814619d93935cee752e82bbc44f7 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Managed-transfer API, identity, manifest and submission script are ready; job submission is blocked because Storage Transfer Service requires bucket-level object list/create permissions, which cannot be constrained to a prefix during service preflight.
+Current Phase Status: One-time managed SoccerMon archive transfer is running in GCP. Source ZIPs are being copied directly from Zenodo into the dedicated archive-only bucket.
 
 ---
 
 ## Current Objective
 
-Acquire the complete SoccerMon source archive from Zenodo into `gs://paa-data-979927072833/raw/source_archives/soccermon/zenodo-10033832/` through Storage Transfer Service, using a checksum-bearing URL list. The transfer is agentless and managed by GCP.
+Acquire and verify the complete SoccerMon source archive from Zenodo into `gs://paa-source-archives-979927072833/soccermon/zenodo-10033832/` through Storage Transfer Service, using a checksum-bearing URL list. The transfer is agentless and managed by GCP.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,14 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v6 to v7, under coordination session `PAA-CTRL-20260813-05`.
+
+- Accepted `DEC-021`: created dedicated archive-only bucket `gs://paa-source-archives-979927072833` in `europe-west2`, with uniform bucket-level access.
+- Granted the Storage Transfer managed identity bucket metadata read, object viewer and object creator roles on the dedicated archive bucket only. Removed all attempted conditional transfer bindings from the shared `paa-data` bucket.
+- Updated the acquisition script defaults to the dedicated bucket. The transfer manifest is at `gs://paa-source-archives-979927072833/transfer_manifests/soccermon/zenodo-10033832.tsv`.
+- Created and started one-time job `transferJobs/3472342193733823656`, operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886`.
+- Latest operation check: `IN_PROGRESS`; 5 objects and 99,132,769,855 bytes found at source; 1 object and 940,229,866 bytes copied to the sink. The first archive object is now visible under the destination prefix.
 
 State v5 to v6, under coordination session `PAA-CTRL-20260813-04`.
 
@@ -120,9 +128,9 @@ player-availability-analysis/
 
 ## Current GCP State
 
-**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; ARCHIVE-BUCKET DECISION PENDING.**
+**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; MANAGED ARCHIVE TRANSFER RUNNING.**
 
-Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. The active project is `player-availability-analysis`; the account and `gs://paa-data-979927072833` were successfully verified. Storage Transfer Service is enabled and its managed identity exists. Its preflight requires bucket-level object list/create permissions, so an archive-only bucket is proposed rather than broadening the shared data bucket.
+Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. The active project is `player-availability-analysis`; the account and `gs://paa-data-979927072833` were successfully verified. Storage Transfer Service is enabled and its managed identity has the required bucket-level access only on the dedicated archive bucket.
 
 ```
 Project ID:      player-availability-analysis
@@ -131,6 +139,7 @@ Region:          europe-west2
 
 Storage:         gs://paa-data-979927072833
                  gs://paa-artifacts-979927072833
+                 gs://paa-source-archives-979927072833
 Zones:           raw/subjective/, raw/objective/, bronze/, silver/, gold/, metadata/, tmp/
 
 BigQuery:        paa_core, paa_ml, paa_product
@@ -151,16 +160,18 @@ Unverified: billing budget and alerts, enabled API set, GCS lifecycle rules, IAM
 
 Verified bucket zones: `raw/`, `bronze/`, `silver/`, `gold/`, `metadata/`, `tmp/`.
 
-The URL-list manifest exists at `gs://paa-data-979927072833/metadata/transfer_manifests/soccermon/zenodo-10033832.tsv`. No archive object, transfer job or processing output has been created. No 99 GB transfer cost has been incurred.
+Dedicated archive bucket: `gs://paa-source-archives-979927072833` (`europe-west2`, uniform bucket-level access). It contains the live transfer's URL-list manifest and is isolated from the analytical data lake.
+
+Live transfer job: `transferJobs/3472342193733823656`. Live operation: `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. Latest status: `IN_PROGRESS`, with 5 objects and 99,132,769,855 bytes found at source; 1 object and 940,229,866 bytes copied to the sink.
 
 ---
 
 ## Current Data State
 
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
-- Immediate source objective: acquire the complete archive through Storage Transfer Service into `raw/source_archives/soccermon/zenodo-10033832/`. `scripts/acquire_soccermon_archive.py` generates a URL list with Zenodo size and MD5 integrity values and submits the managed job only with `--submit`.
+- Immediate source objective: complete the managed transfer into `gs://paa-source-archives-979927072833/soccermon/zenodo-10033832/`. `scripts/acquire_soccermon_archive.py` generates a URL list with Zenodo size and MD5 integrity values and submits the managed job only with `--submit`.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
-- **Blocker: Storage Transfer Service requires bucket-level list/create permissions for its managed identity.** Prefix-limited access in `paa-data` is not sufficient for the service. Resulting GCS location and checksums are unverified (`OD-07`, `OD-09`).
+- **Work in progress: managed archive transfer.** The source ZIPs remain unverified until the running operation completes successfully and object-level checksums are recorded (`OD-07`).
 - No data ingested. No bronze, silver or gold artefacts exist.
 - No schema audit against real files, so no field-level assertions are made anywhere in this project.
 
@@ -220,6 +231,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-018 | Superseded: complete SoccerMon archive is preserved in Drive before ingestion |
 | DEC-019 | Complete SoccerMon archive is acquired into GCS with Storage Transfer Service |
 | DEC-020 | Control documents mirror through in-place Drive connector updates |
+| DEC-021 | Dedicated archive-only bucket isolates Storage Transfer Service access |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -237,7 +249,6 @@ Standing constraints from the architecture baseline, treated as binding:
 | ID | Question | Blocks |
 |----|----------|--------|
 | OD-07 | Confirmed location, licence and SHA-256 checksum of the SoccerMon subjective archive | All ingestion work |
-| OD-09 | Use a dedicated source-archive bucket or broaden Storage Transfer access to the shared `paa-data` bucket | Archive acquisition |
 
 ---
 
@@ -249,29 +260,29 @@ Standing constraints from the architecture baseline, treated as binding:
 - Repository structure intentionally incomplete against doc 18 (`DEC-012`). Deliberate, not drift.
 - `injury_episode_gap_days: 3` is provisional pending EXP-001 and must not be used for a headline result.
 - Git identity is set at repository level rather than inherited from a global configuration.
-- Storage Transfer Service preflight does not accept prefix-conditional `storage.objects.list` and `storage.objects.create` permissions. The tested bindings must be cleaned up or replaced after `OD-09` is resolved.
+- The archive transfer is in progress. Its completion status, destination object names and checksums still require verification before ingestion begins.
+- Archive-bucket lifecycle rules and billing-budget alerts have not yet been verified.
 
 ---
 
 ## Blockers
 
-1. **Source data provenance unverified (`OD-07`).** The archive transfer has not been created, so no GCS archive object location or completed transfer checksum exists. This is the single blocker on the current milestone.
-2. **Archive bucket decision pending (`OD-09`).** Storage Transfer Service requires bucket-level object list/create. Do not grant this to the shared data bucket without an explicit decision; a dedicated source-archive bucket is recommended.
+1. **Source data provenance unverified (`OD-07`).** The archive transfer is running, but no destination object location or completed transfer checksum has yet been confirmed. This is the single blocker on the current milestone.
 
 ---
 
 ## Work In Progress
 
-`scripts/acquire_soccermon_archive.py` is ready to prepare and submit the managed GCS transfer once `OD-09` is resolved. No transfer job is in flight. No other control session is known to be editing this working tree.
+One-time Storage Transfer Service job `transferJobs/3472342193733823656` is running. Its live operation is `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Resolve `OD-09`: create a dedicated archive-only GCS bucket and grant Storage Transfer Service the required bucket-level roles there, or explicitly approve broad roles on `paa-data`. The dedicated bucket is recommended.
-2. Update the acquisition script with the approved archive bucket, submit the one-time managed transfer job and record its job and operation IDs.
-3. Resolve `OD-07`: register the GCS location, CC BY 4.0 licence, transfer operation result and object checksums in source provenance.
-4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming; confirm budget alerts exist before any processing.
+1. Monitor job `transferJobs/3472342193733823656` until it reaches a terminal status.
+2. Resolve `OD-07`: register the destination object names, sizes, MD5 checksums, transfer result and CC BY 4.0 licence in source provenance; establish whether a separate SHA-256 computation is needed.
+3. Confirm archive-bucket lifecycle rules and billing-budget alerts before processing begins.
+4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
 6. Implement the subjective ingestion vertical slice, in order: source discovery and manifest, archive inspection, provenance records into `paa_core.source_files` and `paa_core.ingestion_runs`, deterministic parsing, schema discovery, schema validation as data contracts, raw staging, bronze representation, data-quality reporting, structured logging, idempotency, tests.
 7. Run EXP-001 (episode-gap sensitivity) before any label is treated as settled, then freeze `injury_episode_gap_days` and record the decision.
@@ -289,7 +300,7 @@ Standing constraints from the architecture baseline, treated as binding:
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
-| Storage Transfer Service | BLOCKED BY IAM DESIGN | API, managed identity, manifest and script verified; no job. Service requires bucket-level list/create rather than prefix-conditional roles |
+| Storage Transfer Service | IN PROGRESS | Job `transferJobs/3472342193733823656`; operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886` found 5 source objects totalling 99,132,769,855 bytes; 1 object / 940,229,866 bytes copied |
 | Schema / data-contract tests | Not implemented | Directory exists, no data to contract against |
 | Leakage tests | Not implemented | Directory exists, no features to test |
 | Smoke tests | Not implemented | Directory exists, no pipeline to run |
@@ -305,11 +316,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v6, 2026-08-13T03:30:00Z | v6, 2026-08-13T03:30:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-021 | DEC-001 to DEC-021 |
+| `PROJECT_STATE.md` | v7, 2026-08-13T04:00:00Z | v7, 2026-08-13T04:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-021, with DEC-021 accepted | DEC-001 to DEC-021, with DEC-021 accepted |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of foundation commit `12e5415` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `480c803` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
