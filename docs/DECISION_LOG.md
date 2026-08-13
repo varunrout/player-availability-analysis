@@ -438,6 +438,34 @@ Work exists only on this machine until a remote is added. This is an accepted, t
 
 ---
 
+## DEC-016
+
+**Decision ID:** DEC-016
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The Drive mirror of the control documents was maintained through a connector that can create files but cannot update or delete them. Each state update therefore produced a duplicate under the same title, which the desktop client resolved by appending "(1)" and which required manual cleanup. This is unsustainable for documents that change every session.
+
+**Decision:**
+Maintain the Drive mirror by writing the files in place at the mounted Google Drive path (`G:\My Drive\Projects\PlayerAvailabilityAnalysis`), letting Google Drive Desktop sync them. The create-only connector is no longer used for mirroring.
+
+**Rationale:**
+In-place writes overwrite the existing files, so no duplicate is ever created and no manual cleanup is needed. The repository copy under `docs/` remains canonical; the Drive copy is a synced mirror of identical content.
+
+**Alternatives Considered:**
+Continuing with the create-only connector and cleaning up duplicates each time, rejected as error-prone busywork. Mirroring only at major checkpoints, rejected because it leaves the Drive copy stale between checkpoints, which defeats the purpose of a mirror.
+
+**Consequences:**
+The mounted Drive folder must remain accessible to the session for mirroring to work. If it is ever unmounted, mirroring is reported as `STATE SYNC INCOMPLETE` rather than silently skipped. Both copies are byte-identical after each update.
+
+**Affected Components:** project control, state synchronisation, documentation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

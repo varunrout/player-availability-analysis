@@ -1,7 +1,7 @@
 # Player Availability Analysis - Project State
 
-State Version: 2
-Last Updated UTC: 2026-08-13T01:20:00Z
+State Version: 3
+Last Updated UTC: 2026-08-13T01:30:00Z
 Coordination Session ID: PAA-CTRL-20260813-01
 Git Branch: main
 Git HEAD: 12e541582ee10258652e546bfae206f8c5c7f453 (foundation commit; see State Synchronisation Status)
@@ -50,6 +50,8 @@ State v1 to v2, under coordination session `PAA-CTRL-20260813-01`.
 - Made the initial commit, establishing the first recovery point.
 
 **Measured finding.** Dependency resolution with unbounded lower bounds did not converge in over twelve minutes. Tightening the lower bounds to current releases reduced it to under a minute. Recorded in `DEC-011`.
+
+State v2 to v3: mounted the Drive folder and switched the mirror to in-place writes (`DEC-016`); deleted the duplicate Drive copies left by the create-only connector.
 
 ---
 
@@ -186,6 +188,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-013 | Layered config: YAML for behaviour, environment for identity, environment wins |
 | DEC-014 | Subjective vertical slice runs local-first, cloud as sink |
 | DEC-015 | Commit locally now; remote hosting deferred |
+| DEC-016 | Mirror control docs in place via the mounted Drive folder |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -266,15 +269,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v2, 2026-08-13T01:20:00Z | v2, 2026-08-13T01:20:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-015 | DEC-001 to DEC-015 |
+| `PROJECT_STATE.md` | v3, 2026-08-13T01:30:00Z | v3, 2026-08-13T01:30:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-016 | DEC-001 to DEC-016 |
 
-Status: **SYNCHRONISED**, with a caveat recorded below.
+Status: **SYNCHRONISED**
 
-**Superseded Drive copies.** The available Drive integration can create files but cannot update or delete them, so the version 1 copies could not be overwritten in place. Version 2 was uploaded under the same titles, which leaves the version 1 files present in the folder. They are superseded and must be removed. Until they are, the folder contains two files per title and only the most recently modified is authoritative.
-
-Superseded file IDs, to be deleted:
-- `PROJECT_STATE.md` v1: `1GNal1zl3Lf9_l219OTmfHHXvqyZCzgmX`
-- `DECISION_LOG.md` v1: `10cpbf-EJm4RwaE23b4kqPwBbMGT1CdU4`
+**Mirror method (`DEC-016`).** The Drive folder is now mounted, so both mirrors are written in place at `G:\My Drive\Projects\PlayerAvailabilityAnalysis` and synced by Google Drive Desktop. The earlier duplicate copies produced by the create-only connector have been deleted; the folder holds exactly one of each control document. If the Drive folder is ever unmounted, mirroring will be reported as `STATE SYNC INCOMPLETE` rather than silently skipped.
 
 **Note on Git HEAD.** This document describes the tree as of foundation commit `12e5415` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
