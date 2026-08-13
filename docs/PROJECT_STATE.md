@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 10
-Last Updated UTC: 2026-08-13T12:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-08
+State Version: 11
+Last Updated UTC: 2026-08-13T13:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-09
 Git Branch: main
-Git HEAD: 41103321b8d805bacf5e318c3330f3fcc52377c2 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 52cfd175a06fd6980543c4ca68b4aa507e9eade2 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: SoccerMon archive transfer and subjective-source provenance are verified. The project is entering the subjective ingestion vertical slice.
+Current Phase Status: Subjective raw staging and bronze normalisation are complete and validated. The project is preparing provenance records and silver-domain design.
 
 ---
 
 ## Current Objective
 
-Implement the subjective ingestion vertical slice from the verified SoccerMon source archive: normalise observed source layouts into bronze datasets, profile quality, and retain source provenance.
+Complete the subjective ingestion vertical slice by recording provenance, designing silver-domain transformations from the validated bronze layer, and preserving data-quality evidence.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,15 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v10 to v11, under coordination session `PAA-CTRL-20260813-09`.
+
+- Implemented `jobs/ingest_subjective_bronze.py` and source-grounded normalisers for daily matrices, player-keyed session JSON, and injury, illness and game-performance event CSVs.
+- Wrote and staged five bronze Parquet datasets at `gs://paa-data-979927072833/bronze/subjective/soccermon/zenodo-10033832/` (714,336 bytes total), plus the quality report at `gs://paa-data-979927072833/metadata/data_quality_reports/subjective/soccermon/zenodo-10033832/bronze_ingestion.json`.
+- Measured bronze output: 548,250 daily metric rows (50 players, 731 dates, 15 metrics, 136,891 null values preserved); 16,265 training-session rows; 162 injury reports; 15 illness reports; 248 game-performance reports.
+- Confirmed 4,036 session rows belong to player-dates with multiple sessions; session grain is retained using `source_record_index` rather than collapsed.
+- Added seven source-specific normalisation tests. Full quality gate passes: `poetry check --lock`, Ruff lint and format, strict mypy, and pytest (`44 passed`, with one expected ZIP duplicate-name test warning).
+- Confirmed idempotency: a full rerun produced byte-identical SHA-256 digests for all five local bronze Parquet outputs.
 
 State v9 to v10, under coordination session `PAA-CTRL-20260813-08`.
 
@@ -123,19 +132,19 @@ player-availability-analysis/
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
   docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
   infra/                      empty
-  jobs/                       extract_subjective_archive.py
+  jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py
   notebooks/                  empty
   scripts/                    acquire_soccermon_archive.py
   src/player_availability/
     __init__.py  py.typed
     config/      settings.py, yaml_source.py
-    ingestion/   archive.py, provenance.py
+    ingestion/   archive.py, provenance.py, subjective.py
     schemas/     empty
     quality/     contracts.py
     utils/       paths.py
   tests/
     conftest.py
-    unit/            settings, archive, provenance and contract tests (35 tests)
+    unit/            settings, archive, provenance, contract and subjective-ingestion tests (44 tests)
     data_contracts/  empty
     leakage/         empty
     smoke/           empty
@@ -195,6 +204,7 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
 - Verified subjective source: MD5 `o+hq7KYR93yTMaU16uAL9w==`, SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c`, CC BY 4.0. The local audit copy is ignored under `data/tmp/archive_audit/`.
 - Raw staging is complete at `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`: 19 unchanged source files and `_extraction_manifest.json`, 20 objects / 3,715,017 bytes.
+- Bronze staging is complete at `gs://paa-data-979927072833/bronze/subjective/soccermon/zenodo-10033832/`: five normalised Parquet datasets / 714,336 bytes. The quality report is stored under `metadata/data_quality_reports/`.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
 - **Work in progress: managed archive transfer.** The source ZIPs remain unverified until the running operation completes successfully and object-level checksums are recorded (`OD-07`).
@@ -287,7 +297,7 @@ Standing constraints from the architecture baseline, treated as binding:
 - Repository structure intentionally incomplete against doc 18 (`DEC-012`). Deliberate, not drift.
 - `injury_episode_gap_days: 3` is provisional pending EXP-001 and must not be used for a headline result.
 - Git identity is set at repository level rather than inherited from a global configuration.
-- Source-specific date parsing, missingness conventions and event semantics still need formal contracts before bronze output is written.
+- Event payloads remain preserved as source JSON; injury episodes, availability status and modelling labels are intentionally not inferred yet.
 - Archive-bucket lifecycle rules and billing-budget alerts have not yet been verified.
 
 ---
@@ -300,19 +310,18 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Raw extraction is complete. Next is the subjective normalisation design established by `DEC-022`: source contracts, wide-to-long daily metric conversion, session-list normalisation, event-report parsing, quality reporting and bronze Parquet output. No objective archive processing is authorised. No other control session is known to be editing this working tree.
+Subjective bronze normalisation is complete under `DEC-022`. Next is provenance persistence and silver-domain design; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Implement and test source-specific contracts and normalisers under `DEC-022`.
-2. Write bronze Parquet datasets and an ingestion quality report from the verified raw subjective prefix; make the run idempotent.
-3. Record source assets and ingestion runs in `paa_core.source_files` and `paa_core.ingestion_runs`.
+1. Inspect the existing `paa_core.source_files` and `paa_core.ingestion_runs` schemas, then record the verified archive, raw staging and bronze run provenance.
+2. Design and implement silver-domain transformations: player registry, training sessions, daily wellness/load relations, and preserved event reports.
+3. Profile injury report duplicates and timing semantics before proposing episode logic.
 4. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 5. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 6. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
-7. Build injury-episode logic only after the raw injury reports, duplicates and timing semantics have been profiled.
 
 ---
 
@@ -329,6 +338,7 @@ Raw extraction is complete. Next is the subjective normalisation design establis
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
 | Storage Transfer Service | PASS | Operation completed successfully: 5 objects / 99,132,769,855 bytes copied, matching the source total |
 | Subjective raw staging | PASS | 19 unchanged source members and extraction manifest staged to GCS; object spot checks and 37-test quality suite pass |
+| Subjective bronze normalisation | PASS | 5 Parquet outputs, compact GCS staging, quality report and byte-identical rerun; 44-test quality suite pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -345,11 +355,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v10, 2026-08-13T12:00:00Z | v10, 2026-08-13T12:00:00Z |
+| `PROJECT_STATE.md` | v11, 2026-08-13T13:00:00Z | v11, 2026-08-13T13:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-022 | DEC-001 to DEC-022 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `4110332` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `52cfd17` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.

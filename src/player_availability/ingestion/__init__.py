@@ -8,6 +8,7 @@ from player_availability.ingestion.archive import (
     inspect_zip_archive,
 )
 from player_availability.ingestion.provenance import IngestionRun, SourceAsset, create_ingestion_run
+from player_availability.ingestion.subjective import SubjectiveBronzeResult, build_subjective_bronze
 
 __all__ = [
     "ArchiveInventory",
@@ -15,6 +16,8 @@ __all__ = [
     "ExtractionResult",
     "IngestionRun",
     "SourceAsset",
+    "SubjectiveBronzeResult",
+    "build_subjective_bronze",
     "create_ingestion_run",
     "extract_zip_archive",
     "inspect_zip_archive",
