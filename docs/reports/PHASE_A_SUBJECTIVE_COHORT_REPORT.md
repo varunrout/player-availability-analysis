@@ -12,6 +12,14 @@ This report is descriptive model-readiness analysis for the `subjective_v1` play
 - Burn-in rule for headline analysis: first 27 calendar days per player excluded from the 28-day-feature cohort.
 - Outcome: future self-reported injury-episode start; same-day episodes are excluded from future labels under the accepted end-of-day cutoff.
 
+## Figures
+
+![New-onset label prevalence](figures/phase_a/label_prevalence_by_horizon.png)
+
+![Feature coverage after burn-in](figures/phase_a/feature_coverage_after_burn_in.png)
+
+![Positive 7-day label concentration](figures/phase_a/positive_7d_label_concentration.png)
+
 ## Cohort Flow and Label Prevalence
 
 | Horizon | Complete-label rows | 28-day-history and new-onset eligible rows | Positive player-days | Prevalence |
@@ -55,11 +63,11 @@ Interpretation: a positive player-day is not an independent medically verified i
 | TeamA-5cd7a61b-88b2-46d2-94f8-5a0d4f682d93 | TeamA | 43 |
 | TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e | TeamA | 24 |
 | TeamA-bcc03f81-2733-45d3-abf1-f7a709c63e68 | TeamA | 22 |
-| TeamA-74afe68c-f348-414c-9754-6d6f9df12587 | TeamA | 21 |
 | TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05 | TeamA | 21 |
+| TeamA-74afe68c-f348-414c-9754-6d6f9df12587 | TeamA | 21 |
 | TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95 | TeamA | 14 |
-| TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea | TeamA | 7 |
-| TeamB-7ab47f4e-6eca-4793-880f-6a0dad3459c3 | TeamB | 7 |
+| TeamA-b58af410-da77-479e-b93c-e03617b9f36d | TeamA | 7 |
+| TeamA-affd6f1d-b364-4700-98bf-8f20896e5ac4 | TeamA | 7 |
 
 Concentration is reported before fitting because repeated player-days are dependent. Later uncertainty intervals must be clustered by player, and leave-one-player-out analysis is mandatory before generalisation claims.
 

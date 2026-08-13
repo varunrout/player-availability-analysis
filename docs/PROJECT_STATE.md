@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 18
-Last Updated UTC: 2026-08-13T20:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-16
+State Version: 19
+Last Updated UTC: 2026-08-13T21:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-17
 Git Branch: main
-Git HEAD: 789450e581512bbc57b17d121c8ae98fd04d483c (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: b0eb6f6b4ac2fe6a18a9a05777c006af874cbff1 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective data engineering, M0 features and Phase A cohort/outcome/feature-quality reporting are complete and validated. Chronological split construction is next.
+Current Phase Status: Subjective data engineering, M0 features and visual Phase A cohort/outcome/feature-quality reporting are complete and validated. Chronological split construction is next.
 
 ---
 
@@ -37,6 +37,12 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v18 to v19, under coordination session `PAA-CTRL-20260813-17`.
+
+- Added locked development dependency `matplotlib 3.11.1` and extended the reusable Phase A analysis job to generate three reproducible charts: label prevalence by horizon, feature coverage after burn-in, and 7-day positive-label concentration.
+- Added chart links to the Phase A report. The report and figures are committed locally, updated in Drive, and staged under the GCS metadata analysis-report prefix.
+- Performed visual inspection of all three rendered figures. Full quality gate passes: Ruff, strict mypy and pytest (`52 passed`, one expected ZIP duplicate-name warning).
 
 State v17 to v18, under coordination session `PAA-CTRL-20260813-16`.
 
@@ -185,7 +191,7 @@ player-availability-analysis/
     config/      settings.py, yaml_source.py
     ingestion/   archive.py, provenance.py, provenance_store.py, subjective.py, silver.py
     schemas/     empty
-    analysis/    cohort.py
+    analysis/    cohort.py, plots.py
     quality/     contracts.py
     utils/       paths.py
   tests/
@@ -200,7 +206,7 @@ player-availability-analysis/
 - Branch `main`. Foundation committed. `.env` correctly excluded from version control.
 - No remote configured. Git is deliberately local-only unless explicitly requested (`DEC-017`).
 - No CI workflow yet.
-- Locked dependency versions include `google-cloud-storage 3.13.1`, `google-cloud-bigquery 3.43.0`, `pydantic 2.13.4`, `pydantic-settings 2.15.0`, `polars 1.43.2`, `pyarrow 25.0.1`, `pytest 9.1.1`, `ruff 0.16.2`, `mypy 2.3.0`.
+- Locked dependency versions include `google-cloud-storage 3.13.1`, `google-cloud-bigquery 3.43.0`, `pydantic 2.13.4`, `pydantic-settings 2.15.0`, `polars 1.43.2`, `pyarrow 25.0.1`, `matplotlib 3.11.1`, `pytest 9.1.1`, `ruff 0.16.2`, `mypy 2.3.0`.
 - The repository intentionally does not yet contain doc 18's `pipelines/`, `app/` or `sql/` directories (`DEC-012`).
 
 ---
@@ -399,6 +405,7 @@ Phase A reporting is complete and promotes the project to Phase B chronological 
 | Subjective v1 features | PASS | 36,550 gold rows / 51 columns; future-append and prior-only baseline tests pass |
 | Analysis execution plan | PASS | Local and Drive runbook created; 296 lines covering analysis sequence, hypotheses, gates and required artefacts |
 | Phase A cohort report | PASS | Reproducible local, Drive and GCS report; 28-day cohort, prevalence, event concentration and feature coverage measured |
+| Phase A charts | PASS | Three reproducible and visually inspected PNG figures published locally, in Drive and in GCS metadata |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -415,7 +422,7 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v18, 2026-08-13T20:00:00Z | v18, 2026-08-13T20:00:00Z |
+| `PROJECT_STATE.md` | v19, 2026-08-13T21:00:00Z | v19, 2026-08-13T21:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-026 | DEC-001 to DEC-026 |
 
 Status: **SYNCHRONISED**
