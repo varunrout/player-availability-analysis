@@ -13,6 +13,7 @@ from player_availability.ingestion.provenance_store import (
     build_provenance_payload,
     persist_provenance,
 )
+from player_availability.ingestion.silver import SubjectiveSilverResult, build_subjective_silver
 from player_availability.ingestion.subjective import SubjectiveBronzeResult, build_subjective_bronze
 
 __all__ = [
@@ -23,7 +24,9 @@ __all__ = [
     "ProvenancePayload",
     "SourceAsset",
     "SubjectiveBronzeResult",
+    "SubjectiveSilverResult",
     "build_subjective_bronze",
+    "build_subjective_silver",
     "build_provenance_payload",
     "create_ingestion_run",
     "extract_zip_archive",
