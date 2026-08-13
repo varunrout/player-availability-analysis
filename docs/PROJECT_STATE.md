@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 17
-Last Updated UTC: 2026-08-13T19:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-15
+State Version: 18
+Last Updated UTC: 2026-08-13T20:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-16
 Git Branch: main
-Git HEAD: 773c67b401ed8186c125f9c81ed76a1b56b5bcd1 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 789450e581512bbc57b17d121c8ae98fd04d483c (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective data engineering and M0 features are complete and validated. The integrated analysis execution runbook is complete; cohort reporting and chronological split construction are next.
+Current Phase Status: Subjective data engineering, M0 features and Phase A cohort/outcome/feature-quality reporting are complete and validated. Chronological split construction is next.
 
 ---
 
 ## Current Objective
 
-Run the subjective modelling programme through the approved analysis execution plan, starting with cohort reporting, split construction and naive operational baselines.
+Run the subjective modelling programme through the approved analysis execution plan, starting with chronological split construction and naive operational baselines.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,13 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v17 to v18, under coordination session `PAA-CTRL-20260813-16`.
+
+- Implemented a reusable Phase A cohort-analysis job and generated `docs/reports/PHASE_A_SUBJECTIVE_COHORT_REPORT.md`, mirrored in Drive and staged with its JSON summary under the GCS metadata analysis-report prefix.
+- Measured the 28-day-history new-onset cohort: 34,849/34,649/34,299 eligible player-days and 178/343/554 positives for 3/7/14-day labels, respectively (0.51%/0.99%/1.62% prevalence). The primary 7-day outcome is highly imbalanced and concentrated in a small number of players.
+- Confirmed feature coverage after burn-in: daily load and session aggregates are complete; wellness fatigue/readiness are available on approximately 48% of eligible days; prior-only daily-load z-scores on 78%. The report treats missingness as a process/completeness signal, not physiology.
+- Phase A decision: **PROMOTE to Phase B**. No model was fitted. Full quality gate passes: Ruff, strict mypy and pytest (`52 passed`, one expected ZIP duplicate-name warning).
 
 State v16 to v17, under coordination session `PAA-CTRL-20260813-15`.
 
@@ -167,7 +174,7 @@ player-availability-analysis/
   poetry.lock                 50 packages pinned
   .env / .env.example / .gitignore
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
-  docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
+  docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/, reports/
                               19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
   infra/                      empty
   jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py, build_subjective_silver.py, record_subjective_provenance.py
@@ -178,6 +185,7 @@ player-availability-analysis/
     config/      settings.py, yaml_source.py
     ingestion/   archive.py, provenance.py, provenance_store.py, subjective.py, silver.py
     schemas/     empty
+    analysis/    cohort.py
     quality/     contracts.py
     utils/       paths.py
   tests/
@@ -355,15 +363,15 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-The integrated analysis execution runbook is complete. Next is Phase A cohort/outcome/feature reporting and Phase B chronological split construction; no objective archive processing is authorised. No other control session is known to be editing this working tree.
+Phase A reporting is complete and promotes the project to Phase B chronological split construction. No model has been fitted and no objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Execute runbook Phase A: cohort, outcome and feature-quality reporting.
-2. Execute runbook Phase B: freeze chronological split boundaries and implement split-leakage and predictor-selection tests.
-3. Run `EXP-002` naive operational baselines before fitting a logistic model.
+1. Execute runbook Phase B: freeze chronological split boundaries and implement split-leakage and predictor-selection tests.
+2. Run `EXP-002` naive operational baselines before fitting a logistic model.
+3. Review the baseline report before implementing `EXP-003` regularised logistic regression.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -390,6 +398,7 @@ The integrated analysis execution runbook is complete. Next is Phase A cohort/ou
 | Player-day labels | PASS | 36,550 gold player-day rows; post-cutoff 3/7/14-day labels, active-episode eligibility and right-censoring validated |
 | Subjective v1 features | PASS | 36,550 gold rows / 51 columns; future-append and prior-only baseline tests pass |
 | Analysis execution plan | PASS | Local and Drive runbook created; 296 lines covering analysis sequence, hypotheses, gates and required artefacts |
+| Phase A cohort report | PASS | Reproducible local, Drive and GCS report; 28-day cohort, prevalence, event concentration and feature coverage measured |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -406,7 +415,7 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v17, 2026-08-13T19:00:00Z | v17, 2026-08-13T19:00:00Z |
+| `PROJECT_STATE.md` | v18, 2026-08-13T20:00:00Z | v18, 2026-08-13T20:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-026 | DEC-001 to DEC-026 |
 
 Status: **SYNCHRONISED**
