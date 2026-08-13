@@ -269,6 +269,12 @@ Test coverage is limited to the configuration layer, which is the only substanti
 | `PROJECT_STATE.md` | v2, 2026-08-13T01:20:00Z | v2, 2026-08-13T01:20:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-015 | DEC-001 to DEC-015 |
 
-Status: **SYNCHRONISED**
+Status: **SYNCHRONISED**, with a caveat recorded below.
+
+**Superseded Drive copies.** The available Drive integration can create files but cannot update or delete them, so the version 1 copies could not be overwritten in place. Version 2 was uploaded under the same titles, which leaves the version 1 files present in the folder. They are superseded and must be removed. Until they are, the folder contains two files per title and only the most recently modified is authoritative.
+
+Superseded file IDs, to be deleted:
+- `PROJECT_STATE.md` v1: `1GNal1zl3Lf9_l219OTmfHHXvqyZCzgmX`
+- `DECISION_LOG.md` v1: `10cpbf-EJm4RwaE23b4kqPwBbMGT1CdU4`
 
 **Note on Git HEAD.** This document describes the tree as of foundation commit `12e5415` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
