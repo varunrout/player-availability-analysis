@@ -688,6 +688,34 @@ The primary silver episode table contains 147 self-reported injury episodes. It 
 
 ---
 
+## DEC-025
+
+**Decision ID:** DEC-025
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The subjective sources have calendar dates but no reliable intraday timestamps for wellness, training-load or injury reports. A player-day cohort therefore needs an explicit prediction-time convention and censoring rules before 3/7/14-day labels can be used safely.
+
+**Decision:**
+Use end-of-calendar-day as the prediction cutoff. Treat data dated on the prediction day as available at cutoff. Define `injury_next_horizon` only from episode starts strictly after the prediction date and through the horizon end. Set labels to null when the horizon passes the player observation end, retain explicit horizon-completeness flags, and mark active-episode days ineligible for primary new-onset modelling.
+
+**Rationale:**
+This is the most defensible convention supported by the available timestamps. Strictly post-cutoff episode starts avoid same-day target leakage, and explicit null censoring avoids falsely labelling unknown future periods as negative.
+
+**Alternatives Considered:**
+Morning cutoff, rejected because no dependable intraday ordering exists. Treating incomplete horizons as negative, rejected because it creates right-censoring bias. Removing active episodes from the table, rejected because they should remain auditable even though excluded from new-onset eligibility.
+
+**Consequences:**
+The gold cohort has 36,550 observed player-days. Positive labels are 213, 448 and 755 for the complete 3/7/14-day horizons. Feature construction must use only data dated on or before the prediction date and must be tested for future-append invariance.
+
+**Affected Components:** player-day cohort, labels, right censoring, leakage tests, modelling eligibility
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
