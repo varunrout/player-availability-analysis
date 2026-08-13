@@ -744,6 +744,34 @@ The gold feature product has 36,550 rows and 51 columns. Automated future-append
 
 ---
 
+## DEC-027
+
+**Decision ID:** DEC-027
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The subjective v1 player-day product is ready for model development, but fixed-horizon labels overlap in time and a random split would leak future outcome context. A single audit-ready partition and an explicit predictor contract are needed before any baseline is fitted.
+
+**Decision:**
+For the primary 14-day new-onset outcome, freeze a shared chronological split after 28 days of player history and complete 14-day labels: train from 2020-01-28 to 2021-03-16, a 14-day embargo, validation from 2021-03-31 to 2021-08-15, a 14-day embargo, and test from 2021-08-30 to 2021-12-17. Use the explicit 34-column subjective v1 predictor allow-list. Labels, eligibility flags, identifiers, dates, episode-state fields and provenance fields are excluded from predictors.
+
+**Rationale:**
+The embargo matches the maximum headline horizon, so observations near a boundary cannot have outcomes reaching into the next partition. One shared manifest makes baseline comparisons, ablations and later models comparable. An allow-list is more robust than attempting to remove disallowed columns by naming convention.
+
+**Alternatives Considered:**
+Random player-day splitting, rejected because it violates the chronological validation requirement. No boundary embargo, rejected because a 14-day label can cross a partition boundary. Separate date splits per horizon, deferred because it would complicate initial model comparisons; later horizon analysis uses the same conservative shared period.
+
+**Consequences:**
+The split-assigned gold product contains 20,505 primary-eligible train rows, 6,900 validation rows and 5,495 test rows, with the test partition held untouched until development is complete. The next permitted experiment is EXP-002 naive operational baselines. Preprocessing, model selection and calibration must respect this partition protocol.
+
+**Affected Components:** modelling datasets, leakage controls, experiment tracking, baseline evaluation, calibration
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

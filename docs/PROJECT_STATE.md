@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 19
-Last Updated UTC: 2026-08-13T21:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-17
+State Version: 20
+Last Updated UTC: 2026-08-13T22:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-18
 Git Branch: main
-Git HEAD: b0eb6f6b4ac2fe6a18a9a05777c006af874cbff1 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective data engineering, M0 features and visual Phase A cohort/outcome/feature-quality reporting are complete and validated. Chronological split construction is next.
+Git HEAD: cc06aebbb6a0383ffb898ed170f437bc58a324c0 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: M1 - Subjective Modelling Baseline
+Current Phase Status: Subjective data engineering, Phase A reporting and Phase B chronological split construction are complete and validated. EXP-002 naive operational baseline is next.
 
 ---
 
 ## Current Objective
 
-Run the subjective modelling programme through the approved analysis execution plan, starting with chronological split construction and naive operational baselines.
+Run the subjective modelling programme through the approved analysis execution plan, starting with EXP-002 naive operational baselines on the frozen chronological partitions.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,13 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v19 to v20, under coordination session `PAA-CTRL-20260813-18`.
+
+- Accepted `DEC-027`: a shared chronological 60/20/final-period split with 14-day embargoes is the frozen development and headline-evaluation protocol for the 14-day primary horizon.
+- Implemented and committed reusable chronological split controls, predictor allow-list validation and three focused split tests at `cc06aeb`.
+- Produced and staged `player_day_features_with_splits.parquet` (36,550 player-days), a JSON manifest and the Phase B audit report. The 34-predictor contract excludes labels, eligibility, identifiers, dates, episode-state and provenance fields.
+- Frozen model partitions contain 20,505 primary-eligible train rows, 6,900 validation rows and 5,495 test rows. No model has been fitted and the test partition has not been inspected for model performance.
 
 State v18 to v19, under coordination session `PAA-CTRL-20260813-17`.
 
@@ -261,20 +268,22 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - The same silver prefix now also contains 147 self-reported injury episodes; labels and availability states do not yet exist.
 - Gold staging contains the 36,550-row player-day labels table. Labels are not features and have no rolling or normalised predictors yet.
 - Gold staging also contains the `subjective_v1` 36,550-row player-day feature table. It includes labels for cohort convenience, but model code must use an explicit predictor list.
+- Gold staging contains `player_day_features_with_splits.parquet`, which preserves the source feature columns and adds history eligibility, a chronological partition and primary 14-day modelling eligibility.
+- The frozen Phase B manifest and report are stored under `metadata/analysis_reports/subjective/soccermon/zenodo-10033832/` and the report is mirrored in Drive.
 - BigQuery provenance is registered: run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs` and 19 linked source-file rows in `paa_core.source_files`. The per-member SHA-256 column is deliberately null because only the enclosing ZIP was independently SHA-256 verified; ZIP CRC32 values are retained in source-file notes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
-- No silver or gold artefacts exist. Objective/GPS data remains archive-only and unprocessed.
+- Objective/GPS data remains archive-only and unprocessed.
 
 ---
 
 ## Current Modelling State
 
-Nothing implemented.
+Phase B controls are implemented. `DEC-027` freezes chronological boundaries with 14-day embargoes, based on the 28-day-history and complete-14-day-label period. The training, validation and test periods are respectively `2020-01-28` to `2021-03-16`, `2021-03-31` to `2021-08-15` and `2021-08-30` to `2021-12-17`.
 
 | ID | Model | Status |
 |----|-------|--------|
-| M0 | Operational baseline | Not started |
+| M0 | Operational baseline | Next: EXP-002 naive prevalence baseline |
 | M1 | Logistic regression | Not started |
 | M2 | Gradient boosting | Not started |
 | M3 | Cox proportional hazards | Not started |
@@ -284,7 +293,7 @@ Nothing implemented.
 
 Grain: `player x date`. Candidate outcomes: `injury_next_3d`, `injury_next_7d`, `injury_next_14d`, and time to next injury episode with right censoring.
 
-Cohort rules are **not frozen**. `injury_episode_gap_days` is set to 3 in `configs/base.yaml` and is explicitly provisional pending EXP-001.
+The primary M0 cohort and split are frozen for this feature version. `injury_episode_gap_days: 3` remains a sensitivity-analysis requirement and must not be used for a causal or medical claim.
 
 ---
 
@@ -328,6 +337,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-024 | Self-reported injury episodes use raw location and a 3-day gap |
 | DEC-025 | End-of-day prediction cutoff and censored post-cutoff player-day labels |
 | DEC-026 | Subjective v1 features are trailing and player-baseline features with explicit leakage controls |
+| DEC-027 | Shared chronological split, 14-day embargo and explicit M0 predictor contract |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -344,7 +354,7 @@ Standing constraints from the architecture baseline, treated as binding:
 
 | ID | Question | Blocks |
 |----|----------|--------|
-| None | No open design decision blocks subjective bronze ingestion |
+| None | No open design decision blocks EXP-002 naive baseline |
 
 ---
 
@@ -369,15 +379,14 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Phase A reporting is complete and promotes the project to Phase B chronological split construction. No model has been fitted and no objective archive processing is authorised. No other control session is known to be editing this working tree.
+Phase B split construction is complete. EXP-002 will calculate only naive operational benchmarks; no fitted predictive model or test-set performance review has occurred. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Execute runbook Phase B: freeze chronological split boundaries and implement split-leakage and predictor-selection tests.
-2. Run `EXP-002` naive operational baselines before fitting a logistic model.
-3. Review the baseline report before implementing `EXP-003` regularised logistic regression.
+1. Run `EXP-002` naive operational baselines on the frozen chronological partitions.
+2. Review the baseline report before implementing `EXP-003` regularised logistic regression.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -406,6 +415,7 @@ Phase A reporting is complete and promotes the project to Phase B chronological 
 | Analysis execution plan | PASS | Local and Drive runbook created; 296 lines covering analysis sequence, hypotheses, gates and required artefacts |
 | Phase A cohort report | PASS | Reproducible local, Drive and GCS report; 28-day cohort, prevalence, event concentration and feature coverage measured |
 | Phase A charts | PASS | Three reproducible and visually inspected PNG figures published locally, in Drive and in GCS metadata |
+| Phase B split controls | PASS | Frozen dates, two 14-day embargoes, 34-column predictor allow-list, 36,550-row split product and focused tests pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -422,11 +432,11 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v19, 2026-08-13T21:00:00Z | v19, 2026-08-13T21:00:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-026 | DEC-001 to DEC-026 |
+| `PROJECT_STATE.md` | v20, 2026-08-13T22:00:00Z | v20, 2026-08-13T22:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-027 | DEC-001 to DEC-027 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `0914f3e` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `cc06aeb` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
