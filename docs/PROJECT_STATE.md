@@ -4,7 +4,7 @@ State Version: 7
 Last Updated UTC: 2026-08-13T04:00:00Z
 Coordination Session ID: PAA-CTRL-20260813-05
 Git Branch: main
-Git HEAD: 480c803d12fb814619d93935cee752e82bbc44f7 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: abc9f4c5506a7afac4e6e34a35a3e0e6737d7d87 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
 Current Phase Status: One-time managed SoccerMon archive transfer is running in GCP. Source ZIPs are being copied directly from Zenodo into the dedicated archive-only bucket.
 
@@ -323,4 +323,4 @@ Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `480c803` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `abc9f4c` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
