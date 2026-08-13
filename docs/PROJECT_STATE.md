@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 15
-Last Updated UTC: 2026-08-13T17:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-13
+State Version: 16
+Last Updated UTC: 2026-08-13T18:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-14
 Git Branch: main
-Git HEAD: c73309f5fba86f9e3b3ed021230a95c1fa6c97c1 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: fc958bb32f2ad5b2d4218ba30acd0ebb7c983068 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration, silver relations, injury episodes and leak-safe player-day labels are complete and validated. Feature engineering is next.
+Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration, silver relations, injury episodes, labels and M0 leak-safe features are complete and validated. Modelling split design and baseline preparation are next.
 
 ---
 
@@ -37,6 +37,12 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v15 to v16, under coordination session `PAA-CTRL-20260813-14`.
+
+- Accepted `DEC-026`: subjective feature version 1 uses end-of-day current values, trailing 3/7/14/28-day summaries, session exposure aggregates, wellness completeness and strictly prior-only player baselines. Labels and eligibility fields remain in the data product but must never be selected as predictors.
+- Built and staged `player_day_features.parquet` at `gs://paa-data-979927072833/gold/subjective/soccermon/zenodo-10033832/`, containing 36,550 rows and 51 metadata, label and feature columns.
+- Added future-append invariance and prior-baseline tests. The quality report measures 36,550 non-null daily-load values and 17,008 wellness-report-present days. Full quality gate passes: Ruff, strict mypy and pytest (`52 passed`, one expected ZIP duplicate-name warning).
 
 State v14 to v15, under coordination session `PAA-CTRL-20260813-13`.
 
@@ -233,6 +239,7 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - Silver staging is complete at `gs://paa-data-979927072833/silver/subjective/soccermon/zenodo-10033832/`: player registry, training-load daily, wellness daily, training sessions and preserved event-report relations. No injury episode or label table exists.
 - The same silver prefix now also contains 147 self-reported injury episodes; labels and availability states do not yet exist.
 - Gold staging contains the 36,550-row player-day labels table. Labels are not features and have no rolling or normalised predictors yet.
+- Gold staging also contains the `subjective_v1` 36,550-row player-day feature table. It includes labels for cohort convenience, but model code must use an explicit predictor list.
 - BigQuery provenance is registered: run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs` and 19 linked source-file rows in `paa_core.source_files`. The per-member SHA-256 column is deliberately null because only the enclosing ZIP was independently SHA-256 verified; ZIP CRC32 values are retained in source-file notes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
@@ -299,6 +306,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-023 | Canonical subjective silver relations preserve daily, session and event grain |
 | DEC-024 | Self-reported injury episodes use raw location and a 3-day gap |
 | DEC-025 | End-of-day prediction cutoff and censored post-cutoff player-day labels |
+| DEC-026 | Subjective v1 features are trailing and player-baseline features with explicit leakage controls |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -340,14 +348,14 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Leak-safe player-day labels are complete under `DEC-025`. Next is feature engineering from subjective data; no objective archive processing is authorised. No other control session is known to be editing this working tree.
+Leak-safe subjective v1 features are complete under `DEC-026`. Next is chronological split construction and a simple operational baseline; no objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Build leak-safe subjective daily and session-derived features using only information available by the end-of-day prediction cutoff.
-2. Add automated future-append invariance and past-only player-baseline leakage tests before any model training.
+1. Define chronological train/validation/test windows and train a simple operational baseline without random row-level splitting.
+2. Add split-leakage and predictor-selection tests before any fitted model.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -372,6 +380,7 @@ Leak-safe player-day labels are complete under `DEC-025`. Next is feature engine
 | Subjective silver transformation | PASS | 7 canonical Parquet relations staged in GCS; quality report and 48-test suite pass |
 | Injury-episode construction | PASS | 147 3-day-gap episodes staged in GCS; 1/3/7-day sensitivity documented and 49-test suite pass |
 | Player-day labels | PASS | 36,550 gold player-day rows; post-cutoff 3/7/14-day labels, active-episode eligibility and right-censoring validated |
+| Subjective v1 features | PASS | 36,550 gold rows / 51 columns; future-append and prior-only baseline tests pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -388,8 +397,8 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v15, 2026-08-13T17:00:00Z | v15, 2026-08-13T17:00:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-025 | DEC-001 to DEC-025 |
+| `PROJECT_STATE.md` | v16, 2026-08-13T18:00:00Z | v16, 2026-08-13T18:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-026 | DEC-001 to DEC-026 |
 
 Status: **SYNCHRONISED**
 

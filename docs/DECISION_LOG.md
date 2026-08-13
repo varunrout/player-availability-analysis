@@ -716,6 +716,34 @@ The gold cohort has 36,550 observed player-days. Positive labels are 213, 448 an
 
 ---
 
+## DEC-026
+
+**Decision ID:** DEC-026
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The end-of-day player-day cohort now has complete 3/7/14-day labels. The first feature set must demonstrate longitudinal player monitoring while preventing future information, current-value self-normalisation and accidental label inclusion.
+
+**Decision:**
+Create `subjective_v1` features from daily load, fatigue, readiness, wellness-report completeness and player-session exposure. Include current end-of-day values, trailing 3/7/14/28-day summaries, and player expanding means and z-scores calculated from prior observations only. Keep label, eligibility and metadata columns in the output for cohort handling, but require future modelling code to use an explicit predictor list that excludes them.
+
+**Rationale:**
+The source timestamps support same-day values under `DEC-025`; trailing windows and prior-only player baselines reflect recent state and individual context without future leakage. An explicit predictor allow-list is more reliable than assuming labels will be excluded by column position or naming convention.
+
+**Alternatives Considered:**
+Full broad feature catalogue before a baseline, deferred until validation shows incremental value. Whole-season player normalisation, rejected because it uses future observations. Separate label and feature files only, rejected because a joined analytical product is useful when predictor selection is enforced.
+
+**Consequences:**
+The gold feature product has 36,550 rows and 51 columns. Automated future-append and prior-baseline tests are mandatory and passing. No model has been fitted; chronological split and predictor-selection controls are the next gate.
+
+**Affected Components:** feature engineering, leakage tests, training datasets, model validation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
