@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 12
-Last Updated UTC: 2026-08-13T14:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-10
+State Version: 13
+Last Updated UTC: 2026-08-13T15:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-11
 Git Branch: main
-Git HEAD: afb6f991d4a82a5091614a556ff1ac7ad2bb1fd4 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 0914f3e940b3ebe3c860b0431c6aa209dfafe789 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective raw staging, bronze normalisation and BigQuery provenance registration are complete and validated. Silver-domain design is next.
+Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration and silver-domain relations are complete and validated. Injury-report profiling is next.
 
 ---
 
@@ -37,6 +37,13 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v12 to v13, under coordination session `PAA-CTRL-20260813-11`.
+
+- Accepted `DEC-023`: the silver layer has separate canonical player registry, training-load daily, wellness daily, training-session and preserved event-report relations. It deliberately does not infer injury episodes, availability or labels.
+- Implemented `build_subjective_silver.py`; staged seven compact Parquet outputs at `gs://paa-data-979927072833/silver/subjective/soccermon/zenodo-10033832/` and its quality report under `metadata/data_quality_reports/`.
+- Measured outputs: 50 player-registry rows, 36,550 training-load daily rows, 36,550 wellness daily rows, 16,265 retained sessions, and 162/15/248 injury/illness/game event reports. Wellness missingness is explicit through `wellness_report_present` and `wellness_metric_count`.
+- Added a focused silver transformation test. Full quality gate passes: Ruff lint and format, strict mypy, and pytest (`48 passed`, with one expected ZIP duplicate-name warning).
 
 State v11 to v12, under coordination session `PAA-CTRL-20260813-10`.
 
@@ -138,13 +145,13 @@ player-availability-analysis/
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
   docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
   infra/                      empty
-  jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py, record_subjective_provenance.py
+  jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py, build_subjective_silver.py, record_subjective_provenance.py
   notebooks/                  empty
   scripts/                    acquire_soccermon_archive.py
   src/player_availability/
     __init__.py  py.typed
     config/      settings.py, yaml_source.py
-    ingestion/   archive.py, provenance.py, provenance_store.py, subjective.py
+    ingestion/   archive.py, provenance.py, provenance_store.py, subjective.py, silver.py
     schemas/     empty
     quality/     contracts.py
     utils/       paths.py
@@ -211,6 +218,7 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - Verified subjective source: MD5 `o+hq7KYR93yTMaU16uAL9w==`, SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c`, CC BY 4.0. The local audit copy is ignored under `data/tmp/archive_audit/`.
 - Raw staging is complete at `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`: 19 unchanged source files and `_extraction_manifest.json`, 20 objects / 3,715,017 bytes.
 - Bronze staging is complete at `gs://paa-data-979927072833/bronze/subjective/soccermon/zenodo-10033832/`: five normalised Parquet datasets / 714,336 bytes. The quality report is stored under `metadata/data_quality_reports/`.
+- Silver staging is complete at `gs://paa-data-979927072833/silver/subjective/soccermon/zenodo-10033832/`: player registry, training-load daily, wellness daily, training sessions and preserved event-report relations. No injury episode or label table exists.
 - BigQuery provenance is registered: run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs` and 19 linked source-file rows in `paa_core.source_files`. The per-member SHA-256 column is deliberately null because only the enclosing ZIP was independently SHA-256 verified; ZIP CRC32 values are retained in source-file notes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
@@ -274,6 +282,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-020 | Control documents mirror through in-place Drive connector updates |
 | DEC-021 | Dedicated archive-only bucket isolates Storage Transfer Service access |
 | DEC-022 | Normalise verified subjective source layouts by their native grain |
+| DEC-023 | Canonical subjective silver relations preserve daily, session and event grain |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -315,14 +324,14 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Subjective bronze normalisation and provenance registration are complete under `DEC-022`. Next is silver-domain design; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
+Subjective silver relations are complete under `DEC-023`. Next is injury-report duplicate and timing profiling; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Design and implement silver-domain transformations: player registry, training sessions, daily wellness/load relations, and preserved event reports.
-2. Profile injury report duplicates and timing semantics before proposing episode logic.
+1. Profile injury report duplicates and timing semantics before proposing episode logic.
+2. Design the injury-episode evidence and sensitivity experiment; do not implement labels until its decision is accepted.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -344,6 +353,7 @@ Subjective bronze normalisation and provenance registration are complete under `
 | Subjective raw staging | PASS | 19 unchanged source members and extraction manifest staged to GCS; object spot checks and 37-test quality suite pass |
 | Subjective bronze normalisation | PASS | 5 Parquet outputs, compact GCS staging, quality report and byte-identical rerun; 44-test quality suite pass |
 | Subjective BigQuery provenance | PASS | One registered ingestion run with 19 linked source files; read-back totals reconcile (27,655 read / 564,940 written) |
+| Subjective silver transformation | PASS | 7 canonical Parquet relations staged in GCS; quality report and 48-test suite pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -360,11 +370,11 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v12, 2026-08-13T14:00:00Z | v12, 2026-08-13T14:00:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-022 | DEC-001 to DEC-022 |
+| `PROJECT_STATE.md` | v13, 2026-08-13T15:00:00Z | v13, 2026-08-13T15:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-023 | DEC-001 to DEC-023 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `afb6f99` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `0914f3e` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.

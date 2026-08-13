@@ -632,6 +632,34 @@ The first subjective ingestion implementation consists of source-specific contra
 **Supersedes:** none
 **Superseded By:** none
 
+## DEC-023
+
+**Decision ID:** DEC-023
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The bronze subjective layer contains normalised long daily metrics, player-session rows and source-preserved events. The next analytical layer requires stable relations for profiling and later player-day construction, but injury reports have not yet been profiled sufficiently to infer episodes or labels.
+
+**Decision:**
+Create separate silver relations for the player registry, training-load daily values, wellness daily values, training sessions, injury reports, illness reports and game-performance reports. Pivot daily metrics only within their training-load and wellness domains. Retain all session rows, make wellness report presence explicit, and preserve event payloads. Do not create injury episodes, availability states or modelling labels.
+
+**Rationale:**
+This establishes clean daily and session relations without erasing native source grain or making premature outcome assumptions. Explicit wellness completeness makes missingness analysable rather than silently imputed. Deferring episode logic protects subsequent labels from unsupported grouping rules and leakage.
+
+**Alternatives Considered:**
+Create a combined player-day feature table now, rejected because it would conflate source curation with feature engineering and injury semantics. Aggregate sessions to a daily total, rejected because valid same-day multiple sessions exist. Treat injury reports as episodes, rejected pending duplicate and timestamp profiling.
+
+**Consequences:**
+Seven compact silver Parquet relations are staged in GCS. The next substantive task is evidence-led injury-report profiling and an explicit episode-definition decision. `DEC-022` remains the governing bronze normalisation decision.
+
+**Affected Components:** subjective silver storage, data contracts, player-day preparation, outcome construction
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
