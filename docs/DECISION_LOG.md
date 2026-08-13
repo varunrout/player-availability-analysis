@@ -466,13 +466,67 @@ The mounted Drive folder must remain accessible to the session for mirroring to 
 
 ---
 
+## DEC-017
+
+**Decision ID:** DEC-017
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The repository has a local foundation commit but no remote. The project owner has explicitly set the version-control policy for the present phase.
+
+**Decision:**
+Keep Git local-only. Do not create, configure, push to or otherwise use a remote unless the project owner explicitly requests it.
+
+**Rationale:**
+The work is currently being developed on a single machine and no external hosting policy is needed to make progress. This keeps visibility, review and backup choices in the project owner's control.
+
+**Alternatives Considered:**
+Creating a private remote now, rejected because it would change the agreed local-only operating model. Creating a public remote, rejected because it would make project history externally visible without an explicit request.
+
+**Consequences:**
+The repository has no off-machine version-control backup and no remote CI trigger. Local commits remain appropriate. `OD-08` is resolved as a policy decision and can be revisited only through a new material decision.
+
+**Affected Components:** version control, backup, review process, CI delivery
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
+## DEC-018
+
+**Decision ID:** DEC-018
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The complete SoccerMon archive is approximately 100 GB compressed and was not yet present in the project Google Drive folder. The archive must be preserved and provenance-established before any downstream work can rely on it.
+
+**Decision:**
+The first active delivery objective is to acquire the complete SoccerMon archive from its Zenodo record into the project Google Drive folder. Acquisition runs directly to the mounted Drive location, supports resume after interruption, and produces a SHA-256 provenance manifest. It does not stage the archive in GCP.
+
+**Rationale:**
+Google Drive is the project's permanent raw-archive location. Direct-to-Drive acquisition avoids an unnecessary local duplicate and avoids cloud storage and compute cost for a source archive that is not yet being processed. Resumability and recorded checksums make a long transfer practical and auditable.
+
+**Alternatives Considered:**
+Downloading the archive to local disk first, rejected because it requires a second 100 GB copy before the Drive upload. Staging the complete archive in GCS, rejected because the architecture intentionally keeps permanent raw archives in Drive and does not require cloud processing at this stage. Beginning full GPS ingestion after download, rejected by DEC-005; the subjective ingestion vertical slice remains first.
+
+**Consequences:**
+`scripts/acquire_soccermon_archive.py` is the acquisition entry point. The script must be run against an existing mounted Drive archive directory and its resulting manifest retained alongside the downloaded files. `OD-07` remains open until the transfer completes and the location, licence and SHA-256 values are recorded.
+
+**Affected Components:** source acquisition, data provenance, Drive storage, cost control, delivery sequencing
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
 **OD-07 - Source-archive provenance.** No SoccerMon archive was located in the searchable Drive account during the baseline session. The location, licence record and SHA-256 checksum of the subjective archive are unverified. Blocks all ingestion work.
-
-**OD-08 - Remote hosting and branch policy.** Deferred from DEC-015. Requires a choice of host, public or private visibility, and a branch and review policy. Until resolved, the repository exists only on one machine.
 
 ### Resolved
 
@@ -484,3 +538,4 @@ Recorded for visibility. Each becomes a numbered decision when resolved. None ha
 | OD-04 Repository structure | DEC-012 |
 | OD-05 Configuration strategy | DEC-013 |
 | OD-06 Vertical-slice execution locus | DEC-014 |
+| OD-08 Remote hosting and branch policy | DEC-017 |

@@ -1,20 +1,20 @@
 # Player Availability Analysis - Project State
 
-State Version: 3
-Last Updated UTC: 2026-08-13T01:30:00Z
-Coordination Session ID: PAA-CTRL-20260813-01
+State Version: 4
+Last Updated UTC: 2026-08-13T02:10:00Z
+Coordination Session ID: PAA-CTRL-20260813-02
 Git Branch: main
 Git HEAD: 12e541582ee10258652e546bfae206f8c5c7f453 (foundation commit; see State Synchronisation Status)
-Current Milestone: M1 - SoccerMon Subjective Ingestion Vertical Slice
-Current Phase Status: Foundation complete and committed; ingestion not started, blocked on source-archive provenance
+Current Milestone: M0 - SoccerMon Archive Acquisition to Google Drive
+Current Phase Status: Archive acquisition script implemented; awaiting an operator-run, resumable transfer into the mounted Google Drive folder.
 
 ---
 
 ## Current Objective
 
-Deliver the SoccerMon subjective ingestion vertical slice: source discovery, archive inspection, checksums, provenance records, deterministic parsing, schema validation, bronze representation, data-quality reporting, idempotency and tests.
+Acquire the complete SoccerMon source archive from Zenodo directly into the project Google Drive folder, with resumability and a SHA-256 provenance manifest. The archive is a preservation source, not a GCP ingestion instruction.
 
-No modelling work begins until the ingestion foundation is trustworthy.
+After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
 ---
 
@@ -37,6 +37,13 @@ No modelling work begins until the ingestion foundation is trustworthy.
 ---
 
 ## Completed Since Previous State
+
+State v3 to v4, under coordination session `PAA-CTRL-20260813-02`.
+
+- Confirmed the local Google Cloud SDK is installed (`580.0.0`), including `gcloud`, `gsutil` and `bq`. Its executable is not on the current shell `PATH`; invoke it from its installed location until the user chooses to update `PATH`.
+- Clarified local-only Git policy (`DEC-017`): no remote is added, pushed to, or otherwise configured unless explicitly requested.
+- Prioritised complete SoccerMon archive preservation in Google Drive before ingestion (`DEC-018`). The archive remains out of GCP during acquisition.
+- Added `scripts/acquire_soccermon_archive.py`: a standard-library Zenodo downloader that discovers record files, supports exact-file selection, resumes interrupted downloads, validates expected byte size, and writes local SHA-256 provenance to `soccermon_acquisition_manifest.json`.
 
 State v1 to v2, under coordination session `PAA-CTRL-20260813-01`.
 
@@ -87,7 +94,7 @@ player-availability-analysis/
 
 **Facts:**
 - Branch `main`. Foundation committed. `.env` correctly excluded from version control.
-- No remote configured. Work exists on one machine only (`OD-08`).
+- No remote configured. Git is deliberately local-only unless explicitly requested (`DEC-017`).
 - No CI workflow yet.
 - Locked dependency versions include `google-cloud-storage 3.13.1`, `google-cloud-bigquery 3.43.0`, `pydantic 2.13.4`, `pydantic-settings 2.15.0`, `polars 1.43.2`, `pyarrow 25.0.1`, `pytest 9.1.1`, `ruff 0.16.2`, `mypy 2.3.0`.
 - The repository intentionally does not yet contain doc 18's `pipelines/`, `app/` or `sql/` directories (`DEC-012`).
@@ -96,9 +103,9 @@ player-availability-analysis/
 
 ## Current GCP State
 
-**Verification status: ASSERTED FROM HANDOFF, NOT VERIFIED.**
+**Verification status: CLI INSTALLED; PROJECT ACCESS NOT VERIFIED.**
 
-No authenticated GCP access from this control session. Carried forward from the handoff and `.env.example`, not confirmed against the live project.
+Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. No authenticated project access has been verified from this control session. The resource details below are carried forward from the handoff and `.env.example`, not confirmed against the live project.
 
 ```
 Project ID:      player-availability-analysis
@@ -132,8 +139,9 @@ No cloud resource has been written to by this project's code. Nothing has been s
 ## Current Data State
 
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
+- Immediate source objective: preserve the complete archive in the project Google Drive folder using `scripts/acquire_soccermon_archive.py`. The script downloads directly from Zenodo, resumes `.part` files and emits a SHA-256 acquisition manifest.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
-- **Blocker: no SoccerMon archive was located in the searchable Drive account.** Location, licence record and SHA-256 checksum are unverified (`OD-07`).
+- **Blocker: no SoccerMon archive was located in the searchable Drive account.** Archive transfer has not yet been run; resulting location and SHA-256 checksum are unverified (`OD-07`).
 - No data ingested. No bronze, silver or gold artefacts exist.
 - No schema audit against real files, so no field-level assertions are made anywhere in this project.
 
@@ -189,6 +197,8 @@ Full records in `DECISION_LOG.md`.
 | DEC-014 | Subjective vertical slice runs local-first, cloud as sink |
 | DEC-015 | Commit locally now; remote hosting deferred |
 | DEC-016 | Mirror control docs in place via the mounted Drive folder |
+| DEC-017 | Git remains local-only unless explicitly requested |
+| DEC-018 | Complete SoccerMon archive is preserved in Drive before ingestion |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -206,13 +216,12 @@ Standing constraints from the architecture baseline, treated as binding:
 | ID | Question | Blocks |
 |----|----------|--------|
 | OD-07 | Confirmed location, licence and SHA-256 checksum of the SoccerMon subjective archive | All ingestion work |
-| OD-08 | Remote hosting, visibility, and branch and review policy | Off-machine backup, review process, CI |
 
 ---
 
 ## Known Issues / Technical Debt
 
-- No remote. The repository exists on one machine only (`OD-08`).
+- No remote. This is intentional local-only Git policy (`DEC-017`), so the repository still has no off-machine version-control backup.
 - No CI workflow. `poetry check --lock`, ruff, mypy and pytest all run locally via `make check` but are not enforced automatically.
 - Service-account naming unreconciled: `paa-build-sa` (handoff) versus `paa-ci-sa` (doc 18).
 - Repository structure intentionally incomplete against doc 18 (`DEC-012`). Deliberate, not drift.
@@ -223,24 +232,24 @@ Standing constraints from the architecture baseline, treated as binding:
 
 ## Blockers
 
-1. **Source data provenance unverified (`OD-07`).** No SoccerMon archive located in Drive. Ingestion cannot begin without a confirmed, checksummed source. This is the single blocker on the current milestone.
-2. **GCP state unverified.** Cloud resources are asserted, not confirmed. Must be re-verified from an authenticated environment before any cloud write.
+1. **Source data provenance unverified (`OD-07`).** The archive transfer has not yet been run, so no Drive location or SHA-256 manifest exists. This is the single blocker on the current milestone.
+2. **GCP project access unverified.** The CLI is installed but project configuration, ADC and cloud resources have not been confirmed. Must be verified before any cloud write.
 
 ---
 
 ## Work In Progress
 
-None in flight. No other control session is known to be editing this working tree.
+`scripts/acquire_soccermon_archive.py` is ready for an operator-run transfer. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Resolve `OD-07`: locate the SoccerMon subjective archive, record its licence, compute and store its SHA-256.
-2. Resolve `OD-08`: choose remote hosting and visibility; push; add branch policy.
-3. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push.
-4. Verify GCP state from an authenticated environment; reconcile the `paa-build-sa` / `paa-ci-sa` naming; confirm budget alerts exist before any processing.
-5. Implement the subjective ingestion vertical slice, in order: source discovery and manifest, archive inspection, SHA-256 and provenance records into `paa_core.source_files` and `paa_core.ingestion_runs`, deterministic parsing, schema discovery, schema validation as data contracts, raw staging, bronze representation, data-quality reporting, structured logging, idempotency, tests.
+1. Run a dry run against the mounted Drive archive directory, then run the archive acquisition script with the same destination. Preserve the resulting `soccermon_acquisition_manifest.json`.
+2. Resolve `OD-07`: register the Drive location, CC BY 4.0 licence and manifest SHA-256 values in source provenance.
+3. Verify GCP project access from the installed CLI; reconcile the `paa-build-sa` / `paa-ci-sa` naming; confirm budget alerts exist before any processing.
+4. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
+5. Implement the subjective ingestion vertical slice, in order: source discovery and manifest, archive inspection, provenance records into `paa_core.source_files` and `paa_core.ingestion_runs`, deterministic parsing, schema discovery, schema validation as data contracts, raw staging, bronze representation, data-quality reporting, structured logging, idempotency, tests.
 6. Run EXP-001 (episode-gap sensitivity) before any label is treated as settled, then freeze `injury_episode_gap_days` and record the decision.
 
 ---
@@ -254,6 +263,7 @@ None in flight. No other control session is known to be editing this working tre
 | Type check (mypy strict) | PASS | 16 source files, no issues |
 | Unit tests | PASS | 23 passed |
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
+| Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; script compilation and Ruff checks pass |
 | Schema / data-contract tests | Not implemented | Directory exists, no data to contract against |
 | Leakage tests | Not implemented | Directory exists, no features to test |
 | Smoke tests | Not implemented | Directory exists, no pipeline to run |
@@ -269,8 +279,8 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v3, 2026-08-13T01:30:00Z | v3, 2026-08-13T01:30:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-016 | DEC-001 to DEC-016 |
+| `PROJECT_STATE.md` | v4, 2026-08-13T02:10:00Z | v4, 2026-08-13T02:10:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-018 | DEC-001 to DEC-018 |
 
 Status: **SYNCHRONISED**
 
