@@ -32,6 +32,15 @@ class ArchiveInventory:
     members: tuple[ArchiveMember, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class ExtractionResult:
+    """The outcome of idempotently staging an archive into a raw directory."""
+
+    inventory: ArchiveInventory
+    destination_directory: Path
+    written_paths: tuple[Path, ...]
+
+
 def inspect_zip_archive(archive_path: Path) -> ArchiveInventory:
     """Return a safe, sorted inventory of a local ZIP archive.
 
@@ -53,6 +62,38 @@ def inspect_zip_archive(archive_path: Path) -> ArchiveInventory:
         archive_path=archive_path,
         archive_size_bytes=archive_path.stat().st_size,
         members=tuple(sorted(members, key=lambda member: member.path)),
+    )
+
+
+def extract_zip_archive(archive_path: Path, destination_directory: Path) -> ExtractionResult:
+    """Safely extract a ZIP to a raw staging directory.
+
+    Existing files are accepted only when their bytes exactly match the archive.
+    This makes retries idempotent while preventing a partial or changed prior run
+    from being silently reused.
+    """
+    inventory = inspect_zip_archive(archive_path)
+    destination_directory.mkdir(parents=True, exist_ok=True)
+    written_paths: list[Path] = []
+
+    with zipfile.ZipFile(archive_path) as archive:
+        for member in inventory.members:
+            destination_path = destination_directory.joinpath(*PurePosixPath(member.path).parts)
+            destination_path.parent.mkdir(parents=True, exist_ok=True)
+            contents = archive.read(member.path)
+            if destination_path.exists():
+                if destination_path.read_bytes() != contents:
+                    raise ValueError(
+                        f"Existing raw file differs from archive member: {destination_path}"
+                    )
+            else:
+                destination_path.write_bytes(contents)
+            written_paths.append(destination_path)
+
+    return ExtractionResult(
+        inventory=inventory,
+        destination_directory=destination_directory,
+        written_paths=tuple(written_paths),
     )
 
 

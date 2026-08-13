@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from player_availability.ingestion import inspect_zip_archive
+from player_availability.ingestion import extract_zip_archive, inspect_zip_archive
 
 
 def write_zip(path: Path, members: list[tuple[str, str]]) -> None:
@@ -45,3 +45,30 @@ def test_inspect_zip_archive_rejects_duplicate_member_paths(tmp_path: Path) -> N
 def test_inspect_zip_archive_requires_existing_file(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError, match="does not exist"):
         inspect_zip_archive(tmp_path / "missing.zip")
+
+
+def test_extract_zip_archive_preserves_files_and_is_idempotent(tmp_path: Path) -> None:
+    archive_path = tmp_path / "source.zip"
+    destination = tmp_path / "raw"
+    write_zip(archive_path, [("nested/report.csv", "first"), ("other.json", "second")])
+
+    first = extract_zip_archive(archive_path, destination)
+    second = extract_zip_archive(archive_path, destination)
+
+    assert [path.relative_to(destination).as_posix() for path in first.written_paths] == [
+        "nested/report.csv",
+        "other.json",
+    ]
+    assert second.written_paths == first.written_paths
+    assert (destination / "nested/report.csv").read_text(encoding="utf-8") == "first"
+
+
+def test_extract_zip_archive_rejects_different_existing_file(tmp_path: Path) -> None:
+    archive_path = tmp_path / "source.zip"
+    destination = tmp_path / "raw"
+    write_zip(archive_path, [("report.csv", "archive-value")])
+    destination.mkdir()
+    (destination / "report.csv").write_text("different-value", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="differs"):
+        extract_zip_archive(archive_path, destination)

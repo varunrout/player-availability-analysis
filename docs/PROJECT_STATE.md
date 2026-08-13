@@ -1,10 +1,10 @@
 # Player Availability Analysis - Project State
 
-State Version: 9
-Last Updated UTC: 2026-08-13T11:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-07
+State Version: 10
+Last Updated UTC: 2026-08-13T12:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-08
 Git Branch: main
-Git HEAD: 22ce5920538f9c5f826d0717f06d3d81db35467d (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 41103321b8d805bacf5e318c3330f3fcc52377c2 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
 Current Phase Status: SoccerMon archive transfer and subjective-source provenance are verified. The project is entering the subjective ingestion vertical slice.
 
@@ -37,6 +37,14 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v9 to v10, under coordination session `PAA-CTRL-20260813-08`.
+
+- Implemented `jobs/extract_subjective_archive.py` and safe, idempotent ZIP extraction. Existing raw files are accepted only when their bytes match the verified archive member.
+- Extracted the verified subjective archive to ignored local raw staging and mirrored its 19 unchanged source files plus `_extraction_manifest.json` to `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`.
+- Verified the staged `session.json` (1,029,120 bytes) and extraction manifest (3,328 bytes) in Cloud Storage. The raw prefix contains 20 objects totalling 3,715,017 bytes.
+- Added two extraction idempotency tests. Full quality gate passes: `poetry check --lock`, Ruff lint and format, strict mypy, and pytest (`37 passed`, with one expected ZIP duplicate-name test warning).
+- The archive bucket remains immutable source preservation; no objective archive has been extracted, copied into raw staging, or processed.
 
 State v8 to v9, under coordination session `PAA-CTRL-20260813-07`.
 
@@ -115,7 +123,7 @@ player-availability-analysis/
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
   docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
   infra/                      empty
-  jobs/                       empty
+  jobs/                       extract_subjective_archive.py
   notebooks/                  empty
   scripts/                    acquire_soccermon_archive.py
   src/player_availability/
@@ -186,6 +194,7 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
 - Verified subjective source: MD5 `o+hq7KYR93yTMaU16uAL9w==`, SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c`, CC BY 4.0. The local audit copy is ignored under `data/tmp/archive_audit/`.
+- Raw staging is complete at `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`: 19 unchanged source files and `_extraction_manifest.json`, 20 objects / 3,715,017 bytes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
 - **Work in progress: managed archive transfer.** The source ZIPs remain unverified until the running operation completes successfully and object-level checksums are recorded (`OD-07`).
@@ -291,14 +300,14 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Implementing the subjective normalisation design established by `DEC-022`: source contracts, wide-to-long daily metric conversion, session-list normalisation, event-report parsing, quality reporting and bronze Parquet output. No objective archive processing is authorised. No other control session is known to be editing this working tree.
+Raw extraction is complete. Next is the subjective normalisation design established by `DEC-022`: source contracts, wide-to-long daily metric conversion, session-list normalisation, event-report parsing, quality reporting and bronze Parquet output. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
 1. Implement and test source-specific contracts and normalisers under `DEC-022`.
-2. Write bronze Parquet datasets and an ingestion quality report from the verified subjective archive; make the run idempotent.
+2. Write bronze Parquet datasets and an ingestion quality report from the verified raw subjective prefix; make the run idempotent.
 3. Record source assets and ingestion runs in `paa_core.source_files` and `paa_core.ingestion_runs`.
 4. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 5. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
@@ -319,6 +328,7 @@ Implementing the subjective normalisation design established by `DEC-022`: sourc
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
 | Storage Transfer Service | PASS | Operation completed successfully: 5 objects / 99,132,769,855 bytes copied, matching the source total |
+| Subjective raw staging | PASS | 19 unchanged source members and extraction manifest staged to GCS; object spot checks and 37-test quality suite pass |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -335,11 +345,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v9, 2026-08-13T11:00:00Z | v9, 2026-08-13T11:00:00Z |
+| `PROJECT_STATE.md` | v10, 2026-08-13T12:00:00Z | v10, 2026-08-13T12:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-022 | DEC-001 to DEC-022 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `22ce592` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `4110332` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
