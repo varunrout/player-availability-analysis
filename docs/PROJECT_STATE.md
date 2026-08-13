@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 16
-Last Updated UTC: 2026-08-13T18:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-14
+State Version: 17
+Last Updated UTC: 2026-08-13T19:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-15
 Git Branch: main
-Git HEAD: fc958bb32f2ad5b2d4218ba30acd0ebb7c983068 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 773c67b401ed8186c125f9c81ed76a1b56b5bcd1 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective raw staging, bronze normalisation, provenance registration, silver relations, injury episodes, labels and M0 leak-safe features are complete and validated. Modelling split design and baseline preparation are next.
+Current Phase Status: Subjective data engineering and M0 features are complete and validated. The integrated analysis execution runbook is complete; cohort reporting and chronological split construction are next.
 
 ---
 
 ## Current Objective
 
-Complete the subjective ingestion vertical slice by designing and implementing silver-domain transformations from the validated bronze layer, while preserving data-quality evidence.
+Run the subjective modelling programme through the approved analysis execution plan, starting with cohort reporting, split construction and naive operational baselines.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -21,7 +21,7 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ## Completed Foundation
 
 **Planning corpus (Google Drive, folder `1SABJ8ya7T89Eji5SJwRLuEGt814D9dxU`)**
-- 19 planning documents, `00_PROJECT_CHARTER.md` through `18_GCP_ARCHITECTURE_AND_DEVELOPMENT_OPERATING_MODEL.md`.
+- 20 planning documents, `00_PROJECT_CHARTER.md` through `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`.
 - `18_GCP_ARCHITECTURE_AND_DEVELOPMENT_OPERATING_MODEL.md` is the architecture baseline.
 - `PROJECT_STATE.md` and `DECISION_LOG.md` mirrored alongside them.
 
@@ -37,6 +37,12 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v16 to v17, under coordination session `PAA-CTRL-20260813-15`.
+
+- Created `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` locally and in Drive. It integrates the charter, hypotheses, outcome rules, feature strategy, validation requirements and experiment backlog into one 296-line modelling runbook.
+- The runbook specifies cohort/label/feature analysis, split and leakage gates, naive and logistic baselines, calibration, alert-budget simulation, ablations, unseen-player stress testing, model-promotion criteria and required evidence for each experiment.
+- No modelling design decision changed; the runbook operationalises existing accepted decisions and documents the required experiment order.
 
 State v15 to v16, under coordination session `PAA-CTRL-20260813-14`.
 
@@ -162,6 +168,7 @@ player-availability-analysis/
   .env / .env.example / .gitignore
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
   docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
+                              19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
   infra/                      empty
   jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py, build_subjective_silver.py, record_subjective_provenance.py
   notebooks/                  empty
@@ -348,14 +355,15 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Leak-safe subjective v1 features are complete under `DEC-026`. Next is chronological split construction and a simple operational baseline; no objective archive processing is authorised. No other control session is known to be editing this working tree.
+The integrated analysis execution runbook is complete. Next is Phase A cohort/outcome/feature reporting and Phase B chronological split construction; no objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Define chronological train/validation/test windows and train a simple operational baseline without random row-level splitting.
-2. Add split-leakage and predictor-selection tests before any fitted model.
+1. Execute runbook Phase A: cohort, outcome and feature-quality reporting.
+2. Execute runbook Phase B: freeze chronological split boundaries and implement split-leakage and predictor-selection tests.
+3. Run `EXP-002` naive operational baselines before fitting a logistic model.
 3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
 4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
 5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
@@ -381,6 +389,7 @@ Leak-safe subjective v1 features are complete under `DEC-026`. Next is chronolog
 | Injury-episode construction | PASS | 147 3-day-gap episodes staged in GCS; 1/3/7-day sensitivity documented and 49-test suite pass |
 | Player-day labels | PASS | 36,550 gold player-day rows; post-cutoff 3/7/14-day labels, active-episode eligibility and right-censoring validated |
 | Subjective v1 features | PASS | 36,550 gold rows / 51 columns; future-append and prior-only baseline tests pass |
+| Analysis execution plan | PASS | Local and Drive runbook created; 296 lines covering analysis sequence, hypotheses, gates and required artefacts |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -397,7 +406,7 @@ Test coverage covers configuration, archive safety, generic contracts, source-sp
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v16, 2026-08-13T18:00:00Z | v16, 2026-08-13T18:00:00Z |
+| `PROJECT_STATE.md` | v17, 2026-08-13T19:00:00Z | v17, 2026-08-13T19:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-026 | DEC-001 to DEC-026 |
 
 Status: **SYNCHRONISED**
