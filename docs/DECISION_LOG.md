@@ -442,7 +442,7 @@ Work exists only on this machine until a remote is added. This is an accepted, t
 
 **Decision ID:** DEC-016
 **Date:** 2026-08-13
-**Status:** ACCEPTED
+**Status:** SUPERSEDED
 
 **Context:**
 The Drive mirror of the control documents was maintained through a connector that can create files but cannot update or delete them. Each state update therefore produced a duplicate under the same title, which the desktop client resolved by appending "(1)" and which required manual cleanup. This is unsustainable for documents that change every session.
@@ -462,7 +462,7 @@ The mounted Drive folder must remain accessible to the session for mirroring to 
 **Affected Components:** project control, state synchronisation, documentation
 
 **Supersedes:** none
-**Superseded By:** none
+**Superseded By:** DEC-020
 
 ---
 
@@ -498,7 +498,7 @@ The repository has no off-machine version-control backup and no remote CI trigge
 
 **Decision ID:** DEC-018
 **Date:** 2026-08-13
-**Status:** ACCEPTED
+**Status:** SUPERSEDED
 
 **Context:**
 The complete SoccerMon archive is approximately 100 GB compressed and was not yet present in the project Google Drive folder. The archive must be preserved and provenance-established before any downstream work can rely on it.
@@ -518,6 +518,62 @@ Downloading the archive to local disk first, rejected because it requires a seco
 **Affected Components:** source acquisition, data provenance, Drive storage, cost control, delivery sequencing
 
 **Supersedes:** none
+**Superseded By:** DEC-019
+
+---
+
+## DEC-019
+
+**Decision ID:** DEC-019
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The mounted Google Drive path is not available to the execution environment. GCP project access and the existing data bucket have now been verified, while Storage Transfer Service is currently disabled.
+
+**Decision:**
+Acquire the complete SoccerMon archive directly from Zenodo into `gs://paa-data-979927072833/raw/source_archives/soccermon/zenodo-10033832/` through a one-time Storage Transfer Service URL-list job. The URL list records Zenodo's published object sizes and MD5 checksums. It is stored in `metadata/transfer_manifests/` and is the only small staging object written before the transfer.
+
+**Rationale:**
+Storage Transfer Service is agentless, managed and appropriate for a 99 GB public archive. It avoids local disk capacity, a fragile Drive mount and a workstation-dependent upload. The size and MD5 fields make the service reject incomplete or corrupted source objects. This follows the existing GCS zoning model while keeping the source archive outside BigQuery and avoiding raw GPS ingestion.
+
+**Alternatives Considered:**
+Mounted Google Drive acquisition, superseded because the path is unavailable. Downloading to local disk then uploading to GCS, rejected because it requires a large local duplicate and is restart-prone. Streaming through a workstation process, rejected because it couples a long transfer to local process availability.
+
+**Consequences:**
+Enable `storagetransfer.googleapis.com` and grant its managed service agent least-privilege read access to the URL-list manifest. `scripts/acquire_soccermon_archive.py` prepares the list and creates the job only when run with `--submit`. The job is one-time and uses `--overwrite-when=never`. No objective/GPS processing begins after transfer; DEC-005 remains binding.
+
+**Affected Components:** source acquisition, Cloud Storage, IAM, data provenance, cost control, delivery sequencing
+
+**Supersedes:** DEC-018
+**Superseded By:** none
+
+---
+
+## DEC-020
+
+**Decision ID:** DEC-020
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The project-control documents must remain mirrored between the local repository and Google Drive, but the mounted `G:` Drive path is unavailable from this environment. The Drive connector can update the existing raw Markdown files in place using stable file IDs.
+
+**Decision:**
+Maintain the Drive mirrors of `PROJECT_STATE.md` and `DECISION_LOG.md` through in-place Drive connector updates. Do not depend on a mounted Drive letter.
+
+**Rationale:**
+This preserves the required shared-state mirror without relying on workstation-specific filesystem integration. Updates retain the existing Drive file IDs and avoid duplicate files.
+
+**Alternatives Considered:**
+Mounted-path writes, superseded because the path is not accessible. Creating a new file for each update, rejected because it causes duplicate and ambiguous control documents.
+
+**Consequences:**
+Every material state update writes the local file and then replaces the contents of the corresponding stable Drive file. Synchronisation is verified by connector readback.
+
+**Affected Components:** project control, state synchronisation, documentation
+
+**Supersedes:** DEC-016
 **Superseded By:** none
 
 ---
