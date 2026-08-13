@@ -604,11 +604,39 @@ Created `gs://paa-source-archives-979927072833` in `europe-west2` with uniform b
 **Supersedes:** none
 **Superseded By:** none
 
+---
+
+## DEC-022
+
+**Decision ID:** DEC-022
+**Date:** 2026-08-13
+**Status:** ACCEPTED
+
+**Context:**
+The verified SoccerMon subjective archive does not use one uniform tabular layout. Daily training-load and wellness files are wide matrices containing 731 dates and 50 player columns. Training sessions are stored as a JSON object keyed by player identifier, each value a list of records with `date`, `duration`, `rpe` and `srpe`. Injury, illness and game-performance files are timestamped event-style CSVs.
+
+**Decision:**
+Normalise subjective sources according to their observed native grain. Convert daily wide matrices to long bronze records keyed by player identifier, observation date, metric name and value. Convert JSON session lists to player-session records. Preserve injury, illness and game-performance entries as source events with their source payloads and parsed timestamps. Do not infer injury episodes, availability status or modelling labels during bronze ingestion.
+
+**Rationale:**
+Long-form daily records create a stable, auditable layer for joining metrics, profiling missingness and later building the player-day table. Preserving session and event grain retains source meaning and prevents premature aggregation. Separating normalisation from episode and label logic reduces leakage and makes each transformation independently testable.
+
+**Alternatives Considered:**
+Keeping the wide matrices as the analytical representation, rejected because player-level joins, quality checks and incremental feature engineering would be brittle. Collapsing sessions directly to daily totals, rejected because it discards the observed session grain before its duplicate and timing behaviour are audited. Building injury episodes during ingestion, rejected because the raw event semantics require a dedicated, evidence-led decision.
+
+**Consequences:**
+The first subjective ingestion implementation consists of source-specific contracts, normalisers, bronze Parquet outputs and quality reports. Canonical domain tables, injury episodes, labels and player-day features remain later stages. `DEC-005` remains binding: no objective GPS processing begins.
+
+**Affected Components:** subjective ingestion, bronze storage, data contracts, provenance, quality reporting
+
+**Supersedes:** none
+**Superseded By:** none
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-**OD-07 - Source-archive provenance.** No SoccerMon archive was located in the searchable Drive account during the baseline session. The location, licence record and SHA-256 checksum of the subjective archive are unverified. Blocks all ingestion work.
+No open project decision currently blocks subjective bronze ingestion.
 
 ### Resolved
 
@@ -621,3 +649,4 @@ Recorded for visibility. Each becomes a numbered decision when resolved. None ha
 | OD-05 Configuration strategy | DEC-013 |
 | OD-06 Vertical-slice execution locus | DEC-014 |
 | OD-08 Remote hosting and branch policy | DEC-017 |
+| OD-07 Source-archive provenance | Transfer verification and schema audit, 2026-08-13 |

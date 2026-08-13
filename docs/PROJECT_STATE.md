@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 8
-Last Updated UTC: 2026-08-13T05:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-06
+State Version: 9
+Last Updated UTC: 2026-08-13T11:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-07
 Git Branch: main
-Git HEAD: 45a4aac3604faad5b7bc641b9c9ff857318eeb01 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 22ce5920538f9c5f826d0717f06d3d81db35467d (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: One-time managed SoccerMon archive transfer is running in GCP. Source ZIPs are being copied directly from Zenodo into the dedicated archive-only bucket.
+Current Phase Status: SoccerMon archive transfer and subjective-source provenance are verified. The project is entering the subjective ingestion vertical slice.
 
 ---
 
 ## Current Objective
 
-Acquire and verify the complete SoccerMon source archive from Zenodo into `gs://paa-source-archives-979927072833/soccermon/zenodo-10033832/` through Storage Transfer Service, using a checksum-bearing URL list. The transfer is agentless and managed by GCP.
+Implement the subjective ingestion vertical slice from the verified SoccerMon source archive: normalise observed source layouts into bronze datasets, profile quality, and retain source provenance.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,14 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v8 to v9, under coordination session `PAA-CTRL-20260813-07`.
+
+- Verified successful one-time transfer operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886`: 5 of 5 objects and 99,132,769,855 bytes copied; source and sink totals match.
+- Registered exact archive object locations. The verified subjective ZIP is 705,770 bytes at `gs://paa-source-archives-979927072833/soccermon/zenodo-10033832/zenodo.org/records/10033832/files/subjective.zip`, generation `1786585914896704`.
+- Verified the subjective archive MD5 `o+hq7KYR93yTMaU16uAL9w==` against the checksum-bearing Zenodo transfer manifest, and computed local SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c` for the downloaded audit copy.
+- Performed read-only schema discovery on the 19-file subjective archive. It contains wide daily training-load and wellness matrices (731 dates, 50 player columns), per-player session lists in JSON, and event-style injury, illness and game-performance CSVs.
+- Accepted `DEC-022`: bronze ingestion will normalise the observed wide daily matrices to long records while preserving session and event grain. No source files have been extracted into a project data layer or transformed into bronze yet.
 
 State v7 to v8, under coordination session `PAA-CTRL-20260813-06`.
 
@@ -113,8 +121,7 @@ player-availability-analysis/
   src/player_availability/
     __init__.py  py.typed
     config/      settings.py, yaml_source.py
-    ingestion/   empty
-      archive.py, provenance.py
+    ingestion/   archive.py, provenance.py
     schemas/     empty
     quality/     contracts.py
     utils/       paths.py
@@ -137,7 +144,7 @@ player-availability-analysis/
 
 ## Current GCP State
 
-**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; MANAGED ARCHIVE TRANSFER RUNNING.**
+**Verification status: PROJECT, BUCKET AND STORAGE TRANSFER SERVICE VERIFIED; ARCHIVE TRANSFER SUCCESSFUL.**
 
 Google Cloud SDK `580.0.0` is installed locally, including `gcloud`, `gsutil` and `bq`, but is not on the current shell `PATH`. The active project is `player-availability-analysis`; the account and `gs://paa-data-979927072833` were successfully verified. Storage Transfer Service is enabled and its managed identity has the required bucket-level access only on the dedicated archive bucket.
 
@@ -171,14 +178,15 @@ Verified bucket zones: `raw/`, `bronze/`, `silver/`, `gold/`, `metadata/`, `tmp/
 
 Dedicated archive bucket: `gs://paa-source-archives-979927072833` (`europe-west2`, uniform bucket-level access). It contains the live transfer's URL-list manifest and is isolated from the analytical data lake.
 
-Live transfer job: `transferJobs/3472342193733823656`. Live operation: `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. Latest status: `IN_PROGRESS`, with 5 objects and 99,132,769,855 bytes found at source; 1 object and 8,255,096,042 bytes copied to the sink.
+Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `transferOperations/transferJobs-3472342193733823656-16747793546306343886`, status `SUCCESS`, with 5 objects and 99,132,769,855 bytes found at source and copied to the sink.
 
 ---
 
 ## Current Data State
 
 - Source dataset: SoccerMon. Subjective archive small; objective GNSS archive approximately 99 GB compressed.
-- Immediate source objective: complete the managed transfer into `gs://paa-source-archives-979927072833/soccermon/zenodo-10033832/`. `scripts/acquire_soccermon_archive.py` generates a URL list with Zenodo size and MD5 integrity values and submits the managed job only with `--submit`.
+- Verified subjective source: MD5 `o+hq7KYR93yTMaU16uAL9w==`, SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c`, CC BY 4.0. The local audit copy is ignored under `data/tmp/archive_audit/`.
+- Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
 - **Work in progress: managed archive transfer.** The source ZIPs remain unverified until the running operation completes successfully and object-level checksums are recorded (`OD-07`).
 - No data ingested. No bronze, silver or gold artefacts exist.
@@ -241,6 +249,7 @@ Full records in `DECISION_LOG.md`.
 | DEC-019 | Complete SoccerMon archive is acquired into GCS with Storage Transfer Service |
 | DEC-020 | Control documents mirror through in-place Drive connector updates |
 | DEC-021 | Dedicated archive-only bucket isolates Storage Transfer Service access |
+| DEC-022 | Normalise verified subjective source layouts by their native grain |
 
 Standing constraints from the architecture baseline, treated as binding:
 - Random row-level splitting is not acceptable as the primary evaluation approach.
@@ -257,7 +266,7 @@ Standing constraints from the architecture baseline, treated as binding:
 
 | ID | Question | Blocks |
 |----|----------|--------|
-| OD-07 | Confirmed location, licence and SHA-256 checksum of the SoccerMon subjective archive | All ingestion work |
+| None | No open design decision blocks subjective bronze ingestion |
 
 ---
 
@@ -269,32 +278,32 @@ Standing constraints from the architecture baseline, treated as binding:
 - Repository structure intentionally incomplete against doc 18 (`DEC-012`). Deliberate, not drift.
 - `injury_episode_gap_days: 3` is provisional pending EXP-001 and must not be used for a headline result.
 - Git identity is set at repository level rather than inherited from a global configuration.
-- The archive transfer is in progress. Its completion status, destination object names and checksums still require verification before ingestion begins.
+- Source-specific date parsing, missingness conventions and event semantics still need formal contracts before bronze output is written.
 - Archive-bucket lifecycle rules and billing-budget alerts have not yet been verified.
 
 ---
 
 ## Blockers
 
-1. **Source data provenance unverified (`OD-07`).** The archive transfer is running, but no destination object location or completed transfer checksum has yet been confirmed. This is the single blocker on the current milestone.
+None. The next phase has normal data-quality gates rather than an acquisition blocker.
 
 ---
 
 ## Work In Progress
 
-One-time Storage Transfer Service job `transferJobs/3472342193733823656` is running. Its live operation is `transferOperations/transferJobs-3472342193733823656-16747793546306343886`. The generic ingestion foundation is complete; data-dependent subjective parsing waits for transfer verification and schema audit. No other control session is known to be editing this working tree.
+Implementing the subjective normalisation design established by `DEC-022`: source contracts, wide-to-long daily metric conversion, session-list normalisation, event-report parsing, quality reporting and bronze Parquet output. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Monitor job `transferJobs/3472342193733823656` until it reaches a terminal status.
-2. Resolve `OD-07`: register the destination object names, sizes, MD5 checksums, transfer result and CC BY 4.0 licence in source provenance; establish whether a separate SHA-256 computation is needed.
-3. Confirm archive-bucket lifecycle rules and billing-budget alerts before processing begins.
-4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
-5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
-6. Implement the subjective ingestion vertical slice, in order: source discovery and manifest, archive inspection, provenance records into `paa_core.source_files` and `paa_core.ingestion_runs`, deterministic parsing, schema discovery, schema validation as data contracts, raw staging, bronze representation, data-quality reporting, structured logging, idempotency, tests.
-7. Run EXP-001 (episode-gap sensitivity) before any label is treated as settled, then freeze `injury_episode_gap_days` and record the decision.
+1. Implement and test source-specific contracts and normalisers under `DEC-022`.
+2. Write bronze Parquet datasets and an ingestion quality report from the verified subjective archive; make the run idempotent.
+3. Record source assets and ingestion runs in `paa_core.source_files` and `paa_core.ingestion_runs`.
+4. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
+5. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
+6. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
+7. Build injury-episode logic only after the raw injury reports, duplicates and timing semantics have been profiled.
 
 ---
 
@@ -309,7 +318,7 @@ One-time Storage Transfer Service job `transferJobs/3472342193733823656` is runn
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
-| Storage Transfer Service | IN PROGRESS | Job `transferJobs/3472342193733823656`; operation `transferOperations/transferJobs-3472342193733823656-16747793546306343886` found 5 source objects totalling 99,132,769,855 bytes; 1 object / 8,255,096,042 bytes copied |
+| Storage Transfer Service | PASS | Operation completed successfully: 5 objects / 99,132,769,855 bytes copied, matching the source total |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -326,11 +335,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v8, 2026-08-13T05:00:00Z | v8, 2026-08-13T05:00:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-021, with DEC-021 accepted | DEC-001 to DEC-021, with DEC-021 accepted |
+| `PROJECT_STATE.md` | v9, 2026-08-13T11:00:00Z | v9, 2026-08-13T11:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-022 | DEC-001 to DEC-022 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `45a4aac` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `22ce592` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
