@@ -1,0 +1,59 @@
+[project]
+name = "player-availability-analysis"
+version = "0.1.0"
+description = "Player availability modelling and practitioner decision-support platform"
+requires-python = ">=3.12,<3.13"
+# Constraints are bounded on both sides. Unbounded lower bounds force the
+# resolver to backtrack through hundreds of releases, and unbounded upper bounds
+# allow a major version to break the build without a deliberate change.
+# The lockfile pins exact versions; these ranges define what an upgrade may move to.
+dependencies = [
+    "google-cloud-storage (>=3.13,<4.0)",
+    "google-cloud-bigquery (>=3.43,<4.0)",
+    "pydantic (>=2.13,<3.0)",
+    "pydantic-settings (>=2.15,<3.0)",
+    "pyyaml (>=6.0,<7.0)",
+    "polars (>=1.43,<2.0)",
+    "pyarrow (>=25.0,<26.0)",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+# The distribution is named `player-availability-analysis`.
+# The import package is `player_availability`, matching the architecture baseline.
+[tool.poetry]
+packages = [{ include = "player_availability", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=9.1,<10.0"
+pytest-cov = ">=7.1,<8.0"
+ruff = ">=0.16,<0.17"
+mypy = ">=2.3,<3.0"
+types-pyyaml = ">=6.0,<7.0"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests", "jobs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# "src" lets the suite run against a source checkout without an editable install;
+# "." makes the `tests` package importable for shared fixtures.
+pythonpath = ["src", "."]
+addopts = "-ra --strict-markers"
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["player_availability", "tests"]
+strict = true
+warn_unused_configs = true

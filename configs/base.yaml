@@ -1,0 +1,27 @@
+# Analytical behaviour shared by every environment.
+#
+# These values change experiment results and are therefore version controlled.
+# Environment variables prefixed PAA_ANALYSIS_ override anything set here.
+#
+# Provisional values are marked. A provisional value must not be used for a
+# headline result until its sensitivity experiment has been run and the outcome
+# recorded in docs/DECISION_LOG.md.
+
+analysis:
+  # PROVISIONAL pending EXP-001 (episode-gap sensitivity: 1 vs 3 vs 7 days).
+  # Chosen as the middle candidate so early pipeline work has a defined rule.
+  injury_episode_gap_days: 3
+
+  # New-onset classification horizons, per doc 05.
+  label_horizons_days: [3, 7, 14]
+
+  # Trailing windows for rolling load, wellness and player-relative features.
+  rolling_windows_days: [3, 7, 14, 28]
+
+  # Burn-in: the longest rolling window, so headline experiments never use
+  # partially populated features. Partial-history sensitivity is tested separately.
+  min_history_days: 28
+
+  # Player-days inside an active injury episode are excluded from the new-onset
+  # model. Recurrent-event formulations are handled as a separate cohort.
+  exclude_active_episode_days: true

@@ -1,0 +1,7 @@
+# Production overrides.
+#
+# Active when PAA_ENV=prod.
+# Analytical behaviour should be identical to base unless a documented decision
+# says otherwise, so that production results match validated experiments.
+
+analysis: {}
