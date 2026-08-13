@@ -1,18 +1,18 @@
 # Player Availability Analysis - Project State
 
-State Version: 11
-Last Updated UTC: 2026-08-13T13:00:00Z
-Coordination Session ID: PAA-CTRL-20260813-09
+State Version: 12
+Last Updated UTC: 2026-08-13T14:00:00Z
+Coordination Session ID: PAA-CTRL-20260813-10
 Git Branch: main
-Git HEAD: 52cfd175a06fd6980543c4ca68b4aa507e9eade2 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: afb6f991d4a82a5091614a556ff1ac7ad2bb1fd4 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: M0 - SoccerMon Archive Acquisition to Cloud Storage
-Current Phase Status: Subjective raw staging and bronze normalisation are complete and validated. The project is preparing provenance records and silver-domain design.
+Current Phase Status: Subjective raw staging, bronze normalisation and BigQuery provenance registration are complete and validated. Silver-domain design is next.
 
 ---
 
 ## Current Objective
 
-Complete the subjective ingestion vertical slice by recording provenance, designing silver-domain transformations from the validated bronze layer, and preserving data-quality evidence.
+Complete the subjective ingestion vertical slice by designing and implementing silver-domain transformations from the validated bronze layer, while preserving data-quality evidence.
 
 After acquisition and verification, deliver the SoccerMon subjective ingestion vertical slice. No modelling work begins until the ingestion foundation is trustworthy.
 
@@ -37,6 +37,12 @@ After acquisition and verification, deliver the SoccerMon subjective ingestion v
 ---
 
 ## Completed Since Previous State
+
+State v11 to v12, under coordination session `PAA-CTRL-20260813-10`.
+
+- Implemented and tested an idempotent BigQuery provenance writer for the subjective bronze run. It records one deterministic ingestion-run identity and source-file records derived from the verified extraction manifest, without fabricating per-member SHA-256 values.
+- Registered and read-back verified run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs`, with `27,655` source records read, `564,940` bronze records written and zero errors. All 19 source members are linked in `paa_core.source_files`.
+- Added three unit tests for payload construction, complete rerun idempotency and recovery from a partial source-file insertion. Full quality gate passes: `poetry check --lock`, Ruff lint and format, strict mypy, and pytest (`47 passed`, with one expected ZIP duplicate-name warning).
 
 State v10 to v11, under coordination session `PAA-CTRL-20260813-09`.
 
@@ -132,19 +138,19 @@ player-availability-analysis/
   configs/                    base.yaml, local.yaml, dev.yaml, prod.yaml
   docs/                       PROJECT_STATE.md, DECISION_LOG.md, architecture/, decisions/
   infra/                      empty
-  jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py
+  jobs/                       extract_subjective_archive.py, ingest_subjective_bronze.py, record_subjective_provenance.py
   notebooks/                  empty
   scripts/                    acquire_soccermon_archive.py
   src/player_availability/
     __init__.py  py.typed
     config/      settings.py, yaml_source.py
-    ingestion/   archive.py, provenance.py, subjective.py
+    ingestion/   archive.py, provenance.py, provenance_store.py, subjective.py
     schemas/     empty
     quality/     contracts.py
     utils/       paths.py
   tests/
     conftest.py
-    unit/            settings, archive, provenance, contract and subjective-ingestion tests (44 tests)
+    unit/            settings, archive, provenance, contract and subjective-ingestion tests (47 tests)
     data_contracts/  empty
     leakage/         empty
     smoke/           empty
@@ -205,11 +211,10 @@ Live transfer job: `transferJobs/3472342193733823656`. Completed operation: `tra
 - Verified subjective source: MD5 `o+hq7KYR93yTMaU16uAL9w==`, SHA-256 `338e9878fbed1f941cfc37b3f012cb356f97cc0f726e80a79aa5c8e67cc2a87c`, CC BY 4.0. The local audit copy is ignored under `data/tmp/archive_audit/`.
 - Raw staging is complete at `gs://paa-data-979927072833/raw/subjective/soccermon/zenodo-10033832/`: 19 unchanged source files and `_extraction_manifest.json`, 20 objects / 3,715,017 bytes.
 - Bronze staging is complete at `gs://paa-data-979927072833/bronze/subjective/soccermon/zenodo-10033832/`: five normalised Parquet datasets / 714,336 bytes. The quality report is stored under `metadata/data_quality_reports/`.
+- BigQuery provenance is registered: run `d4b0a71cdfc8d87e7431` in `paa_core.ingestion_runs` and 19 linked source-file rows in `paa_core.source_files`. The per-member SHA-256 column is deliberately null because only the enclosing ZIP was independently SHA-256 verified; ZIP CRC32 values are retained in source-file notes.
 - Observed layouts: 731-day by 50-player daily metric matrices, 50 per-player session lists with `date`, `duration`, `rpe` and `srpe`, and timestamped injury, illness and game-performance events.
 - **Locked sequence: subjective vertical slice first. Full GPS ingestion must not begin.**
-- **Work in progress: managed archive transfer.** The source ZIPs remain unverified until the running operation completes successfully and object-level checksums are recorded (`OD-07`).
-- No data ingested. No bronze, silver or gold artefacts exist.
-- No schema audit against real files, so no field-level assertions are made anywhere in this project.
+- No silver or gold artefacts exist. Objective/GPS data remains archive-only and unprocessed.
 
 ---
 
@@ -310,18 +315,17 @@ None. The next phase has normal data-quality gates rather than an acquisition bl
 
 ## Work In Progress
 
-Subjective bronze normalisation is complete under `DEC-022`. Next is provenance persistence and silver-domain design; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
+Subjective bronze normalisation and provenance registration are complete under `DEC-022`. Next is silver-domain design; no injury episode, availability or model label logic has begun. No objective archive processing is authorised. No other control session is known to be editing this working tree.
 
 ---
 
 ## Immediate Next Actions
 
-1. Inspect the existing `paa_core.source_files` and `paa_core.ingestion_runs` schemas, then record the verified archive, raw staging and bronze run provenance.
-2. Design and implement silver-domain transformations: player registry, training sessions, daily wellness/load relations, and preserved event reports.
-3. Profile injury report duplicates and timing semantics before proposing episode logic.
-4. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
-5. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
-6. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
+1. Design and implement silver-domain transformations: player registry, training sessions, daily wellness/load relations, and preserved event reports.
+2. Profile injury report duplicates and timing semantics before proposing episode logic.
+3. Confirm archive-bucket lifecycle rules and billing-budget alerts before broader processing.
+4. Reconcile the `paa-build-sa` / `paa-ci-sa` naming.
+5. Add a CI workflow running `poetry check --lock`, ruff, mypy strict and pytest on every push. It remains local only until the user explicitly requests a remote.
 
 ---
 
@@ -330,15 +334,16 @@ Subjective bronze normalisation is complete under `DEC-022`. Next is provenance 
 | Gate | Status | Evidence |
 |------|--------|----------|
 | Lint (ruff) | PASS | `ruff check src tests jobs`, all checks passed |
-| Format (ruff) | PASS | 13 files already formatted |
-| Type check (mypy strict) | PASS | 16 source files, no issues |
-| Unit tests | PASS | 35 passed; one expected `zipfile` duplicate-name warning in the archive-safety test |
+| Format (ruff) | PASS | 26 files already formatted |
+| Type check (mypy strict) | PASS | 26 source files, no issues |
+| Unit tests | PASS | 47 passed; one expected `zipfile` duplicate-name warning in the archive-safety test |
 | Lockfile integrity | PASS | `poetry check --lock`, all set |
 | Cloud Storage access | PASS | Active project and `gs://paa-data-979927072833` verified; expected zones listed |
 | Archive acquisition preflight | PASS | Zenodo record `10033832` returned 5 files totalling 99.13 GB; managed-transfer script dry run, compilation and Ruff checks pass; it made no cloud writes |
 | Storage Transfer Service | PASS | Operation completed successfully: 5 objects / 99,132,769,855 bytes copied, matching the source total |
 | Subjective raw staging | PASS | 19 unchanged source members and extraction manifest staged to GCS; object spot checks and 37-test quality suite pass |
 | Subjective bronze normalisation | PASS | 5 Parquet outputs, compact GCS staging, quality report and byte-identical rerun; 44-test quality suite pass |
+| Subjective BigQuery provenance | PASS | One registered ingestion run with 19 linked source files; read-back totals reconcile (27,655 read / 564,940 written) |
 | Ingestion foundation tests | PASS | Synthetic archive safety, provenance and generic contract tests; no real source schema asserted |
 | Schema / data-contract tests | Partially implemented | Generic structural contracts exist; source-specific contracts await schema audit |
 | Leakage tests | Not implemented | Directory exists, no features to test |
@@ -347,7 +352,7 @@ Subjective bronze normalisation is complete under `DEC-022`. Next is provenance 
 
 Gates were run from a clean environment with no inherited path or configuration, so the results reflect a fresh checkout rather than a primed local setup.
 
-Test coverage is limited to the configuration layer, which is the only substantive code that exists.
+Test coverage covers configuration, archive safety, generic contracts, source-specific subjective normalisation and BigQuery provenance persistence. Silver, leakage and smoke coverage are not yet implemented.
 
 ---
 
@@ -355,11 +360,11 @@ Test coverage is limited to the configuration layer, which is the only substanti
 
 | Item | Local | Drive |
 |------|-------|-------|
-| `PROJECT_STATE.md` | v11, 2026-08-13T13:00:00Z | v11, 2026-08-13T13:00:00Z |
+| `PROJECT_STATE.md` | v12, 2026-08-13T14:00:00Z | v12, 2026-08-13T14:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-022 | DEC-001 to DEC-022 |
 
 Status: **SYNCHRONISED**
 
 **Mirror method (`DEC-020`).** The Drive connector updates the existing raw Markdown files in place using their stable Drive IDs. The project does not rely on a mounted `G:` path. The folder holds exactly one of each control document.
 
-**Note on Git HEAD.** This document describes the tree as of commit `52cfd17` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
+**Note on Git HEAD.** This document describes the tree as of commit `afb6f99` on `main`. It is itself committed immediately afterwards, so the commit containing this file is one ahead of the commit it describes. This is a deliberate convention, not drift: a state document cannot record the hash of the commit that contains it.
