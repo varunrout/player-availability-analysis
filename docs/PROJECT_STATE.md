@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 22
-Last Updated UTC: 2026-08-14T12:56:32Z
+State Version: 23
+Last Updated UTC: 2026-08-14T13:47:32Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: e35bc344d65c6e763c6a65a4d74f8f4056415326 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 0
-Current Phase Status: Stage 0 implementation and real-data audit are complete with automated `PASS`. Awaiting project-owner results review; Stage 1 is not authorised.
+Git HEAD: 037bc402c346f9188ecb21218a6e732a3dc91700 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 1
+Current Phase Status: Stage 0 results are approved. Stage 1 injury-episode and outcome EDA is at specification review; implementation is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review and approve or reject the Stage 0 evidence. No Stage 1 implementation may begin before this review, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to agree the Stage 1 injury-episode and outcome EDA specification. No Stage 1 implementation may begin before specification approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -35,6 +35,7 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Stage 0 audited 15 compact relations and 45 relevant cloud objects with zero failures and one expected sparse-session warning.
 - Verified 15 schema contracts, all primary keys, raw-to-gold row-count reconciliation, BigQuery provenance, registry membership, label/feature identity and complete 50-player by 731-day gold coverage.
 - Committed the implementation and retained outputs at `e35bc34`. Full quality gate passes: Ruff, strict mypy, lockfile check and pytest (`55 passed`, one expected ZIP duplicate-name warning).
+- Project owner approved the Stage 0 results on 2026-08-14, closing the data-foundation gate and authorising Stage 1 specification review.
 
 ## Current Repository State
 
@@ -91,7 +92,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- Approve, reject or request revisions to the Stage 0 results and retained artifacts.
+- Approve or revise the detailed Stage 1 injury-episode and outcome EDA specification.
 - Later stages must approve the primary episode rule, horizon, cohort, missingness policy, predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -103,17 +104,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 1 is process-blocked until the project owner reviews and approves Stage 0 results.
+No technical blocker. Stage 1 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 0 results review is open. No Stage 1 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 1 specification review is open. No Stage 1 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review `outputs/analysis/00_data_audit/reports/STAGE_00_DATA_AUDIT.md`, its seven tables and three figures with the project owner.
-2. Obtain explicit Stage 0 results approval, rejection or revision instructions.
-3. After approval only, present the detailed Stage 1 specification for source-semantic and measurement-quality analysis.
+1. Present the exact Stage 1 questions, episode-rule sensitivities, outcome checks, tables, charts and acceptance criteria.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval only, implement the shared Stage 1 module, script, output-free notebook and focused tests.
+4. Run Stage 1, inspect the retained results together and obtain results approval before Stage 2.
 
 ## Validation / Quality Gate Status
 
@@ -131,7 +133,8 @@ Stage 0 results review is open. No Stage 1 code is in progress, and no other con
 | Stage 0 specification | PASS | approved before implementation |
 | Stage 0 implementation | PASS | shared module, script, notebook, outputs and tests committed at `e35bc34` |
 | Stage 0 automated audit | PASS | 15 relations; 45 objects; zero failures; one expected warning |
-| Stage 0 results review | PENDING OWNER APPROVAL | Stage 1 remains blocked |
+| Stage 0 results review | PASS | project-owner approval received 2026-08-14 |
+| Stage 1 specification | PENDING OWNER APPROVAL | no Stage 1 implementation started |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -139,10 +142,10 @@ Stage 0 results review is open. No Stage 1 code is in progress, and no other con
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v22, 2026-08-14T12:56:32Z | v22, 2026-08-14T12:56:32Z |
+| `PROJECT_STATE.md` | v23, 2026-08-14T13:47:32Z | v23, 2026-08-14T13:47:32Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-029 | DEC-001 to DEC-029 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `e35bc34`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `037bc40`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
