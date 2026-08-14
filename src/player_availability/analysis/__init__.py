@@ -21,6 +21,13 @@ from player_availability.analysis.stage_02_missingness_eda import (
     run_stage_02_missingness_eda,
     write_stage_02_outputs,
 )
+from player_availability.analysis.stage_03_feature_distribution_eda import (
+    Stage03FeatureDistributionResult,
+    build_stage_03_figures,
+    load_stage_03_from_gcp,
+    run_stage_03_feature_distribution_eda,
+    write_stage_03_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -38,4 +45,9 @@ __all__ = [
     "load_stage_02_from_gcp",
     "run_stage_02_missingness_eda",
     "write_stage_02_outputs",
+    "Stage03FeatureDistributionResult",
+    "build_stage_03_figures",
+    "load_stage_03_from_gcp",
+    "run_stage_03_feature_distribution_eda",
+    "write_stage_03_outputs",
 ]

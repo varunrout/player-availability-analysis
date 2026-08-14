@@ -1,0 +1,18 @@
+check_id,feature,expectation,violation_count,status
+daily_load_daily_load_sum_3d_le_daily_load_sum_7d,daily_load_sum_7d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+daily_load_daily_load_sum_7d_le_daily_load_sum_14d,daily_load_sum_14d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+daily_load_daily_load_sum_14d_le_daily_load_sum_28d,daily_load_sum_28d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_duration_session_duration_sum_3d_le_session_duration_sum_7d,session_duration_sum_7d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_duration_session_duration_sum_7d_le_session_duration_sum_14d,session_duration_sum_14d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_duration_session_duration_sum_14d_le_session_duration_sum_28d,session_duration_sum_28d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_srpe_session_srpe_sum_3d_le_session_srpe_sum_7d,session_srpe_sum_7d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_srpe_session_srpe_sum_7d_le_session_srpe_sum_14d,session_srpe_sum_14d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+session_srpe_session_srpe_sum_14d_le_session_srpe_sum_28d,session_srpe_sum_28d,Non-negative rolling sums must not decrease as windows expand,0,PASS
+fatigue_mean_3d_present_with_current,fatigue_mean_3d,Current observation must make its current-inclusive mean available,0,PASS
+fatigue_mean_7d_present_with_current,fatigue_mean_7d,Current observation must make its current-inclusive mean available,0,PASS
+fatigue_mean_14d_present_with_current,fatigue_mean_14d,Current observation must make its current-inclusive mean available,0,PASS
+fatigue_mean_28d_present_with_current,fatigue_mean_28d,Current observation must make its current-inclusive mean available,0,PASS
+readiness_mean_3d_present_with_current,readiness_mean_3d,Current observation must make its current-inclusive mean available,0,PASS
+readiness_mean_7d_present_with_current,readiness_mean_7d,Current observation must make its current-inclusive mean available,0,PASS
+readiness_mean_14d_present_with_current,readiness_mean_14d,Current observation must make its current-inclusive mean available,0,PASS
+readiness_mean_28d_present_with_current,readiness_mean_28d,Current observation must make its current-inclusive mean available,0,PASS

@@ -1,0 +1,4 @@
+session_recorded,daily_load_zero,player_days,median_daily_load,median_session_duration_minutes,median_session_srpe,player_day_share,interpretation
+false,true,22353,0.0,0.0,0.0,0.6115731874145006,No recorded session remains unknown; daily-load zero is an observed derived value
+true,false,14191,450.0,80.0,450.0,0.3882626538987688,No recorded session remains unknown; daily-load zero is an observed derived value
+true,true,6,0.0,60.0,0.0,0.00016415868673050614,No recorded session remains unknown; daily-load zero is an observed derived value

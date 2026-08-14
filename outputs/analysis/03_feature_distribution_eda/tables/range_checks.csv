@@ -1,0 +1,65 @@
+check_id,feature,expectation,violation_count,status
+daily_load_finite,daily_load,All observed values must be finite,0,PASS
+fatigue_finite,fatigue,All observed values must be finite,0,PASS
+readiness_finite,readiness,All observed values must be finite,0,PASS
+wellness_metric_count_finite,wellness_metric_count,All observed values must be finite,0,PASS
+session_count_finite,session_count,All observed values must be finite,0,PASS
+session_duration_minutes_finite,session_duration_minutes,All observed values must be finite,0,PASS
+session_srpe_finite,session_srpe,All observed values must be finite,0,PASS
+daily_load_sum_3d_finite,daily_load_sum_3d,All observed values must be finite,0,PASS
+daily_load_sum_7d_finite,daily_load_sum_7d,All observed values must be finite,0,PASS
+daily_load_sum_14d_finite,daily_load_sum_14d,All observed values must be finite,0,PASS
+daily_load_sum_28d_finite,daily_load_sum_28d,All observed values must be finite,0,PASS
+session_duration_sum_3d_finite,session_duration_sum_3d,All observed values must be finite,0,PASS
+session_duration_sum_7d_finite,session_duration_sum_7d,All observed values must be finite,0,PASS
+session_duration_sum_14d_finite,session_duration_sum_14d,All observed values must be finite,0,PASS
+session_duration_sum_28d_finite,session_duration_sum_28d,All observed values must be finite,0,PASS
+session_srpe_sum_3d_finite,session_srpe_sum_3d,All observed values must be finite,0,PASS
+session_srpe_sum_7d_finite,session_srpe_sum_7d,All observed values must be finite,0,PASS
+session_srpe_sum_14d_finite,session_srpe_sum_14d,All observed values must be finite,0,PASS
+session_srpe_sum_28d_finite,session_srpe_sum_28d,All observed values must be finite,0,PASS
+fatigue_mean_3d_finite,fatigue_mean_3d,All observed values must be finite,0,PASS
+fatigue_mean_7d_finite,fatigue_mean_7d,All observed values must be finite,0,PASS
+fatigue_mean_14d_finite,fatigue_mean_14d,All observed values must be finite,0,PASS
+fatigue_mean_28d_finite,fatigue_mean_28d,All observed values must be finite,0,PASS
+readiness_mean_3d_finite,readiness_mean_3d,All observed values must be finite,0,PASS
+readiness_mean_7d_finite,readiness_mean_7d,All observed values must be finite,0,PASS
+readiness_mean_14d_finite,readiness_mean_14d,All observed values must be finite,0,PASS
+readiness_mean_28d_finite,readiness_mean_28d,All observed values must be finite,0,PASS
+daily_load_baseline_mean_prior_finite,daily_load_baseline_mean_prior,All observed values must be finite,0,PASS
+daily_load_zscore_prior_finite,daily_load_zscore_prior,All observed values must be finite,0,PASS
+fatigue_baseline_mean_prior_finite,fatigue_baseline_mean_prior,All observed values must be finite,0,PASS
+fatigue_zscore_prior_finite,fatigue_zscore_prior,All observed values must be finite,0,PASS
+readiness_baseline_mean_prior_finite,readiness_baseline_mean_prior,All observed values must be finite,0,PASS
+readiness_zscore_prior_finite,readiness_zscore_prior,All observed values must be finite,0,PASS
+daily_load_nonnegative,daily_load,Feature semantics require non-negative values,0,PASS
+fatigue_nonnegative,fatigue,Feature semantics require non-negative values,0,PASS
+readiness_nonnegative,readiness,Feature semantics require non-negative values,0,PASS
+wellness_metric_count_nonnegative,wellness_metric_count,Feature semantics require non-negative values,0,PASS
+session_count_nonnegative,session_count,Feature semantics require non-negative values,0,PASS
+session_duration_minutes_nonnegative,session_duration_minutes,Feature semantics require non-negative values,0,PASS
+session_srpe_nonnegative,session_srpe,Feature semantics require non-negative values,0,PASS
+daily_load_sum_3d_nonnegative,daily_load_sum_3d,Feature semantics require non-negative values,0,PASS
+daily_load_sum_7d_nonnegative,daily_load_sum_7d,Feature semantics require non-negative values,0,PASS
+daily_load_sum_14d_nonnegative,daily_load_sum_14d,Feature semantics require non-negative values,0,PASS
+daily_load_sum_28d_nonnegative,daily_load_sum_28d,Feature semantics require non-negative values,0,PASS
+session_duration_sum_3d_nonnegative,session_duration_sum_3d,Feature semantics require non-negative values,0,PASS
+session_duration_sum_7d_nonnegative,session_duration_sum_7d,Feature semantics require non-negative values,0,PASS
+session_duration_sum_14d_nonnegative,session_duration_sum_14d,Feature semantics require non-negative values,0,PASS
+session_duration_sum_28d_nonnegative,session_duration_sum_28d,Feature semantics require non-negative values,0,PASS
+session_srpe_sum_3d_nonnegative,session_srpe_sum_3d,Feature semantics require non-negative values,0,PASS
+session_srpe_sum_7d_nonnegative,session_srpe_sum_7d,Feature semantics require non-negative values,0,PASS
+session_srpe_sum_14d_nonnegative,session_srpe_sum_14d,Feature semantics require non-negative values,0,PASS
+session_srpe_sum_28d_nonnegative,session_srpe_sum_28d,Feature semantics require non-negative values,0,PASS
+fatigue_mean_3d_nonnegative,fatigue_mean_3d,Feature semantics require non-negative values,0,PASS
+fatigue_mean_7d_nonnegative,fatigue_mean_7d,Feature semantics require non-negative values,0,PASS
+fatigue_mean_14d_nonnegative,fatigue_mean_14d,Feature semantics require non-negative values,0,PASS
+fatigue_mean_28d_nonnegative,fatigue_mean_28d,Feature semantics require non-negative values,0,PASS
+readiness_mean_3d_nonnegative,readiness_mean_3d,Feature semantics require non-negative values,0,PASS
+readiness_mean_7d_nonnegative,readiness_mean_7d,Feature semantics require non-negative values,0,PASS
+readiness_mean_14d_nonnegative,readiness_mean_14d,Feature semantics require non-negative values,0,PASS
+readiness_mean_28d_nonnegative,readiness_mean_28d,Feature semantics require non-negative values,0,PASS
+daily_load_baseline_mean_prior_nonnegative,daily_load_baseline_mean_prior,Feature semantics require non-negative values,0,PASS
+fatigue_baseline_mean_prior_nonnegative,fatigue_baseline_mean_prior,Feature semantics require non-negative values,0,PASS
+readiness_baseline_mean_prior_nonnegative,readiness_baseline_mean_prior,Feature semantics require non-negative values,0,PASS
+wellness_metric_count_range,wellness_metric_count,Completeness count must be between zero and seven,0,PASS

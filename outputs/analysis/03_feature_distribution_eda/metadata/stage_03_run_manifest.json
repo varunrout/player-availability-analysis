@@ -1,0 +1,14 @@
+{
+  "failure_count": 0,
+  "generated_at_utc": "2026-08-14T20:56:30.055784+00:00",
+  "numeric_feature_count": 33,
+  "outlier_register_count": 250,
+  "player_count": 50,
+  "player_day_count": 36550,
+  "range_failure_count": 0,
+  "review_count": 6,
+  "stage": "03_feature_distribution_eda",
+  "statistical_extreme_count": 979,
+  "status": "PASS",
+  "warning_count": 0
+}

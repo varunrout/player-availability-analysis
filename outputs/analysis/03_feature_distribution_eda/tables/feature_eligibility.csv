@@ -1,0 +1,35 @@
+feature,family,eligibility,reason
+daily_load,load,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+fatigue,wellness,descriptive_only_same_day,Same-day wellness/reporting field excluded under DEC-031
+readiness,wellness,descriptive_only_same_day,Same-day wellness/reporting field excluded under DEC-031
+wellness_metric_count,wellness,descriptive_only_same_day,Same-day wellness/reporting field excluded under DEC-031
+session_count,session,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_duration_minutes,session,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_srpe,session,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+daily_load_sum_3d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+daily_load_sum_7d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+daily_load_sum_14d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+daily_load_sum_28d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_duration_sum_3d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_duration_sum_7d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_duration_sum_14d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_duration_sum_28d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_srpe_sum_3d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_srpe_sum_7d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_srpe_sum_14d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+session_srpe_sum_28d,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+fatigue_mean_3d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+fatigue_mean_7d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+fatigue_mean_14d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+fatigue_mean_28d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+readiness_mean_3d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+readiness_mean_7d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+readiness_mean_14d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+readiness_mean_28d,rolling,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+daily_load_baseline_mean_prior,rolling,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+daily_load_zscore_prior,player_relative,primary_candidate,No Stage 2 exclusion; later feature-contract review still required
+fatigue_baseline_mean_prior,rolling,primary_candidate_lagged,Prior-only wellness baseline excludes the prediction day
+fatigue_zscore_prior,player_relative,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+readiness_baseline_mean_prior,rolling,primary_candidate_lagged,Prior-only wellness baseline excludes the prediction day
+readiness_zscore_prior,player_relative,requires_lagged_rebuild,Existing field includes the prediction-day wellness value
+wellness_report_present,reporting,descriptive_only_same_day,Same-day reporting indicator excluded under DEC-031

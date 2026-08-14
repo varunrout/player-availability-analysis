@@ -14,6 +14,8 @@ from typing import Any
 import pytest
 import yaml
 
+os.environ.setdefault("MPLBACKEND", "Agg")
+
 GCP_ENVIRONMENT: dict[str, str] = {
     "GCP_PROJECT_ID": "test-project",
     "GCP_REGION": "europe-west2",
