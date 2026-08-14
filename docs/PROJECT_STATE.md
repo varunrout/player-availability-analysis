@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 21
-Last Updated UTC: 2026-08-14T12:10:16Z
+State Version: 22
+Last Updated UTC: 2026-08-14T12:56:32Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: 5c76cc04bc526bbe5e5dae82399ee1562806c154 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: e35bc344d65c6e763c6a65a4d74f8f4056415326 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: Pre-Model Analysis - Stage 0
-Current Phase Status: Previous Phase A/Phase B analysis is withdrawn. Trusted data engineering remains complete. Awaiting Stage 0 specification review before any new analysis implementation.
+Current Phase Status: Stage 0 implementation and real-data audit are complete with automated `PASS`. Awaiting project-owner results review; Stage 1 is not authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to agree the Stage 0 analysis inventory and data-audit specification. No baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review and approve or reject the Stage 0 evidence. No Stage 1 implementation may begin before this review, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -29,6 +29,12 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Accepted `DEC-029`: shared analysis functions support both a script and a matching notebook; scripts alone persist outputs under `outputs/analysis/<stage>/`; notebooks render inline and are committed without outputs.
 - Replaced the bundled Phase A/Phase B workflow in the analysis runbook with Stages 0 through 8 and explicit owner-approval gates.
 - Committed the clean reset and filesystem contract at `5c76cc0`. Full remaining quality gate passes: Ruff, strict mypy, lockfile check and pytest (`52 passed`, one expected ZIP duplicate-name warning).
+- Implemented Stage 0 once as shared analysis code, with a script runner, matching output-free notebook, retained tables/report/charts and focused tests.
+- Added JupyterLab and IPython kernel dependencies to the Poetry development group and refreshed `poetry.lock`.
+- Executed both the notebook and canonical script against the actual GCS and BigQuery products through ADC.
+- Stage 0 audited 15 compact relations and 45 relevant cloud objects with zero failures and one expected sparse-session warning.
+- Verified 15 schema contracts, all primary keys, raw-to-gold row-count reconciliation, BigQuery provenance, registry membership, label/feature identity and complete 50-player by 731-day gold coverage.
+- Committed the implementation and retained outputs at `e35bc34`. Full quality gate passes: Ruff, strict mypy, lockfile check and pytest (`55 passed`, one expected ZIP duplicate-name warning).
 
 ## Current Repository State
 
@@ -37,13 +43,13 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      52 passing tests; no active analysis-stage test yet
+tests/                      55 passing tests, including three Stage 0 tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
 ```
 
-There is no active pre-model analysis implementation, report, chart, split implementation or split-assigned dataset. Historical commits remain available locally by design.
+Active Stage 0 assets are under `src/player_availability/analysis/`, `jobs/analysis/`, `notebooks/analysis/` and `outputs/analysis/00_data_audit/`. The notebook is committed with no outputs or execution counts. There is no active split implementation, split-assigned dataset or model. Historical commits remain available locally by design.
 
 ## Current GCP State
 
@@ -53,6 +59,7 @@ There is no active pre-model analysis implementation, report, chart, split imple
 - Gold subjective prefix retains only `player_day_labels.parquet` and unsplit `player_day_features.parquet`.
 - The former Phase A/Phase B analysis-report prefix has no objects.
 - BigQuery provenance remains registered in `paa_core.ingestion_runs` and `paa_core.source_files`.
+- Stage 0 read and reconciled GCS and BigQuery products but made no cloud-data changes.
 - No objective/GPS archive has been extracted or processed.
 
 ## Current Data State
@@ -66,7 +73,7 @@ There is no active pre-model analysis implementation, report, chart, split imple
 
 ## Current Modelling State
 
-No model has been fitted. No chronological split is currently frozen. `DEC-027` is superseded by `DEC-028`. Baseline modelling is blocked by process until Stages 0 through 8 are completed and approved.
+No model has been fitted. No chronological split is currently frozen. `DEC-027` is superseded by `DEC-028`. Stage 0 contains no prevalence, feature-distribution, correlation, split or model analysis. Baseline modelling is blocked by process until Stages 0 through 8 are completed and approved.
 
 ## Current Product State
 
@@ -84,7 +91,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- Approve or revise the detailed Stage 0 analysis inventory and data-audit specification.
+- Approve, reject or request revisions to the Stage 0 results and retained artifacts.
 - Later stages must approve the primary episode rule, horizon, cohort, missingness policy, predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -92,23 +99,21 @@ No API, dashboard, product table or inference service is implemented. The intend
 - No remote or CI workflow; this is consistent with the current local-only Git policy.
 - Service-account naming remains unreconciled: `paa-build-sa` versus `paa-ci-sa` in older architecture text.
 - Archive-bucket lifecycle rules and billing-budget alerts have not yet been verified.
-- Notebook dependencies and an automated notebook-output clearing check are not yet implemented; add them only when the first notebook is approved for construction.
 - Full objective/GPS ingestion remains deliberately deferred.
 
 ## Blockers
 
-No technical blocker. Stage 0 implementation waits for project-owner approval of its specification.
+No technical blocker. Stage 1 is process-blocked until the project owner reviews and approves Stage 0 results.
 
 ## Work In Progress
 
-None. The repository is intentionally clean at the Stage 0 planning gate. No other control session is known to be modifying the working tree.
+Stage 0 results review is open. No Stage 1 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present the exact Stage 0 questions, input relations, checks, charts, tables and acceptance criteria.
-2. Obtain project-owner approval or revision of that specification.
-3. Implement shared Stage 0 functions, a script runner, matching output-free notebook and focused tests.
-4. Run the script into `outputs/analysis/00_data_audit/`, inspect the results together and obtain approval before Stage 1.
+1. Review `outputs/analysis/00_data_audit/reports/STAGE_00_DATA_AUDIT.md`, its seven tables and three figures with the project owner.
+2. Obtain explicit Stage 0 results approval, rejection or revision instructions.
+3. After approval only, present the detailed Stage 1 specification for source-semantic and measurement-quality analysis.
 
 ## Validation / Quality Gate Status
 
@@ -116,14 +121,17 @@ None. The repository is intentionally clean at the Stage 0 planning gate. No oth
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | 41 source/test/job files formatted |
-| Type check | PASS | strict mypy, 36 source files |
-| Tests | PASS | 52 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | Stage 0 files formatted; repository format check clean |
+| Type check | PASS | strict mypy, 39 source files |
+| Tests | PASS | 55 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
 | Trusted gold foundation | PASS | unsplit labels and features remain in GCS |
-| Stage 0 specification | PENDING OWNER APPROVAL | no implementation started |
+| Stage 0 specification | PASS | approved before implementation |
+| Stage 0 implementation | PASS | shared module, script, notebook, outputs and tests committed at `e35bc34` |
+| Stage 0 automated audit | PASS | 15 relations; 45 objects; zero failures; one expected warning |
+| Stage 0 results review | PENDING OWNER APPROVAL | Stage 1 remains blocked |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -131,10 +139,10 @@ None. The repository is intentionally clean at the Stage 0 planning gate. No oth
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v21, 2026-08-14T12:10:16Z | v21, 2026-08-14T12:10:16Z |
+| `PROJECT_STATE.md` | v22, 2026-08-14T12:56:32Z | v22, 2026-08-14T12:56:32Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-029 | DEC-001 to DEC-029 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `5c76cc0`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `e35bc34`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
