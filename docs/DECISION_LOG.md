@@ -884,6 +884,34 @@ Stage 3 may analyse current-day fields descriptively but must distinguish them f
 
 ---
 
+## DEC-032
+
+**Decision ID:** DEC-032
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+Stage 3 profiled 33 numeric features across 36,550 player-days. Load, session-duration and sRPE fields are strongly zero-inflated and right-skewed: 22,353 player-days have no recorded session and zero daily load, 14,191 have a recorded session and positive load, and six have a recorded session with zero load. Within-player variation dominates the five core features, but between-player variation remains material, especially for fatigue and readiness. Team and calendar means shift materially. Existing prior-baseline z-scores can become extreme under near-zero historical variance, reaching absolute maxima of 80.6 for daily load, 12.9 for fatigue and 21.0 for readiness. Three-IQR outer fences flag 979 rows across 14 features, without evidence that those observations are erroneous.
+
+**Decision:**
+Preserve canonical raw feature values and all statistically extreme observations; do not delete, winsorise or correct values solely because they cross a distributional fence. Carry deterministic `log1p` candidates for non-negative load, session-duration, session-sRPE and rolling-sum magnitudes, paired with an explicit zero/session-recording indicator so magnitude and recording state remain distinguishable. Do not automatically transform the discrete wellness scales. Exclude the existing prior-baseline z-score fields from the primary operational predictor contract because their tails are unstable under near-zero historical variance. Permit later robust player-relative candidates only with explicit minimum-history and positive-variance requirements. Carry a 28-calendar-day burn-in and at least seven prior observed wellness reports as Stage 6 sensitivity candidates, not frozen cohort requirements. Current-day and current-inclusive wellness features remain descriptive-only under `DEC-031`.
+
+**Rationale:**
+The load/session distributions contain two different signals: whether a session was recorded and the magnitude when exposure was recorded. A monotonic `log1p` transform can reduce leverage from long right tails while preserving zero, but the paired indicator is needed because zero does not mean confirmed rest. Discrete wellness scores have bounded source semantics and do not warrant an automatic skewness transform. The current z-score construction is mathematically fragile when prior variance is tiny; allowing it into the primary contract would let denominator instability dominate the signal. Statistical extremeness is insufficient evidence of a source error.
+
+**Alternatives Considered:**
+Use raw magnitudes only, retained as a comparison but rejected as the sole operational representation because extreme right tails may dominate scale-sensitive models. Replace or remove all zero-load days, rejected because they encode the observed recording process and cannot be classified as confirmed rest or missing exposure. Winsorise or delete outer-fence observations, rejected because no source-level error was established. Keep the existing z-scores unchanged, rejected for the primary contract because of unstable denominators. Freeze a 28-day burn-in and seven-report threshold immediately, deferred because Stage 6 must quantify their effects on sample size, events and representation.
+
+**Consequences:**
+Stage 4 may evaluate redundancy and structural coupling among raw magnitudes, candidate transforms, recording indicators, rolling summaries and eligible lagged/player-relative families without using outcome performance. Predictor contracts must preserve the distinction between recording state and magnitude. Stage 6 must quantify candidate history requirements before any cohort restriction is accepted. Stage 7 must specify any robust relative-feature denominator floor and train-only preprocessing. Team and calendar shifts must constrain the later validation protocol.
+
+**Affected Components:** feature engineering, predictor contracts, preprocessing, cohort sensitivity, leakage controls, validation, interpretation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

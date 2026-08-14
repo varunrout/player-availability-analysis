@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 28
-Last Updated UTC: 2026-08-14T21:09:38Z
+State Version: 29
+Last Updated UTC: 2026-08-14T22:09:30Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: 730b0dc9d178a1237b13bc061fda4a23b5a0651e (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 3
-Current Phase Status: Stage 3 feature-distribution and temporal EDA is implemented and passes its automated gate. Results and the resulting range/transformation/history policy await project-owner review; Stage 4 is not authorised.
+Git HEAD: 246f59f6e0aee8490bf508f83d6baeccc997acd9 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 4 Specification
+Current Phase Status: Stage 3 results and feature-handling policy are approved under `DEC-032`. Stage 4 redundancy and structural-relationship analysis awaits project-owner specification approval; no Stage 4 implementation is authorised yet.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 3 evidence and decide credible ranges, justified transformations, reliable feature families and history requirements. No Stage 4 implementation may begin before Stage 3 results approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 4 specification for feature redundancy, structural coupling and target-blind candidate predictor contracts. No Stage 4 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -65,6 +65,8 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Statistical outer fences flag 979 rows across 14 features. The 250 highest-severity rows are retained in a review-only register capped at 20 per feature; no values were corrected or deleted.
 - Executed the canonical script and notebook against the GCS gold product; committed implementation and retained outputs at `730b0dc`.
 - Full quality gate passes: lockfile, Ruff, strict mypy, pytest (`64 passed`, one expected ZIP duplicate-name warning), JSON notebook validation and notebook execution.
+- Project owner approved the Stage 3 results and recommended feature-handling policy on 2026-08-14.
+- Accepted `DEC-032`: preserve raw values and statistical extremes, carry paired recording-state and `log1p` magnitude candidates, do not automatically transform discrete wellness, exclude unstable existing z-scores from the primary operational contract, and defer history thresholds to Stage 6 sensitivity.
 
 ## Current Repository State
 
@@ -130,13 +132,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-029` defines the shared script/notebook implementation and output-storage contract.
 - `DEC-030` defines player-date onset as the effective binary outcome event and constrains sensitivity, validation and claims.
 - `DEC-031` defines missing-value semantics and a conservative lagged-only wellness/reporting policy for the primary predictor contract.
+- `DEC-032` defines Stage 3 feature handling: preserve extremes, separate recording state from magnitude, carry justified `log1p` candidates, and exclude unstable existing z-scores from the primary operational contract.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise Stage 3 results and decide credible ranges, transformation candidates, reliable feature families and history/variance requirements.
+- Approve or revise the Stage 4 redundancy and structural-relationship analysis specification.
 - Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -151,18 +154,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 4 is process-blocked until the project owner approves Stage 3 results and the associated methodological decision is recorded.
+No technical blocker. Stage 4 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 3 results review is open. No Stage 4 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 4 specification review is open. No Stage 4 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Explain the Stage 3 results, especially zero inflation, team/calendar shifts, current-inclusive wellness ineligibility and z-score tail instability.
-2. Obtain project-owner approval or revision of the Stage 3 results and recommended feature-handling policy.
-3. After approval, append the material decision as `DEC-032` and present the Stage 4 redundancy/structural-relationship specification.
-4. Do not implement Stage 4 until its specification is separately approved.
+1. Present the Stage 4 redundancy and structural-relationship specification, including exact analyses, outputs and acceptance gate.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval, implement Stage 4 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
+4. Run Stage 4 against the canonical gold product, complete quality checks, discuss results and obtain a separate results approval before Stage 5.
 
 ## Validation / Quality Gate Status
 
@@ -194,7 +197,9 @@ Stage 3 results review is open. No Stage 4 code is in progress, and no other con
 | Stage 3 implementation | PASS | shared module, script, notebook, outputs and tests committed at `730b0dc` |
 | Stage 3 automated integrity | PASS | 33 numeric features; zero hard failures; rolling identities pass |
 | Stage 3 notebook execution | PASS | executed against GCS; committed notebook remains output-free |
-| Stage 3 results review | PENDING OWNER APPROVAL | range, transformation, feature-family and history decisions required |
+| Stage 3 results review | PASS | project-owner approval received 2026-08-14; policy accepted under `DEC-032` |
+| Stage 4 specification | PENDING OWNER APPROVAL | redundancy, structural-coupling and target-blind predictor-contract scope to approve |
+| Stage 4 implementation | NOT STARTED | blocked pending specification approval |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -202,10 +207,10 @@ Stage 3 results review is open. No Stage 4 code is in progress, and no other con
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v28, 2026-08-14T21:09:38Z | v28, 2026-08-14T21:09:38Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-031 | DEC-001 to DEC-031 |
+| `PROJECT_STATE.md` | v29, 2026-08-14T22:09:30Z | v29, 2026-08-14T22:09:30Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-032 | DEC-001 to DEC-032 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `730b0dc`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `246f59f`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
