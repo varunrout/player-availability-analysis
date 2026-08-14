@@ -912,6 +912,34 @@ Stage 4 may evaluate redundancy and structural coupling among raw magnitudes, ca
 
 ---
 
+## DEC-033
+
+**Decision ID:** DEC-033
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+Stage 4 measured target-blind structural relationships across 33 source numeric features and 16 derived representations for 36,550 player-days. The 35-feature full candidate contract contains raw and `log1p` alternatives rather than 35 independent signals. There are 221 feature pairs with absolute Spearman correlation at least 0.90 and 36 near-deterministic pairs at least 0.995; 15 of the latter are expected raw/`log1p` alternatives. Daily load and session sRPE are near duplicates at the current and rolling levels: current all-day Spearman is 0.999 and positive-recorded-day Spearman is 0.989. Daily load versus session duration falls to 0.828 on positive recorded days. Every adjacent 3/7, 7/14 and 14/28-day rolling-sum pair exceeds 0.92 Spearman. Wellness report presence and wellness metric count are near-deterministic at 0.999 and remain outcome-entangled same-day reporting fields.
+
+**Decision:**
+Accept the Stage 4 target-blind full candidate contract as a research catalogue of alternative representations, not a list to enter simultaneously into one model. Carry a smaller provisional operational family policy into later pre-model stages: retain explicit session-recording state and session-count context; use `log1p` magnitude representations for the skewed load/session fields; treat daily load as the primary internal-load family and retain session sRPE only as an alternative sensitivity family rather than an independent simultaneous signal; retain session duration as distinct exposure-duration context; use 7-day and 28-day accumulated windows as the provisional recent and longer-term operational anchors; retain 3-day and 14-day windows in the full contract but defer them from the compact operational contract. Defer prior-player-baseline inclusion until Stage 6 history/cohort sensitivity and Stage 7 leakage/preprocessing review. Require lagged wellness/reporting reconstruction before those families can become primary candidates. Continue to exclude same-day/current-inclusive wellness and the existing unstable z-scores. The exact predictor allow-list remains unfrozen until Stage 7.
+
+**Rationale:**
+The compact policy preserves interpretable recording state, current magnitude, recent accumulation and longer accumulation without treating transformations, adjacent windows or duplicate load constructs as independent evidence. Daily load is the canonical daily internal-load field, while session duration adds information not fully explained by load magnitude. Keeping session sRPE and intermediate windows in the full catalogue preserves sensitivity options without burdening the primary operational representation. Deferring baselines and wellness prevents structural analysis from silently deciding history eligibility or prediction-time ordering.
+
+**Alternatives Considered:**
+Enter all 35 candidates simultaneously, rejected because the catalogue intentionally contains highly redundant alternatives. Carry daily load and session sRPE together as independent primary signals, rejected because their current and rolling relationships are near deterministic. Use all four rolling windows in the compact contract, rejected because adjacent windows are uniformly highly correlated. Drop session duration, rejected because its positive-recorded-day relationship with daily load is materially less redundant. Freeze prior baselines and lagged wellness now, deferred because their history, coverage, leakage and cohort effects belong to Stages 6 and 7. Select features from outcome association or model performance in Stage 4, rejected because the stage is explicitly target-blind.
+
+**Consequences:**
+Stage 5 descriptive outcome-context analysis may compare approved descriptive feature families around episode onset without using that retrospective evidence to silently expand the primary operational contract. Stage 6 must quantify horizon, episode-gap, burn-in, wellness-history and baseline-history sensitivities. Stage 7 must construct the final predictor allow-list, lagged wellness features, train-only preprocessing and leakage controls. Later model comparisons may test deferred full-contract alternatives as labelled sensitivities, but headline models must not present redundant daily-load/session-sRPE or adjacent-window variants as independent evidence.
+
+**Affected Components:** feature contracts, descriptive analysis, feature engineering, cohort sensitivity, preprocessing, leakage controls, modelling experiments, interpretation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

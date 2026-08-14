@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 30
-Last Updated UTC: 2026-08-14T22:44:54Z
+State Version: 31
+Last Updated UTC: 2026-08-14T23:46:46Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: 93a95fc605fc3763d546e51e5f2ab8092c90a2a6 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 4 Results Review
-Current Phase Status: Stage 4 feature-redundancy and structural-relationship analysis is implemented and passes its automated gate. Full and operational candidate contracts await project-owner review; Stage 5 is not authorised.
+Git HEAD: 17421c77738cf617aace00ba4ba6d48797d0df6b (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 5 Specification
+Current Phase Status: Stage 4 results and target-blind feature-family policy are approved under `DEC-033`. Stage 5 descriptive outcome-context analysis awaits project-owner specification approval; no Stage 5 implementation is authorised yet.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 4 redundancy, coupling and target-blind contract evidence and approve or revise the predictor families carried into Stage 5. No Stage 5 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 5 specification for descriptive pre-onset trajectories, matched/reference periods, player/team concentration and reporting-process checks. No Stage 5 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -77,6 +77,8 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Wellness report presence and wellness metric count are near-deterministic at Spearman 0.999; both remain descriptive-only under `DEC-031`.
 - Executed the canonical Stage 4 script and notebook against the GCS gold product. Stage status is PASS with zero failures, zero warnings and three review findings; no cloud data was changed.
 - Committed Stage 4 implementation and retained outputs at `93a95fc`. Full quality gate passes: lockfile, formatting, Ruff, strict mypy, pytest (`67 passed`, one expected ZIP duplicate-name warning), JSON notebook validation and notebook execution.
+- Project owner approved the Stage 4 results and recommended target-blind feature-family policy on 2026-08-15 local time.
+- Accepted `DEC-033`: retain the full contract as an alternatives catalogue; carry a compact provisional operational policy using recording state, `log1p` magnitudes, daily load as the primary internal-load family, session duration as distinct context, and 7/28-day anchors; defer session-sRPE duplication, 3/14-day windows, prior baselines and lagged wellness to explicit later sensitivities and controls.
 
 ## Current Repository State
 
@@ -146,13 +148,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-030` defines player-date onset as the effective binary outcome event and constrains sensitivity, validation and claims.
 - `DEC-031` defines missing-value semantics and a conservative lagged-only wellness/reporting policy for the primary predictor contract.
 - `DEC-032` defines Stage 3 feature handling: preserve extremes, separate recording state from magnitude, carry justified `log1p` candidates, and exclude unstable existing z-scores from the primary operational contract.
+- `DEC-033` defines the target-blind full-contract catalogue and compact provisional operational feature-family policy; the exact predictor allow-list remains unfrozen until Stage 7.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the Stage 4 results, full candidate contract and smaller operational feature-family proposal.
+- Approve or revise the Stage 5 descriptive outcome-context analysis specification.
 - Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -168,18 +171,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 5 is process-blocked until the project owner approves the Stage 4 results and predictor-contract policy.
+No technical blocker. Stage 5 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 4 results review is open. No Stage 5 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 5 specification review is open. No Stage 5 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Explain Stage 4 results, especially structural-zero inflation, daily-load/session-sRPE duplication, rolling-window redundancy and the difference between full and operational contracts.
-2. Obtain project-owner approval or revision of the Stage 4 results and recommended target-blind predictor-family policy.
-3. After approval, append the material predictor-contract decision as `DEC-033` and present the Stage 5 descriptive outcome-context specification.
-4. Do not implement Stage 5 until its specification is separately approved.
+1. Present the Stage 5 descriptive outcome-context specification, including event indexing, reference periods, feature families, stratification, outputs and non-predictive interpretation boundaries.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval, implement Stage 5 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
+4. Run Stage 5 against canonical products, complete quality checks, discuss results and obtain a separate results approval before Stage 6.
 
 ## Validation / Quality Gate Status
 
@@ -216,7 +219,9 @@ Stage 4 results review is open. No Stage 5 code is in progress, and no other con
 | Stage 4 implementation | PASS | shared module, script, notebook, outputs and tests committed at `93a95fc` |
 | Stage 4 automated integrity | PASS | 0 outcome columns used; 15 transforms valid; 0 hard failures |
 | Stage 4 notebook execution | PASS | 4/4 code cells executed against GCS with zero errors; committed notebook remains output-free |
-| Stage 4 results review | PENDING OWNER APPROVAL | full and operational target-blind predictor contracts require review |
+| Stage 4 results review | PASS | project-owner approval received 2026-08-15 local time; policy accepted under `DEC-033` |
+| Stage 5 specification | PENDING OWNER APPROVAL | descriptive outcome-context scope and safeguards to approve |
+| Stage 5 implementation | NOT STARTED | blocked pending specification approval |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -224,10 +229,10 @@ Stage 4 results review is open. No Stage 5 code is in progress, and no other con
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v30, 2026-08-14T22:44:54Z | v30, 2026-08-14T22:44:54Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-032 | DEC-001 to DEC-032 |
+| `PROJECT_STATE.md` | v31, 2026-08-14T23:46:46Z | v31, 2026-08-14T23:46:46Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-033 | DEC-001 to DEC-033 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `93a95fc`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `17421c7`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
