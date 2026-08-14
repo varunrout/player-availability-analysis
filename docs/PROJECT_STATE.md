@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 24
-Last Updated UTC: 2026-08-14T15:51:29Z
+State Version: 25
+Last Updated UTC: 2026-08-14T19:09:06Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: 42463175d3c55645dcf409df89d5d0ea8e2aebb8 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 1
-Current Phase Status: Stage 1 implementation and real-data outcome EDA are complete with automated `PASS`. Awaiting project-owner methodological review; Stage 2 is not authorised.
+Git HEAD: e2893820bd76fbc38be2361d7737eaee4d20c7d1 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 2
+Current Phase Status: Stage 1 methodological findings are approved under `DEC-030`. Stage 2 missingness and reporting-process EDA is at specification review; implementation is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 1 evidence, approve or revise the primary episode rule and decide whether outcome labels are credible enough for Stage 2. No baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to agree the Stage 2 missingness and reporting-process EDA specification. No Stage 2 implementation may begin before specification approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -42,6 +42,7 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Stage 1 automated integrity checks pass: all 299 unique report components reconcile, stored three-day episodes reproduce exactly, gold labels reproduce exactly and horizon nesting has zero violations.
 - Executed the canonical script and notebook against GCP products; committed implementation and retained outputs at `4246317`.
 - Full quality gate passes: lockfile, Ruff, strict mypy and pytest (`58 passed`, one expected ZIP duplicate-name warning).
+- Accepted `DEC-030`: retained the three-day location episode rule, defined player-date onset as the effective binary outcome event, accepted labels for continued EDA with explicit limitations, and mandated gap/concentration/generalisation sensitivities.
 
 ## Current Repository State
 
@@ -97,15 +98,15 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-027` is superseded and its former split is not active.
 - `DEC-028` resets pre-model analysis to Stage 0 while preserving trusted data engineering and history.
 - `DEC-029` defines the shared script/notebook implementation and output-storage contract.
+- `DEC-030` defines player-date onset as the effective binary outcome event and constrains sensitivity, validation and claims.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the current three-day episode rule after reviewing 1/3/7-day sensitivity.
-- Approve or reject Stage 1 outcome-label credibility for progression to Stage 2.
-- Later stages must approve the primary episode rule, horizon, cohort, missingness policy, predictor contract and chronological validation protocol before modelling.
+- Approve or revise the detailed Stage 2 missingness and reporting-process EDA specification.
+- Later stages must approve the primary horizon, cohort, missingness policy, predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
 
@@ -117,17 +118,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 2 is process-blocked until the project owner reviews and approves or revises the Stage 1 methodological findings.
+No technical blocker. Stage 2 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 1 results review is open. No Stage 2 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 2 specification review is open. No Stage 2 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review `outputs/analysis/01_outcome_eda/reports/STAGE_01_OUTCOME_EDA.md`, its 11 tables and eight figures with the project owner.
-2. Decide whether to retain the three-day location-specific episode rule and accept the labels as credible but materially limited.
-3. After explicit results approval only, present the detailed Stage 2 missingness and reporting-process EDA specification.
+1. Present the exact Stage 2 coverage, missing-run, co-missingness, reporting-frequency and pre-onset reporting-process analyses.
+2. Obtain project-owner approval or revision of the Stage 2 specification.
+3. After approval only, implement the shared Stage 2 module, script, output-free notebook and focused tests.
+4. Run Stage 2, inspect retained results together and obtain results approval before Stage 3.
 
 ## Validation / Quality Gate Status
 
@@ -149,7 +151,8 @@ Stage 1 results review is open. No Stage 2 code is in progress, and no other con
 | Stage 1 specification | PASS | approved before implementation |
 | Stage 1 implementation | PASS | shared module, script, notebook, outputs and tests committed at `4246317` |
 | Stage 1 automated integrity | PASS | component, episode, label and horizon checks have zero failures |
-| Stage 1 methodological review | PENDING OWNER APPROVAL | episode-rule and outcome-credibility decision open |
+| Stage 1 methodological review | PASS | accepted under `DEC-030` |
+| Stage 2 specification | PENDING OWNER APPROVAL | no Stage 2 implementation started |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -157,10 +160,10 @@ Stage 1 results review is open. No Stage 2 code is in progress, and no other con
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v24, 2026-08-14T15:51:29Z | v24, 2026-08-14T15:51:29Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-029 | DEC-001 to DEC-029 |
+| `PROJECT_STATE.md` | v25, 2026-08-14T19:09:06Z | v25, 2026-08-14T19:09:06Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-030 | DEC-001 to DEC-030 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `4246317`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `e289382`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

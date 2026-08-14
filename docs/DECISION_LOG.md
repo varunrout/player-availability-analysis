@@ -828,6 +828,34 @@ Every analysis stage requires shared functions, a script runner, a cleared noteb
 
 ---
 
+## DEC-030
+
+**Decision ID:** DEC-030
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+Stage 1 independently reproduced the accepted three-day location-specific episodes and all gold labels, while clarifying the effective outcome support. The 147 location episodes correspond to 73 distinct player-date onset events because 33 onset dates contain multiple simultaneous location episodes. Outcomes are also highly concentrated: 35 of 50 players have no episode, the top five players contribute 75.3% of onset days, and the leading team contributes 90.4%. One-, three- and seven-day rules produce 108, 73 and 55 onset days respectively.
+
+**Decision:**
+Retain the three-day, player-plus-raw-location episode construction accepted in `DEC-024`. For fixed-horizon binary labels and effective event-support calculations, define the outcome event unit as a player-date on which one or more location episodes starts; simultaneous location episodes on that date are not independent modelling events. Accept the current labels as internally credible for continued pre-model EDA, not as evidence of modelling readiness or medical ground truth. Require one- and seven-day episode-gap sensitivities in Stage 6 and require player, team and calendar concentration to constrain validation design and claims. Any later model must include unseen-player stress testing and must not claim team transfer without supporting evidence.
+
+**Rationale:**
+The three-day rule is an evidence-led intermediate between one-day fragmentation and seven-day over-merging; the latter creates report spans as long as 103 days. The binary label answers whether any future onset occurs, so counting simultaneous body-location starts as independent events would overstate effective sample size and uncertainty precision. Exact episode and label reproduction supports internal credibility, while the observed concentration requires conservative validation and interpretation.
+
+**Alternatives Considered:**
+Switch to the one-day rule, rejected as the primary rule because it fragments repeated reporting. Switch to the seven-day rule, rejected because it strongly compresses events and can create implausibly long report clusters. Collapse locations before episode construction, rejected because the source does not provide a supported anatomical aggregation rule. Treat all 147 location episodes as independent modelling events, rejected because the binary target collapses simultaneous starts to one player-date event. Stop analysis entirely, rejected because the labels are internally valid and the remaining staged analyses can determine whether a defensible modelling protocol exists.
+
+**Consequences:**
+Stage 2 missingness and reporting-process EDA may proceed. Reports and later model documentation must distinguish 147 location episodes from 73 player-date onset events. Effective event support, uncertainty and concentration must use onset days where appropriate. Stage 6 must retain gap-rule sensitivity, and Stages 7 and 8 must explicitly address unseen-player, team and temporal generalisation before modelling can be approved.
+
+**Affected Components:** episode interpretation, outcome labels, cohort sensitivity, validation, uncertainty, modelling claims, product language
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
