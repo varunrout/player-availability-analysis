@@ -1,0 +1,9 @@
+family_role,candidate_features,proposal,reason
+recording_state,session_recorded; session_count,PROPOSED_INCLUDE,Retains whether and how many sessions were recorded
+current_load_magnitude,daily_load_log1p; session_duration_minutes_log1p; session_srpe_log1p,REVIEW_COUPLING,Select structurally distinct magnitude representations after review
+recent_accumulated_load,daily_load_sum_7d_log1p; session_duration_sum_7d_log1p; session_srpe_sum_7d_log1p,PROPOSED_INCLUDE,Seven-day operational context; target-blind domain anchor
+longer_accumulated_load,daily_load_sum_28d_log1p; session_duration_sum_28d_log1p; session_srpe_sum_28d_log1p,PROPOSED_INCLUDE,Twenty-eight-day context; history impact remains Stage 6 sensitivity
+intermediate_rolling_windows,3d and 14d log1p rolling sums,PROPOSED_DEFER,Retain in full contract; operational inclusion depends on redundancy review
+prior_player_baselines,daily_load_baseline_mean_prior; fatigue_baseline_mean_prior; readiness_baseline_mean_prior,PROPOSED_DEFER,History and representation effects require Stage 6 and Stage 7 controls
+wellness_state,lagged fatigue/readiness/reporting features not yet built,REQUIRES_LAGGED_REBUILD,Same-day/current-inclusive fields remain ineligible under DEC-031
+existing_zscores,daily_load_zscore_prior; fatigue_zscore_prior; readiness_zscore_prior,EXCLUDE,Unstable denominator behaviour under DEC-032

@@ -1,0 +1,16 @@
+{
+  "derived_candidate_count": 16,
+  "failure_count": 0,
+  "full_candidate_count": 35,
+  "generated_at_utc": "2026-08-14T22:40:44.273435+00:00",
+  "high_correlation_pair_count": 221,
+  "near_deterministic_pair_count": 36,
+  "outcome_columns_used": 0,
+  "player_count": 50,
+  "player_day_count": 36550,
+  "review_count": 3,
+  "source_numeric_feature_count": 33,
+  "stage": "04_feature_redundancy",
+  "status": "PASS",
+  "warning_count": 0
+}

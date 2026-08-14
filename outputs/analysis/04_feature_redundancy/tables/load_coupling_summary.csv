@@ -1,0 +1,4 @@
+pair_label,feature_left,feature_right,all_day_count,positive_recorded_day_count,zero_state_agreement_rate,pearson_all_days,spearman_all_days,pearson_positive_recorded_days,spearman_positive_recorded_days
+daily_load vs session_duration_minutes,daily_load,session_duration_minutes,36550,14191,0.999890560875513,0.9409100857732352,0.9869385719660752,0.8113935156687593,0.8284094802592648
+daily_load vs session_srpe,daily_load,session_srpe,36550,14191,1.0,0.9945868657421163,0.9991975283233818,0.9835103385569806,0.989415977673214
+session_duration_minutes vs session_srpe,session_duration_minutes,session_srpe,36550,14191,0.999890560875513,0.9464210191540368,0.9879933785285309,0.8304086156700616,0.8424561121731193

@@ -1,0 +1,10 @@
+check_id,scope,status,message
+outcome_isolation,analysis frame,PASS,0 prohibited outcome-like columns entered the analysis frame
+transform_integrity,log1p candidates,PASS,0 transformation checks failed
+correlation_bounds,correlation register,PASS,"0 coefficients fall outside [-1, 1]"
+candidate_variation,full candidate contract,PASS,0 candidates are constant or empty
+high_correlation_review,candidate representations,REVIEW,221 feature pairs have absolute Spearman correlation at least 0.90
+near_deterministic_review,candidate representations,REVIEW,"36 pairs reach the near-deterministic threshold; expected raw/log pairs remain alternatives, not independent evidence"
+load_coupling_review,load system,REVIEW,Strongest positive-recorded-day coupling is daily_load vs session_srpe at Spearman 0.989
+same_day_wellness_boundary,wellness features,PASS,Same-day and current-inclusive wellness fields are absent from the full candidate contract
+source_preservation,canonical features,PASS,Stage 4 adds target-blind representations without dropping player-days or modifying source values

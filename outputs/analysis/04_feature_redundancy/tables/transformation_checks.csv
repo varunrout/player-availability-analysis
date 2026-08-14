@@ -1,0 +1,16 @@
+feature,transformed_feature,invalid_value_count,zero_preservation_violation_count,spearman_raw_vs_log1p,status
+daily_load,daily_load_log1p,0,0,1.0,PASS
+session_duration_minutes,session_duration_minutes_log1p,0,0,1.0,PASS
+session_srpe,session_srpe_log1p,0,0,1.0,PASS
+daily_load_sum_3d,daily_load_sum_3d_log1p,0,0,1.0,PASS
+daily_load_sum_7d,daily_load_sum_7d_log1p,0,0,1.0,PASS
+daily_load_sum_14d,daily_load_sum_14d_log1p,0,0,1.0,PASS
+daily_load_sum_28d,daily_load_sum_28d_log1p,0,0,1.0,PASS
+session_duration_sum_3d,session_duration_sum_3d_log1p,0,0,1.0,PASS
+session_duration_sum_7d,session_duration_sum_7d_log1p,0,0,1.0,PASS
+session_duration_sum_14d,session_duration_sum_14d_log1p,0,0,1.0,PASS
+session_duration_sum_28d,session_duration_sum_28d_log1p,0,0,1.0,PASS
+session_srpe_sum_3d,session_srpe_sum_3d_log1p,0,0,1.0,PASS
+session_srpe_sum_7d,session_srpe_sum_7d_log1p,0,0,1.0,PASS
+session_srpe_sum_14d,session_srpe_sum_14d_log1p,0,0,1.0,PASS
+session_srpe_sum_28d,session_srpe_sum_28d_log1p,0,0,1.0,PASS

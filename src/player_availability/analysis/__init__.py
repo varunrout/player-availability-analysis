@@ -28,6 +28,13 @@ from player_availability.analysis.stage_03_feature_distribution_eda import (
     run_stage_03_feature_distribution_eda,
     write_stage_03_outputs,
 )
+from player_availability.analysis.stage_04_feature_redundancy import (
+    Stage04FeatureRedundancyResult,
+    build_stage_04_figures,
+    load_stage_04_from_gcp,
+    run_stage_04_feature_redundancy,
+    write_stage_04_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -50,4 +57,9 @@ __all__ = [
     "load_stage_03_from_gcp",
     "run_stage_03_feature_distribution_eda",
     "write_stage_03_outputs",
+    "Stage04FeatureRedundancyResult",
+    "build_stage_04_figures",
+    "load_stage_04_from_gcp",
+    "run_stage_04_feature_redundancy",
+    "write_stage_04_outputs",
 ]

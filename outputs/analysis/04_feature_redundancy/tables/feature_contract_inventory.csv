@@ -1,0 +1,51 @@
+feature,source_feature,family,representation,timing,contract_status,reason
+daily_load,daily_load,load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+fatigue,fatigue,wellness,raw,same_day,descriptive_only,Same-day wellness/reporting is excluded under DEC-031
+readiness,readiness,wellness,raw,same_day,descriptive_only,Same-day wellness/reporting is excluded under DEC-031
+wellness_metric_count,wellness_metric_count,wellness,raw,same_day,descriptive_only,Same-day wellness/reporting is excluded under DEC-031
+session_count,session_count,session,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_duration_minutes,session_duration_minutes,session,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_srpe,session_srpe,session,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+daily_load_sum_3d,daily_load_sum_3d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+daily_load_sum_7d,daily_load_sum_7d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+daily_load_sum_14d,daily_load_sum_14d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+daily_load_sum_28d,daily_load_sum_28d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_duration_sum_3d,session_duration_sum_3d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_duration_sum_7d,session_duration_sum_7d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_duration_sum_14d,session_duration_sum_14d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_duration_sum_28d,session_duration_sum_28d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_srpe_sum_3d,session_srpe_sum_3d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_srpe_sum_7d,session_srpe_sum_7d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_srpe_sum_14d,session_srpe_sum_14d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+session_srpe_sum_28d,session_srpe_sum_28d,rolling_load,raw,end_of_day,full_candidate,Target-blind candidate retained for structural review
+fatigue_mean_3d,fatigue_mean_3d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+fatigue_mean_7d,fatigue_mean_7d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+fatigue_mean_14d,fatigue_mean_14d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+fatigue_mean_28d,fatigue_mean_28d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+readiness_mean_3d,readiness_mean_3d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+readiness_mean_7d,readiness_mean_7d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+readiness_mean_14d,readiness_mean_14d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+readiness_mean_28d,readiness_mean_28d,rolling_wellness,raw,current_inclusive,requires_lagged_rebuild,Current-inclusive wellness rolling mean is ineligible under DEC-031
+daily_load_baseline_mean_prior,daily_load_baseline_mean_prior,prior_baseline,raw,prior_only,full_candidate,Target-blind candidate retained for structural review
+daily_load_zscore_prior,daily_load_zscore_prior,player_relative,raw,prior_baseline_plus_current,excluded_unstable,Existing z-score has unstable tails under DEC-032
+fatigue_baseline_mean_prior,fatigue_baseline_mean_prior,prior_baseline,raw,prior_only,full_candidate,Target-blind candidate retained for structural review
+fatigue_zscore_prior,fatigue_zscore_prior,player_relative,raw,prior_baseline_plus_current,excluded_unstable,Existing z-score has unstable tails under DEC-032
+readiness_baseline_mean_prior,readiness_baseline_mean_prior,prior_baseline,raw,prior_only,full_candidate,Target-blind candidate retained for structural review
+readiness_zscore_prior,readiness_zscore_prior,player_relative,raw,prior_baseline_plus_current,excluded_unstable,Existing z-score has unstable tails under DEC-032
+wellness_report_present,wellness_report_present,reporting_state,binary_indicator,same_day,descriptive_only,Same-day reporting indicator is excluded under DEC-031
+session_recorded,session_count,recording_state,binary_indicator,end_of_day,full_candidate,Separates recording state from exposure magnitude under DEC-032
+daily_load_log1p,daily_load,load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_duration_minutes_log1p,session_duration_minutes,session,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_srpe_log1p,session_srpe,session,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+daily_load_sum_3d_log1p,daily_load_sum_3d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+daily_load_sum_7d_log1p,daily_load_sum_7d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+daily_load_sum_14d_log1p,daily_load_sum_14d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+daily_load_sum_28d_log1p,daily_load_sum_28d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_duration_sum_3d_log1p,session_duration_sum_3d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_duration_sum_7d_log1p,session_duration_sum_7d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_duration_sum_14d_log1p,session_duration_sum_14d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_duration_sum_28d_log1p,session_duration_sum_28d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_srpe_sum_3d_log1p,session_srpe_sum_3d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_srpe_sum_7d_log1p,session_srpe_sum_7d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_srpe_sum_14d_log1p,session_srpe_sum_14d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
+session_srpe_sum_28d_log1p,session_srpe_sum_28d,rolling_load,log1p,end_of_day,full_candidate,Skew-resistant magnitude candidate accepted under DEC-032
