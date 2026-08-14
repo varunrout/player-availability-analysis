@@ -190,104 +190,104 @@ An experiment can be:
 
 No algorithm advances merely because it has a higher AUROC.
 
-## 5. Analysis sequence
+## 5. Stage-gated pre-model analysis sequence
 
-### Phase A: Cohort and label exploratory analysis
+The former bundled "Phase A" report and "Phase B" split are withdrawn. Pre-model analysis now proceeds through the following explicit stages. Every stage follows the same gate: approve the specification, implement the script and notebook interfaces, run the script, inspect outputs, discuss findings, then approve or revise before continuing.
 
-This is mandatory before fitting any model.
+No baseline model may be fitted before Stage 8 receives a `READY` decision.
 
-#### A1. Cohort integrity
+### Stage 0: Analysis inventory and data audit
 
-Questions:
+- Verify analytical tables, grains, keys, schemas, row counts and date coverage.
+- Reconcile raw, bronze, silver and gold counts relevant to analysis.
+- Audit duplicate keys, player observation lengths, calendar continuity and unsupported fields.
+- Produce dataset inventory, cohort-coverage figures, player observation-length figures and a data-quality exceptions table.
 
-- Are there exactly one player-day row per player and prediction date?
-- What are player observation lengths and their overlap by team/season?
-- Does the 28-day burn-in disproportionately remove a team, player or time period?
-- How many rows, episodes and positives remain for each horizon?
+Gate: confirm that the analytical dataset is trustworthy enough for EDA.
 
-Outputs:
+### Stage 1: Injury episode and outcome EDA
 
-- Cohort flow table: all player-days -> complete-label days -> inactive-episode days -> burn-in eligible days.
-- Player-day and episode counts by team, year and player.
-- Missingness and feature-coverage table.
+- Analyse raw reports versus episodes, repeated reporting, episode duration, location and supported severity fields.
+- Compare the pre-specified 1-, 3- and 7-day episode-gap rules.
+- Measure active-episode days, right censoring, 3/7/14-day label prevalence and horizon overlap.
+- Quantify how many distinct episodes sit behind positive player-days and how events are concentrated by player, team and calendar period.
 
-Red flags:
+Gate: approve the primary episode rule and confirm that outcome labels are credible enough to continue.
 
-- A single player or a few dates dominate positive labels.
-- The final cohort has very few events after burn-in.
-- Feature coverage differs dramatically between future test and training periods.
+### Stage 2: Missingness and reporting-process EDA
 
-#### A2. Outcome analysis
+- Measure feature coverage by player, team and calendar period.
+- Analyse missing-run lengths, co-missingness and wellness-report frequency.
+- Compare complete and incomplete reporting periods, including context around episode starts.
+- Treat missingness as a possible process signal; do not automatically interpret it as physiology.
 
-Questions:
+Gate: approve missing-value handling, reporting-indicator eligibility and any cohort exclusions.
 
-- How many raw reports map to each primary episode?
-- What is the distribution of episode duration and episode gap?
-- What is label prevalence for 3/7/14 days?
-- How concentrated are episodes by player, team and calendar month?
+### Stage 3: Feature distribution and temporal EDA
 
-Outputs:
+- Profile distributions, zeros, extreme values and plausible ranges for load, wellness and session variables.
+- Separate within-player from between-player variation and compare supported team/calendar strata.
+- Inspect rolling 3/7/14/28-day features, prior-only baselines and z-score stability.
+- Maintain an outlier register; statistical extremeness alone never justifies correction or deletion.
 
-- Raw-report-to-episode compression table.
-- Episode count and duration distribution.
-- Label-prevalence table by horizon.
-- Event timeline and concentration summary.
+Gate: approve valid ranges, transformations and reliable feature families.
 
-Interpretation discipline:
+### Stage 4: Feature redundancy and structural relationships
 
-Describe these as self-reported injury-related events. Do not infer incidence of medically diagnosed injuries.
+- Measure correlation and near-deterministic relationships among current, rolling and player-relative features.
+- Audit coupling among daily load, duration and sRPE and among wellness/completeness variables.
+- Define a full candidate contract and a smaller operational feature-family contract without using target performance.
 
-#### A3. Feature analysis
+Gate: approve the predictor contracts to carry into prospective testing.
 
-Questions:
+### Stage 5: Descriptive outcome-context analysis
 
-- Are predictor ranges plausible and stable over time?
-- Which wellness fields are missing together?
-- How correlated are daily load, session sRPE and rolling summaries?
-- Are player-relative z-scores available only after enough past observations?
-- Is reporting completeness associated with team or season?
+- Describe pre-episode feature trajectories and compare them with suitable non-event reference periods.
+- Examine player-relative, player-stratified and team-stratified patterns.
+- Determine whether apparent patterns are dominated by a few players or reporting behaviour.
+- Make no predictive, causal or medical claim from these retrospective descriptions.
 
-Outputs:
+Gate: decide which descriptive patterns merit prospective testing.
 
-- Distribution and missingness table per predictor.
-- Correlation matrix for candidate numeric predictors.
-- Feature coverage by split.
-- Outlier register: values investigated, retained, corrected or excluded.
+### Stage 6: Cohort and outcome sensitivity analysis
 
-No action is taken solely because a value is statistically extreme; source validity must be checked first.
+- Compare episode-gap, prediction-horizon, burn-in and missingness-aware cohort choices.
+- Quantify changes in sample size, positive counts, player/team representation and event concentration.
+- Freeze primary and secondary analysis specifications only after reviewing these sensitivities.
 
-### Phase B: Split construction and leakage audit
+Gate: approve the primary cohort, horizon, episode definition and required later sensitivities.
 
-#### B1. Primary chronological split
+### Stage 7: Final pre-model protocol and leakage audit
 
-Create a date-based development design before looking at model performance:
+- Freeze cohort eligibility, feature history, predictor contract, preprocessing, metrics, uncertainty and alert-capacity rules.
+- Construct chronological train/validation/test boundaries only after the preceding EDA is approved.
+- Audit boundary embargoes, future-append invariance, prior-only normalisation and train-only preprocessing.
+- Define rolling-origin development and leave-one-player-out stress testing without inspecting final test performance.
 
-- Training: earliest approximately 60% of eligible calendar time.
-- Validation: next approximately 20%.
-- Final test: most recent approximately 20%.
+Gate: approve the complete prospective evaluation protocol and lock final-test access.
 
-Exact boundaries must be chosen from observed coverage, recorded once and not moved to improve a result. Every player-day belongs to exactly one chronological partition based on prediction date.
+### Stage 8: Pre-model readiness report
 
-Use training for fitting, validation for feature-set/model/calibration choices, and test once for final evaluation of a frozen candidate.
+- Consolidate data strengths, limitations, outcome validity, missingness risks, feature behaviour, cohort decisions and leakage controls.
+- Record the final hypotheses and modelling protocol.
+- End with one explicit decision: `READY`, `REVISE` or `DO NOT MODEL`.
 
-#### B2. Rolling-origin validation
+Only `READY` permits baseline modelling.
 
-Within the development period, create expanding windows where each train period precedes its validation block. Use this to establish stability rather than select the one most favourable period.
+### Analysis implementation and output contract
 
-#### B3. Unseen-player validation
+- Shared reusable analysis logic belongs under `src/player_availability/analysis/`.
+- Reproducible command-line runners belong under `jobs/analysis/` and are the canonical way to generate retained outputs.
+- Retained outputs belong under `outputs/analysis/<stage>/`, using nested `figures/`, `tables/`, `reports/` and `metadata/` folders when applicable.
+- A matching notebook belongs under `notebooks/analysis/` for quick inspection and explanation of each stage.
+- Scripts and notebooks import the same shared analysis functions; analytical logic is not independently reimplemented in two places.
+- Notebooks render tables and charts inline but do not write files to `outputs/` or another persistent output location.
+- Committed notebooks are cleared of cell outputs and execution counts.
+- Script-generated outputs are reviewed with the project owner before the next stage begins.
 
-Run leave-one-player-out after a stable temporal baseline exists. Preserve chronology inside each training fold. This is a generalisation stress test, not the primary tuning loop.
+### Post-gate baseline modelling
 
-#### B4. Leakage test checklist
-
-- Historical feature values are unchanged when future rows are appended.
-- Baseline normalisation has no current/future observation contribution.
-- Train-fitted preprocessors never consume validation/test rows.
-- Predictor allow-list excludes labels, outcomes, IDs and post-event fields.
-- Split assignment is date based and mutually exclusive.
-- Calibration is trained on validation, not test.
-
-### Phase C: Baseline modelling
+### Baseline modelling
 
 #### C1. EXP-002: Naive operational baselines
 
@@ -309,7 +309,7 @@ Decision gate:
 
 Purpose: interpretable fixed-horizon benchmark.
 
-Primary first target: 7-day event risk, subject to Phase A prevalence and practitioner utility review. Run 3 and 14 days as pre-specified comparisons rather than opportunistically selecting a winner.
+Primary first target: 7-day event risk, subject to Stage 1 outcome EDA and Stage 6 sensitivity approval. Run 3 and 14 days as pre-specified comparisons rather than opportunistically selecting a winner.
 
 Feature sets:
 
@@ -336,7 +336,7 @@ Decision gate:
 
 - Promote F3 only if it beats F2 on pre-specified validation criteria without worse calibration or an unacceptable alert burden.
 
-### Phase D: Calibration and operational utility
+### Calibration and operational utility
 
 #### D1. EXP-009: Calibration comparison
 
@@ -366,7 +366,7 @@ Translate probability estimates into review workflow simulations:
 
 The selected threshold is a review-prioritisation policy. It is never a medical threshold.
 
-### Phase E: Robustness and ablations
+### Robustness and ablations
 
 #### E1. EXP-004: Personalisation ablation
 
@@ -384,9 +384,9 @@ Compare model performance with and without wellness-completeness variables. If p
 
 Report average, spread and worst-case results. If performance collapses, the dashboard claim must be restricted to within-observed-player temporal stratification.
 
-### Phase F: Model ladder advancement
+### Model ladder advancement
 
-Only after Phases A-E are complete:
+Only after the baseline, calibration, operational-utility and required robustness analyses are complete:
 
 - EXP-006 discrete-time hazard model;
 - EXP-007 Cox proportional-hazards baseline;
@@ -433,7 +433,7 @@ A candidate is not accepted as champion if:
 
 ## 7. Required artefacts
 
-For each completed phase store:
+For each completed stage or modelling experiment, the script stores retained artifacts under `outputs/analysis/<stage>/` or the corresponding later experiment folder:
 
 - versioned cohort summary;
 - feature dictionary and predictor allow-list;
@@ -444,16 +444,16 @@ For each completed phase store:
 - model artefact where applicable;
 - short decision note with Promote/Revise/Reject outcome.
 
-All public-facing figures and reports must name the outcome as a self-reported injury-related event and disclose the main data limitations.
+Notebook-rendered outputs are exploratory views and are not stored. All public-facing figures and reports must name the outcome as a self-reported injury-related event and disclose the main data limitations.
 
 ## 8. Immediate execution checklist
 
 Before the first model fit:
 
-1. Generate the Phase A cohort, outcome and feature-quality report.
-2. Freeze and commit exact primary chronological split boundaries.
-3. Implement predictor allow-list validation and split-leakage tests.
-4. Run EXP-002 naive baseline for all three horizons.
-5. Review baseline report before fitting logistic regression.
+1. Complete and approve Stages 0 through 6 sequentially.
+2. Complete Stage 7 protocol freezing and leakage validation.
+3. Approve the Stage 8 pre-model readiness report as `READY`.
+4. Run EXP-002 naive baseline under the approved protocol.
+5. Review the baseline report before fitting logistic regression.
 
-The next implementation action is Phase A reporting and split construction, not model tuning.
+The next implementation action is the Stage 0 analysis inventory and data-audit specification. No analysis script is built until that specification is approved.
