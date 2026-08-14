@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 26
-Last Updated UTC: 2026-08-14T19:57:40Z
+State Version: 27
+Last Updated UTC: 2026-08-14T20:27:02Z
 Coordination Session ID: PAA-CTRL-20260814-01
 Git Branch: main
-Git HEAD: 9d069359ff1d4e180ddf920220243a64ba63748e (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 2
-Current Phase Status: Stage 2 missingness and reporting-process EDA is implemented and passes its automated gate. Results and the resulting missingness policy await project-owner review; Stage 3 is not authorised.
+Git HEAD: 781f2c6 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 3
+Current Phase Status: Stage 2 results and missingness policy are approved under `DEC-031`. Stage 3 feature-distribution and temporal EDA is at specification review; implementation is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 2 evidence and decide the missingness/reporting-process policy. No Stage 3 implementation may begin before Stage 2 results approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to agree the Stage 3 feature-distribution and temporal EDA specification. No Stage 3 implementation may begin before specification approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -52,6 +52,8 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - All eight training-load metrics are populated on every calendar row, but derived zeros are common; absence of a session record remains uninterpretable as either confirmed rest or missing exposure.
 - Wellness reporting rises from a mean 62.9% over days -28 to -1 to 97.3% on injury-onset days, demonstrating outcome-entangled reporting-process risk. This is descriptive, not causal or predictive evidence.
 - Committed Stage 2 implementation and retained outputs at `9d06935`. Full quality gate passes: lockfile, Ruff, strict mypy, pytest (`61 passed`, one expected ZIP duplicate-name warning), and notebook execution.
+- Project owner approved the Stage 2 results and recommended missingness policy on 2026-08-14.
+- Accepted `DEC-031`: preserve null/zero distinctions, prohibit blanket imputation, exclude same-day wellness/reporting fields from the primary predictor contract, permit lagged reporting candidates under later audit, retain unknown session-absence semantics and defer player exclusions to Stage 6.
 
 ## Current Repository State
 
@@ -112,14 +114,15 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-028` resets pre-model analysis to Stage 0 while preserving trusted data engineering and history.
 - `DEC-029` defines the shared script/notebook implementation and output-storage contract.
 - `DEC-030` defines player-date onset as the effective binary outcome event and constrains sensitivity, validation and claims.
+- `DEC-031` defines missing-value semantics and a conservative lagged-only wellness/reporting policy for the primary predictor contract.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise Stage 2 results and decide the missingness/reporting-indicator policy, including same-day predictor eligibility and any cohort exclusions.
-- Later stages must approve the primary horizon, cohort, missingness policy, predictor contract and chronological validation protocol before modelling.
+- Approve or revise the detailed Stage 3 feature-distribution and temporal EDA specification.
+- Later stages must approve valid ranges, transformations, reliable feature families, the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
 
@@ -131,18 +134,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 3 is process-blocked until the project owner approves Stage 2 results and the associated methodological decision is recorded.
+No technical blocker. Stage 3 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 2 result review is open. No Stage 3 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 3 specification review is open. No Stage 3 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Explain the Stage 2 results, especially all-or-none wellness submission, player/team/calendar variation and the injury-onset reporting spike.
-2. Obtain project-owner approval or revision of the Stage 2 results and missingness policy.
-3. After approval, append the material decision as `DEC-031` and present the Stage 3 specification for review.
-4. Do not implement Stage 3 until its specification is separately approved.
+1. Present the exact Stage 3 distribution, range, outlier, within/between-player and temporal-stability analyses.
+2. Obtain project-owner approval or revision of the Stage 3 specification.
+3. After approval only, implement the shared Stage 3 module, canonical script, output-free notebook, retained artifacts and focused tests.
+4. Run Stage 3, inspect results together and obtain results approval before Stage 4.
 
 ## Validation / Quality Gate Status
 
@@ -169,7 +172,8 @@ Stage 2 result review is open. No Stage 3 code is in progress, and no other cont
 | Stage 2 implementation | PASS | shared module, script, notebook, outputs and tests committed at `9d06935` |
 | Stage 2 automated integrity | PASS | zero failures; wellness flags and eight gold fields reproduce exactly |
 | Stage 2 notebook execution | PASS | executed against GCS; committed notebook remains output-free |
-| Stage 2 results review | PENDING OWNER APPROVAL | results discussion and missingness-policy decision required |
+| Stage 2 results review | PASS | project-owner approval received 2026-08-14; policy accepted under `DEC-031` |
+| Stage 3 specification | PENDING OWNER APPROVAL | no Stage 3 implementation started |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -177,10 +181,10 @@ Stage 2 result review is open. No Stage 3 code is in progress, and no other cont
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v26, 2026-08-14T19:57:40Z | v26, 2026-08-14T19:57:40Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-030 | DEC-001 to DEC-030 |
+| `PROJECT_STATE.md` | v27, 2026-08-14T20:27:02Z | v27, 2026-08-14T20:27:02Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-031 | DEC-001 to DEC-031 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `9d06935`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `781f2c6`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

@@ -856,6 +856,34 @@ Stage 2 missingness and reporting-process EDA may proceed. Reports and later mod
 
 ---
 
+## DEC-031
+
+**Decision ID:** DEC-031
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+Stage 2 found wellness reports on 17,008 of 36,550 player-days (46.5%). Reporting is almost all-or-none, with 16,931 complete seven-metric reports, 77 partial reports and 19,542 no-report days. Coverage varies from 3.1% to 88.4% by player, differs materially by team and calendar period, and includes a 607-day no-report run. Wellness reporting reaches 97.3% on injury-onset days versus 62.9% averaged over the preceding 28 days. Training-load calendar fields are fully populated but contain many derived zeros, while absence of a session record cannot distinguish rest from unrecorded exposure.
+
+**Decision:**
+Preserve source nulls and observed zeros as distinct states; do not convert missing wellness values to zero or apply blanket whole-dataset imputation. Exclude same-day wellness values, wellness-report presence and wellness completeness fields from the primary fixed-horizon predictor contract because the sources lack reliable intraday ordering and reporting is strongly associated with onset-day recording. Permit prior-day and longer-lag wellness values and reporting indicators as candidate features, subject to later leakage audit, train-only preprocessing and sensitivity analysis. Treat no recorded session as an unknown recording/exposure state, never as confirmed rest or automatically missing exposure. Do not exclude low-reporting players at this stage; defer any history, coverage or player exclusions to Stage 6 cohort sensitivity analysis.
+
+**Rationale:**
+The scale, duration and player/team/calendar structure of wellness absence are incompatible with a simple random-missingness assumption. The onset-day reporting spike shows that reporting behavior is entangled with the outcome-recording process. A conservative lagged-only primary contract protects prospective interpretation while retaining reporting history as a potentially useful operational signal. Deferring exclusions prevents Stage 2 from selecting a convenient cohort without quantifying the effect on sample size, event support and representation.
+
+**Alternatives Considered:**
+Zero-fill missing wellness, rejected because zero is an observed source value and has a different meaning. Global mean or player-mean imputation before splitting, rejected because it can erase process information and leak future distributional information. Include same-day wellness and completeness in the primary contract, rejected because intraday ordering is unavailable and reporting is outcome-entangled. Exclude low-coverage players immediately, deferred because the effect on event support and generalisability belongs in Stage 6. Interpret absent sessions as rest, rejected because the source semantics do not support that claim.
+
+**Consequences:**
+Stage 3 may analyse current-day fields descriptively but must distinguish them from primary-model eligibility. Later predictor contracts must use lagged wellness/reporting features for the primary analysis, fit any model-specific imputation on training data only, and retain missingness sensitivity checks. Stage 6 must quantify candidate coverage/history exclusions. Product language must not interpret missing wellness or absent sessions as physiology, non-compliance, rest or medical status.
+
+**Affected Components:** missing-value handling, feature eligibility, leakage controls, cohort sensitivity, preprocessing, interpretation, product language
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
