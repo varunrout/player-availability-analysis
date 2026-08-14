@@ -1,0 +1,15 @@
+wellness_metric_count,observed_metric_pattern,player_days,player_count,player_day_share
+0,"",19542,50,0.5346648426812586
+7,fatigue|mood|readiness|sleep_duration|sleep_quality|soreness|stress,16931,50,0.4632284541723666
+6,fatigue|mood|readiness|sleep_quality|soreness|stress,20,14,0.0005471956224350205
+6,mood|readiness|sleep_duration|sleep_quality|soreness|stress,13,11,0.0003556771545827633
+6,fatigue|mood|sleep_duration|sleep_quality|soreness|stress,9,8,0.00024623803009575924
+6,fatigue|mood|readiness|sleep_duration|sleep_quality|soreness,8,8,0.0002188782489740082
+6,fatigue|readiness|sleep_duration|sleep_quality|soreness|stress,6,5,0.00016415868673050614
+6,fatigue|mood|readiness|sleep_duration|sleep_quality|stress,6,6,0.00016415868673050614
+6,fatigue|mood|readiness|sleep_duration|soreness|stress,6,5,0.00016415868673050614
+5,fatigue|mood|readiness|soreness|stress,5,1,0.00013679890560875513
+2,mood|stress,1,1,0.000027359781121751025
+1,readiness,1,1,0.000027359781121751025
+1,sleep_duration,1,1,0.000027359781121751025
+5,fatigue|readiness|sleep_duration|sleep_quality|soreness,1,1,0.000027359781121751025

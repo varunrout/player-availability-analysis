@@ -1,0 +1,8 @@
+check_id,scope,status,message
+wellness_presence_identity,silver wellness,PASS,0 presence flags disagree with metric count
+gold_completeness_reproduction,gold features,PASS,0 fields differ from silver-derived values
+player_reporting_variation,players,REVIEW,Player wellness coverage ranges from 3.1% to 88.4%
+team_reporting_variation,teams,REVIEW,"Team wellness coverage rates are [0.3556, 0.5588]"
+longest_no_report_run,wellness,REVIEW,Longest consecutive no-report run is 607 days
+event_centered_reporting,onset context,REVIEW,Mean pre-onset wellness report rate is 62.9%; onset-day rate is 97.3%; this is descriptive process evidence only
+session_absence_semantics,training sessions,REVIEW,No recorded session is not interpreted as confirmed rest or missing exposure

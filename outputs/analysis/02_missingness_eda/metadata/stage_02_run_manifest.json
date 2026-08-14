@@ -1,0 +1,13 @@
+{
+  "failure_count": 0,
+  "full_wellness_report_days": 16931,
+  "generated_at_utc": "2026-08-14T19:42:07.021179+00:00",
+  "partial_wellness_report_days": 77,
+  "player_day_count": 36550,
+  "recorded_session_days": 14197,
+  "review_count": 5,
+  "stage": "02_missingness_eda",
+  "status": "PASS",
+  "warning_count": 0,
+  "wellness_report_days": 17008
+}

@@ -1,0 +1,9 @@
+field,mismatch_count,status
+wellness_report_present,0,PASS
+wellness_metric_count,0,PASS
+fatigue,0,PASS
+readiness,0,PASS
+daily_load,0,PASS
+session_count,0,PASS
+session_duration_minutes,0,PASS
+session_srpe,0,PASS

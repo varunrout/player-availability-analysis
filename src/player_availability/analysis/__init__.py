@@ -14,6 +14,13 @@ from player_availability.analysis.stage_01_outcome_eda import (
     run_stage_01_outcome_eda,
     write_stage_01_outputs,
 )
+from player_availability.analysis.stage_02_missingness_eda import (
+    Stage02MissingnessResult,
+    build_stage_02_figures,
+    load_stage_02_from_gcp,
+    run_stage_02_missingness_eda,
+    write_stage_02_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -26,4 +33,9 @@ __all__ = [
     "load_stage_01_from_gcp",
     "run_stage_01_outcome_eda",
     "write_stage_01_outputs",
+    "Stage02MissingnessResult",
+    "build_stage_02_figures",
+    "load_stage_02_from_gcp",
+    "run_stage_02_missingness_eda",
+    "write_stage_02_outputs",
 ]
