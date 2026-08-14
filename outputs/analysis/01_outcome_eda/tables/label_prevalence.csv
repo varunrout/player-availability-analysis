@@ -1,0 +1,4 @@
+horizon_days,total_player_days,complete_player_days,right_censored_player_days,eligible_player_days,active_ineligible_complete_days,complete_positive_player_days,eligible_positive_player_days,complete_prevalence,eligible_prevalence,represented_episode_ids,represented_onset_days
+3,36550,36400,150,36192,208,213,190,0.005851648351648352,0.005249778956675508,140,68
+7,36550,36200,350,35992,208,448,370,0.012375690607734807,0.010280062236052457,145,71
+14,36550,35850,700,35642,208,755,601,0.02105997210599721,0.01686212894899276,145,71

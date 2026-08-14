@@ -1,0 +1,15 @@
+field,mismatch_count,status
+__ordered_player_day_keys__,0,PASS
+team_id,0,PASS
+prediction_cutoff,0,PASS
+observation_end,0,PASS
+active_injury_episode,0,PASS
+label_complete_3d,0,PASS
+injury_next_3d,0,PASS
+eligible_new_onset_3d,0,PASS
+label_complete_7d,0,PASS
+injury_next_7d,0,PASS
+eligible_new_onset_7d,0,PASS
+label_complete_14d,0,PASS
+injury_next_14d,0,PASS
+eligible_new_onset_14d,0,PASS

@@ -1,0 +1,4 @@
+gap_days,source_report_count,parsed_component_count,unique_component_count,exact_duplicate_components_removed,episode_count,onset_day_count,onset_days_with_multiple_locations,multi_component_episode_count,single_day_episode_count,median_report_span_days,maximum_report_span_days
+1,162,306,299,7,232,108,56,35,197,1.0,8
+3,162,306,299,7,147,73,33,55,92,1.0,24
+7,162,306,299,7,101,55,18,48,53,1.0,103

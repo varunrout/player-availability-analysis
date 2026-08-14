@@ -1,0 +1,13 @@
+{
+  "failure_count": 0,
+  "generated_at_utc": "2026-08-14T15:49:32.993676+00:00",
+  "parsed_component_count": 306,
+  "primary_episode_count": 147,
+  "primary_onset_day_count": 73,
+  "review_count": 4,
+  "source_report_count": 162,
+  "stage": "01_outcome_eda",
+  "status": "PASS",
+  "unique_component_count": 299,
+  "warning_count": 0
+}
