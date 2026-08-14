@@ -748,7 +748,7 @@ The gold feature product has 36,550 rows and 51 columns. Automated future-append
 
 **Decision ID:** DEC-027
 **Date:** 2026-08-13
-**Status:** ACCEPTED
+**Status:** SUPERSEDED
 
 **Context:**
 The subjective v1 player-day product is ready for model development, but fixed-horizon labels overlap in time and a random split would leak future outcome context. A single audit-ready partition and an explicit predictor contract are needed before any baseline is fitted.
@@ -768,6 +768,62 @@ The split-assigned gold product contains 20,505 primary-eligible train rows, 6,9
 **Affected Components:** modelling datasets, leakage controls, experiment tracking, baseline evaluation, calibration
 
 **Supersedes:** none
+**Superseded By:** DEC-028
+
+---
+
+## DEC-028
+
+**Decision ID:** DEC-028
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+The initial Phase A report combined selected cohort, outcome and feature checks, and Phase B froze a chronological split before the project owner had reviewed and approved a complete stepwise pre-model EDA programme. The underlying data engineering remains valid, but the active analysis workflow and outputs no longer match the required review process.
+
+**Decision:**
+Withdraw the former Phase A and Phase B analysis implementations and outputs from the active local repository, Google Drive and GCS analytical locations. Preserve the trusted data engineering through the unsplit `player_day_features.parquet`, preserve Git history, and restart pre-model analysis at Stage 0 under explicit specification, implementation, results-discussion and approval gates. Supersede the split decision in `DEC-027`; no chronological split is currently frozen for modelling.
+
+**Rationale:**
+Starting from a reviewed analytical sequence makes the reasoning, evidence and owner approvals visible before modelling choices are locked. Removing active outputs prevents obsolete reports or split assignments from being mistaken for approved evidence, while preserving append-only decision and Git history keeps the project honest and auditable.
+
+**Alternatives Considered:**
+Keep the old report and split as approved work, rejected because their bundled workflow bypassed the required stage-by-stage review. Rewrite Git or erase historical decisions, rejected because that would destroy provenance. Delete the data-engineering layers, rejected because no evidence invalidates their source-grounded transformations.
+
+**Consequences:**
+The active project has no retained EDA report, analysis figures, split manifest or split-assigned gold dataset. Pre-model analysis restarts at Stage 0. A future split must be approved after Stages 0 through 6 and recorded under a new decision if it differs from the superseded protocol.
+
+**Affected Components:** analysis workflow, reports, charts, modelling datasets, GCS metadata, Drive artifacts, project state
+
+**Supersedes:** DEC-027
+**Superseded By:** none
+
+---
+
+## DEC-029
+
+**Decision ID:** DEC-029
+**Date:** 2026-08-14
+**Status:** ACCEPTED
+
+**Context:**
+Pre-model analysis needs both reproducible retained artifacts and a fast, readable interactive form for review. Independently implementing the same calculations in scripts and notebooks would create drift, while allowing notebooks to write outputs would create ambiguous artifact provenance.
+
+**Decision:**
+Implement each approved analysis stage once as shared reusable functions under `src/player_availability/analysis/`. Provide a command-line runner under `jobs/analysis/` that writes retained artifacts to `outputs/analysis/<stage>/`, with nested figures, tables, reports and metadata folders as applicable. Provide a matching notebook under `notebooks/analysis/` that imports the same shared functions, renders results inline and does not persist generated outputs. Commit notebooks with cell outputs and execution counts cleared.
+
+**Rationale:**
+The script provides deterministic, testable and automatable output generation. The notebook improves understanding and discussion. Sharing implementation keeps figures and statistics consistent across both interfaces, and making scripts the only output writers gives every retained artifact a clear provenance path.
+
+**Alternatives Considered:**
+Script-only analysis, rejected because it weakens interactive review. Notebook-only analysis, rejected because it is harder to automate and audit. Duplicate script and notebook calculations, rejected because they can diverge. Persist notebook-generated outputs, rejected because it creates two competing output-generation paths.
+
+**Consequences:**
+Every analysis stage requires shared functions, a script runner, a cleared notebook and focused tests. Only script runs populate `outputs/analysis/`. No analysis implementation begins until the project owner approves that stage's specification, and no subsequent stage begins until the current results are discussed and approved.
+
+**Affected Components:** analysis package, jobs, notebooks, output filesystem, testing, review workflow
+
+**Supersedes:** none
 **Superseded By:** none
 
 ---
@@ -776,7 +832,7 @@ The split-assigned gold product contains 20,505 primary-eligible train rows, 6,9
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-No open project decision currently blocks subjective bronze ingestion.
+No open project decision blocks Stage 0 specification review. The primary horizon, final cohort, predictor contract and chronological split remain deliberately unfrozen until the relevant pre-model analysis gates.
 
 ### Resolved
 
