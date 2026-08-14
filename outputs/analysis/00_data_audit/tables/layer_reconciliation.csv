@@ -1,0 +1,38 @@
+check_id,description,observed,expected,status
+bq_error_count,Latest SoccerMon ingestion run has no errors,0,0,PASS
+bq_records_written,BigQuery records_written reconciles to bronze outputs,564940,564940,PASS
+bq_run_status,Latest SoccerMon ingestion run succeeded,SUCCESS,SUCCESS,PASS
+bq_source_file_count,BigQuery provenance has one row per source member,19,19,PASS
+gold_key_identity,Gold labels and features have identical ordered keys,True,True,PASS
+gold_label_identity,Gold feature product preserves all label columns exactly,True,True,PASS
+quality_bronze_daily_metrics,Bronze daily_metrics row count matches its quality report,548250,548250,PASS
+quality_bronze_game_performance_reports,Bronze game_performance_reports row count matches its quality report,248,248,PASS
+quality_bronze_illness_reports,Bronze illness_reports row count matches its quality report,15,15,PASS
+quality_bronze_injury_reports,Bronze injury_reports row count matches its quality report,162,162,PASS
+quality_bronze_training_sessions,Bronze training_sessions row count matches its quality report,16265,16265,PASS
+quality_injury_episodes,Injury episode count matches its quality report,147,147,PASS
+quality_player_day_features,Gold feature row count matches its quality report,36550,36550,PASS
+quality_player_day_labels,Gold label row count matches its quality report,36550,36550,PASS
+quality_silver_game_performance_reports,Silver game_performance_reports row count matches its quality report,248,248,PASS
+quality_silver_illness_reports,Silver illness_reports row count matches its quality report,15,15,PASS
+quality_silver_injury_reports,Silver injury_reports row count matches its quality report,162,162,PASS
+quality_silver_player_registry,Silver player_registry row count matches its quality report,50,50,PASS
+quality_silver_training_load_daily,Silver training_load_daily row count matches its quality report,36550,36550,PASS
+quality_silver_training_sessions,Silver training_sessions row count matches its quality report,16265,16265,PASS
+quality_silver_wellness_daily,Silver wellness_daily row count matches its quality report,36550,36550,PASS
+raw_object_count,Raw staging has 19 source members plus one manifest,20,20,PASS
+registry_bronze.daily_metrics,bronze.daily_metrics players are present in the silver registry,0,0,PASS
+registry_bronze.game_performance_reports,bronze.game_performance_reports players are present in the silver registry,0,0,PASS
+registry_bronze.illness_reports,bronze.illness_reports players are present in the silver registry,0,0,PASS
+registry_bronze.injury_reports,bronze.injury_reports players are present in the silver registry,0,0,PASS
+registry_bronze.training_sessions,bronze.training_sessions players are present in the silver registry,0,0,PASS
+registry_gold.player_day_features,gold.player_day_features players are present in the silver registry,0,0,PASS
+registry_gold.player_day_labels,gold.player_day_labels players are present in the silver registry,0,0,PASS
+registry_silver.game_performance_reports,silver.game_performance_reports players are present in the silver registry,0,0,PASS
+registry_silver.illness_reports,silver.illness_reports players are present in the silver registry,0,0,PASS
+registry_silver.injury_episodes,silver.injury_episodes players are present in the silver registry,0,0,PASS
+registry_silver.injury_reports,silver.injury_reports players are present in the silver registry,0,0,PASS
+registry_silver.player_registry,silver.player_registry players are present in the silver registry,0,0,PASS
+registry_silver.training_load_daily,silver.training_load_daily players are present in the silver registry,0,0,PASS
+registry_silver.training_sessions,silver.training_sessions players are present in the silver registry,0,0,PASS
+registry_silver.wellness_daily,silver.wellness_daily players are present in the silver registry,0,0,PASS

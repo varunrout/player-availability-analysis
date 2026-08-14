@@ -1,0 +1,16 @@
+layer,relation,primary_key,null_key_rows,duplicate_key_groups,status
+bronze,daily_metrics,"player_id, observation_date, metric_name",0,0,PASS
+bronze,game_performance_reports,"source_file, source_row_number",0,0,PASS
+bronze,illness_reports,"source_file, source_row_number",0,0,PASS
+bronze,injury_reports,"source_file, source_row_number",0,0,PASS
+bronze,training_sessions,"player_id, source_file, source_record_index",0,0,PASS
+gold,player_day_features,"player_id, prediction_date",0,0,PASS
+gold,player_day_labels,"player_id, prediction_date",0,0,PASS
+silver,game_performance_reports,event_id,0,0,PASS
+silver,illness_reports,event_id,0,0,PASS
+silver,injury_episodes,episode_id,0,0,PASS
+silver,injury_reports,event_id,0,0,PASS
+silver,player_registry,player_id,0,0,PASS
+silver,training_load_daily,"player_id, report_date",0,0,PASS
+silver,training_sessions,session_id,0,0,PASS
+silver,wellness_daily,"player_id, report_date",0,0,PASS
