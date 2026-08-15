@@ -1026,11 +1026,39 @@ Stage 7 may inspect only cohort, predictor coverage, partition support and leaka
 
 ---
 
+## DEC-037
+
+**Decision ID:** DEC-037
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The Stage 7 prospective protocol and leakage audit completed with zero failures, one warning and three review findings. All prediction-time, embargo, future-append, preprocessing-scope and final-test-lock checks passed. Validation and test each contain five represented onsets; one late rolling-origin window contains no positive player-days; 38 of 50 held-out players contain no positive development days; and the robust fatigue feature is available on only 8.4% of primary-cohort days.
+
+**Decision:**
+Accept the Stage 7 results interpretation as `PASS WITH LIMITATIONS` and authorise Stage 8 specification review. Preserve the frozen chronological partitions, embargoes, predictor/prohibition contract, final-test lock and support-aware evaluation rules from `DEC-036`. Treat the zero-positive rolling window as a temporal stress window rather than a discrimination or calibration fold. Treat leave-one-player-out results as support-aware stress evidence rather than 50 independently estimable performance folds. Keep F3 player-relative features incremental and secondary, with robust-fatigue availability disclosed explicitly. Do not interpret sparse validation/test support as evidence against all modelling, but require Stage 8 to decide whether a narrow, exploratory baseline programme is defensible and to constrain claims accordingly.
+
+**Rationale:**
+The protocol is internally leak-safe and reproducible, so the identified limitations concern inferential support rather than a correctable integrity failure. Rejecting all modelling would discard the value of a carefully bounded baseline experiment, while ignoring the limitations would produce unjustified precision and generalisation claims. A final readiness gate can distinguish a narrow portfolio-grade experiment from operational or medical validation.
+
+**Alternatives Considered:**
+Reject Stage 7 and redesign the split to manufacture more balanced event counts, rejected because changing frozen calendar boundaries after support inspection would introduce outcome-driven selection. Treat every rolling and player holdout as a conventional estimable fold, rejected because many lack positive support. Promote F3 to the primary feature set despite sparse robust-fatigue coverage, rejected. Begin modelling immediately, rejected because Stage 8 remains the mandatory readiness gate.
+
+**Consequences:**
+Stage 8 must consolidate Stages 0-7 into one evidence register, map every limitation to a mandatory modelling control, freeze the final hypotheses and launch checklist, and return exactly one recommendation: `READY`, `REVISE` or `DO NOT MODEL`. No model, prediction, threshold selection or final-test performance access is authorised by this decision.
+
+**Affected Components:** readiness assessment, validation interpretation, feature-set hierarchy, generalisation claims, modelling launch gate, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Stage 7 results require project-owner interpretation approval. Stage 8 must then determine `READY` or `NOT READY` for modelling under the frozen protocol. Final-test performance access remains prohibited.
+Stage 8 specification requires project-owner approval. The completed Stage 8 report must then receive a separate project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`. Final-test performance access remains prohibited.
 
 ### Resolved
 

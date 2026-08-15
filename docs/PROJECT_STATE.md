@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 36
-Last Updated UTC: 2026-08-15T02:24:45Z
+State Version: 37
+Last Updated UTC: 2026-08-15T13:24:46Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 9125b85d6e2f9c73cd719882b2b6e0ade04ef658 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 7 Results Review
-Current Phase Status: Stage 7 specification was approved and frozen under `DEC-036`, then implemented and executed. Automated protocol/leakage status is PASS with one warning and three review findings. Project-owner results interpretation is pending; Stage 8 is not yet authorised.
+Git HEAD: ac321c082cd1ccf3fd9a8c0bde4e051c79e64ab0 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 8 Specification
+Current Phase Status: Stage 7 results interpretation is approved as `PASS WITH LIMITATIONS` under `DEC-037`. Stage 8 readiness-report specification awaits project-owner approval; implementation is not yet authorised and modelling remains prohibited.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 7's frozen protocol, leakage evidence and sparse-support limitations, then approve or revise the interpretation before Stage 8 specification review. No baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 8 specification for consolidating evidence, hypotheses, limitations, mandatory modelling controls and the final `READY`, `REVISE` or `DO NOT MODEL` recommendation. No baseline model may be fitted before the completed Stage 8 report is separately approved as `READY`.
 
 ## Completed Foundation
 
@@ -110,6 +110,7 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - The final test was audited for support only and remains locked: no model, prediction, threshold or performance metric was produced.
 - Stage 7 automated status is PASS with zero failures, one warning and three review findings: one rolling validation window has zero positives; two partitions have fewer than 10 represented onsets; 38 player holdouts have zero development positives; robust fatigue coverage is 8.4%.
 - Executed canonical script and notebook against GCS; committed implementation and retained outputs at `9125b85`. Full gates pass: lock, 66-file formatting scope, Ruff, strict mypy across 29 source files and pytest (`79 passed`, one expected ZIP duplicate-name warning).
+- Project owner approved the Stage 7 results interpretation on 2026-08-15; accepted `DEC-037` as `PASS WITH LIMITATIONS` and authorised Stage 8 specification review without authorising implementation or modelling.
 
 ## Current Repository State
 
@@ -187,18 +188,19 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-030` defines player-date onset as the effective binary outcome event and constrains sensitivity, validation and claims.
 - `DEC-031` defines missing-value semantics and a conservative lagged-only wellness/reporting policy for the primary predictor contract.
 - `DEC-032` defines Stage 3 feature handling: preserve extremes, separate recording state from magnitude, carry justified `log1p` candidates, and exclude unstable existing z-scores from the primary operational contract.
-- `DEC-033` defines the target-blind full-contract catalogue and compact provisional operational feature-family policy; the exact predictor allow-list remains unfrozen until Stage 7.
+- `DEC-033` defines the target-blind full-contract catalogue and provisional operational feature-family policy; `DEC-036` finalises the predictor allow-list.
 - `DEC-034` accepts Stage 5 only as constrained retrospective context evidence and authorises Stage 6 specification review without authorising implementation.
 - `DEC-035` freezes the primary and secondary Stage 6 outcome/cohort policy and authorises Stage 7 specification review without authorising implementation.
 - `DEC-036` freezes the Stage 7 predictor ladder, prohibited fields, chronological partitions and embargoes, development stress tests, train-only preprocessing, metrics, uncertainty and alert-capacity rules.
+- `DEC-037` accepts Stage 7 as `PASS WITH LIMITATIONS`, preserves the frozen protocol, constrains sparse-support interpretation and authorises Stage 8 specification review only.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the Stage 7 results interpretation, including sparse temporal and unseen-player support limitations.
 - Approve the Stage 8 pre-model readiness specification before implementation.
+- After implementation and review, decide whether Stage 8 is `READY`, `REVISE` or `DO NOT MODEL`.
 
 ## Known Issues / Technical Debt
 
@@ -217,18 +219,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 8 is process-blocked until the project owner approves the Stage 7 results interpretation and then approves the Stage 8 specification.
+No technical blocker. Stage 8 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 7 results review is open. Implementation and retained outputs are committed at `9125b85`; no other control session is known to be modifying the working tree.
+Stage 8 specification review is open. No Stage 8 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present and discuss Stage 7 protocol, leakage checks, predictor coverage and temporal/player support limitations.
-2. Obtain project-owner approval, revision or rejection of the Stage 7 results interpretation.
-3. If approved, present the Stage 8 pre-model readiness-report specification.
-4. Do not implement Stage 8 before specification approval and do not fit a model before Stage 8 returns `READY`.
+1. Present the Stage 8 evidence-consolidation, hard-gate, hypothesis and modelling-control specification.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval, implement Stage 8 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
+4. Review the completed report and obtain a separate `READY`, `REVISE` or `DO NOT MODEL` decision before any modelling.
 
 ## Validation / Quality Gate Status
 
@@ -280,18 +282,20 @@ Stage 7 results review is open. Implementation and retained outputs are committe
 | Stage 7 implementation | PASS | shared module, script, notebook, outputs and tests committed at `9125b85` |
 | Stage 7 automated protocol/leakage audit | PASS WITH LIMITATIONS | zero failures, one warning, three review findings |
 | Stage 7 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| Stage 7 results review | PENDING OWNER APPROVAL | sparse temporal, player and robust-feature support requires interpretation |
-| Leakage/split gate | FROZEN PENDING RESULTS APPROVAL | exact partitions and embargoes retained; final-test performance locked |
+| Stage 7 results review | PASS WITH LIMITATIONS | project-owner approval received 2026-08-15; interpretation accepted under `DEC-037` |
+| Leakage/split gate | FROZEN | exact partitions and embargoes retained; final-test performance locked |
+| Stage 8 specification | PENDING OWNER APPROVAL | readiness evidence, hard gates and decision rules to approve |
+| Stage 8 implementation | NOT STARTED | blocked pending specification approval |
 | Modelling | NOT STARTED | no model fitted |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v36, 2026-08-15T02:24:45Z | v36, 2026-08-15T02:24:45Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-036 | DEC-001 to DEC-036 |
+| `PROJECT_STATE.md` | v37, 2026-08-15T13:24:46Z | v37, 2026-08-15T13:24:46Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-037 | DEC-001 to DEC-037 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `9125b85`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `ac321c0`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
