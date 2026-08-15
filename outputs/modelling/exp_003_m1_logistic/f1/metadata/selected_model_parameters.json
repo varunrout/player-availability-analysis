@@ -1,0 +1,27 @@
+{
+  "class_weight": null,
+  "feature_set": "F1",
+  "features": [
+    "daily_load_log1p",
+    "daily_load_sum_7d_log1p",
+    "daily_load_sum_28d_log1p",
+    "fatigue_lag1",
+    "readiness_lag1",
+    "fatigue_mean_prior_7d",
+    "fatigue_mean_prior_28d",
+    "readiness_mean_prior_7d",
+    "readiness_mean_prior_28d"
+  ],
+  "posthoc_calibration_selected": false,
+  "preprocessing": "training-only median imputation with indicators and scaling",
+  "selected_regularisation_c": 0.001,
+  "selection_rule": "lowest validation Brier, then higher AP, then smaller C",
+  "source_paths": {
+    "episodes": "silver/subjective/soccermon/zenodo-10033832/injury_episodes.parquet",
+    "features": "gold/subjective/soccermon/zenodo-10033832/player_day_features.parquet"
+  },
+  "source_sha256": {
+    "episodes": "e5077c16db69b88e07828d456739603b22a523c7d7e832bab8007e15a6d1f3da",
+    "features": "775cb3c73bb62affebdb9bd5156d4b32bdec6707bf9bbafb70149ba293b16ac6"
+  }
+}

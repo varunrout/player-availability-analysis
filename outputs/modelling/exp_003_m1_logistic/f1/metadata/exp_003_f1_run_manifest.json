@@ -1,0 +1,21 @@
+{
+  "data_version": "subjective_v1",
+  "decision_gate": "PROJECT_OWNER_PROMOTE_REVISE_REJECT",
+  "experiment_id": "EXP-003",
+  "failure_count": 0,
+  "feature_count": 9,
+  "final_test_performance_accessed": false,
+  "final_test_predictions_created": false,
+  "final_test_rows_evaluated": 0,
+  "generated_at_utc": "2026-08-15T20:25:06.939714+00:00",
+  "model_id": "M1-F1",
+  "posthoc_calibration_selected": false,
+  "review_count": 4,
+  "selected_regularisation_c": 0.001,
+  "status": "PASS",
+  "target": "injury_next_7d",
+  "train_player_days": 16365,
+  "validation_player_days": 8690,
+  "validation_positive_days": 28,
+  "validation_represented_onsets": 5
+}

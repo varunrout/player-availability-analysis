@@ -1,0 +1,22 @@
+experiment_id: EXP-003
+model_id: M1-F1
+data_version: subjective_v1
+target: injury_next_7d
+primary_horizon_days: 7
+burn_in_days: 28
+feature_set: F1
+regularisation_c_grid: [0.001, 0.01, 0.1, 1.0, 10.0]
+solver: lbfgs
+penalty: l2
+max_iterations: 5000
+class_weight: null
+alert_review_rates: [0.01, 0.025, 0.05]
+bootstrap_iterations: 500
+random_seed: 20260815
+reliability_bins: 10
+m0_global_brier: 0.003405
+m0_global_log_loss: 0.030310
+m0_global_average_precision: 0.003222
+m0_global_roc_auc: 0.500000
+posthoc_calibration_selection: false
+final_test_access: false
