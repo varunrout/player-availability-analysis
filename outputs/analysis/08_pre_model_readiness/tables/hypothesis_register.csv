@@ -1,0 +1,8 @@
+hypothesis_id,hypothesis,test_rule,experiment_scope,status
+H0,F0 global prevalence is the minimum probability baseline,Brier score and calibration against training prevalence,M0,FROZEN
+H1,F1 absolute load and lagged wellness improve prospective utility over F0,"Development Brier, average precision, calibration and alert capture",M1 primary,FROZEN
+H2,F2 session exposure and reporting context add value beyond F1,Pre-specified incremental development comparison,M1 primary,FROZEN
+H3,F3 prior player-relative features add transferable context beyond F2,Development comparison plus support-aware unseen-player stress,M1 secondary,FROZEN
+H4,sRPE replacement behaves similarly to the near-duplicate daily-load family,"Replacement-only sensitivity, never simultaneous inclusion",M1 sensitivity,FROZEN
+H5,Operational conclusions remain directionally coherent at 3-day and 14-day horizons,Pre-specified horizon sensitivity with matching embargoes,M0/M1 sensitivity,FROZEN
+H6,"Any useful ranking can be translated into calibrated, capacity-bounded review signals","Calibration plus 1%, 2.5% and 5% review-rate metrics",M0/M1 operational,FROZEN

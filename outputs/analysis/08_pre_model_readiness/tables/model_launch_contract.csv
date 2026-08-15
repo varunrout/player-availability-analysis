@@ -1,0 +1,9 @@
+sequence,experiment,description,constraint,authorised_after_owner_ready
+1,M0,Global training prevalence,Required first baseline,true
+2,M0,Pre-specified simple operational heuristic,Descriptive comparator only,true
+3,M1-F1,Regularised logistic regression with F1,Primary learned baseline,true
+4,M1-F2,Regularised logistic regression with F2,Primary incremental comparison,true
+5,M1-F3,Regularised logistic regression with F3,Secondary sensitivity only,true
+6,S-SRPE,Replace daily-load family with sRPE,Redundancy sensitivity,true
+7,S-HORIZON,Repeat frozen 3-day and 14-day targets,No winner selection,true
+8,M2+,Tree and survival models,Deferred until M0/M1 evidence justifies complexity,false

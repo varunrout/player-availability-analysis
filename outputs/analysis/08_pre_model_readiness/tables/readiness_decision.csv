@@ -1,0 +1,2 @@
+recommendation,scope,hard_gates_passed,hard_gates_failed,mandatory_constraints,owner_approval_required,modelling_authorised_by_stage_run,final_test_performance_accessed,decision_basis
+READY,Narrow exploratory M0/M1 subjective-data baseline programme,12,0,12,true,false,false,All hard gates pass; limitations have explicit mandatory controls

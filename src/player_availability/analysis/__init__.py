@@ -56,6 +56,12 @@ from player_availability.analysis.stage_07_prospective_protocol import (
     run_stage_07_prospective_protocol,
     write_stage_07_outputs,
 )
+from player_availability.analysis.stage_08_pre_model_readiness import (
+    Stage08ReadinessResult,
+    build_stage_08_figures,
+    run_stage_08_pre_model_readiness,
+    write_stage_08_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -98,4 +104,8 @@ __all__ = [
     "load_stage_07_from_gcp",
     "run_stage_07_prospective_protocol",
     "write_stage_07_outputs",
+    "Stage08ReadinessResult",
+    "build_stage_08_figures",
+    "run_stage_08_pre_model_readiness",
+    "write_stage_08_outputs",
 ]

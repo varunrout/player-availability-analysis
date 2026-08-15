@@ -1,0 +1,11 @@
+check_id,requirement,current_status,required_before_test_access
+T01,Dataset and source-artifact hashes frozen,PENDING_MODEL_DEVELOPMENT,true
+T02,"Primary cohort, horizon, predictors and prohibitions frozen",PENDING_MODEL_DEVELOPMENT,true
+T03,Model family and finite hyperparameter grid frozen,PENDING_MODEL_DEVELOPMENT,true
+T04,Train-only preprocessing implementation verified,PENDING_MODEL_DEVELOPMENT,true
+T05,Calibration method selected using development data only,PENDING_MODEL_DEVELOPMENT,true
+T06,Alert-capacity thresholds selected using validation only,PENDING_MODEL_DEVELOPMENT,true
+T07,Primary model and all labelled sensitivities frozen,PENDING_MODEL_DEVELOPMENT,true
+T08,Evaluation code tested without final-test predictions,PENDING_MODEL_DEVELOPMENT,true
+T09,One-time final-test access explicitly authorised and logged,PENDING_MODEL_DEVELOPMENT,true
+T10,"All metrics, uncertainty intervals and support counts reported together",PENDING_MODEL_DEVELOPMENT,true

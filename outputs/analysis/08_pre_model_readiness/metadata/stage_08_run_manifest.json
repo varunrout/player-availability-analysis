@@ -1,0 +1,18 @@
+{
+  "failure_count": 0,
+  "final_test_performance_accessed": false,
+  "generated_at_utc": "2026-08-15T13:58:47.637495+00:00",
+  "hard_gate_count": 12,
+  "hard_gate_failure_count": 0,
+  "mandatory_constraint_count": 12,
+  "model_count": 0,
+  "performance_metric_count": 0,
+  "prediction_count": 0,
+  "recommendation": "READY",
+  "review_count": 2,
+  "source_artifact_count": 24,
+  "source_stage_count": 8,
+  "stage": "08_pre_model_readiness",
+  "status": "PASS",
+  "warning_count": 0
+}

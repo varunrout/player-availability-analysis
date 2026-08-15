@@ -1,0 +1,13 @@
+gate_id,domain,gate_status,evidence,failure_disposition,constraint_required
+G01,evidence completeness,PASS,8/8 stage manifests loaded with findings and reports,REVISE,false
+G02,stage integrity,PASS,all Stage 0-7 manifests PASS and no findings register contains FAIL,REVISE,false
+G03,outcome validity,PASS,episode and primary player-day labels reproduce exactly,DO NOT MODEL,false
+G04,missingness semantics,PASS,wellness presence and gold completeness fields reconcile; missingness is explicit,REVISE,true
+G05,feature integrity,PASS,numeric ranges pass and target-blind feature analysis used no outcomes,REVISE,true
+G06,cohort and split contract,PASS,primary cohort reproduces and train/validation/test support is retained,REVISE,false
+G07,leakage prevention,PASS,Stage 7 has zero leakage or protocol failures,DO NOT MODEL,false
+G08,final-test governance,PASS,final-test support only; no performance inspection recorded,DO NOT MODEL,true
+G09,pre-model isolation,PASS,Stages 5-7 contain zero fitted models,DO NOT MODEL,false
+G10,exploratory outcome support,PASS,all partitions have represented onsets; minimum partition support is 5,DO NOT MODEL,true
+G11,prospective protocol completeness,PASS,6 frozen protocol tables present,REVISE,false
+G12,reproducibility,PASS,all eight notebooks are output-free and poetry.lock is present,REVISE,false

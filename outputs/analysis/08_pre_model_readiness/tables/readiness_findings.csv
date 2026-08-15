@@ -1,0 +1,9 @@
+check_id,status,evidence
+stage_evidence_complete,PASS,8/8 stages consolidated
+hard_gate_status,PASS,0 failed hard gates
+notebook_reproducibility,PASS,0 notebooks missing or carrying saved execution state
+limitation_control_mapping,PASS,12/12 limitations have mandatory controls
+material_limitations,REVIEW,8 critical/high limitations constrain modelling and claims
+recommendation_enum,PASS,exact recommendation is READY
+model_free_readiness,PASS,"zero models, predictions, thresholds, performance metrics or final-test access"
+owner_decision_gate,REVIEW,recommendation does not authorise modelling until separately approved by project owner

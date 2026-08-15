@@ -1,0 +1,13 @@
+limitation_id,severity,domain,evidence,mandatory_control,mandatory
+L01,critical,Scope,SoccerMon subjective data and self-reported outcomes do not establish medical validity,Limit all modelling and reporting to exploratory practitioner-review decision support,true
+L02,high,Sparse temporal support,Validation and test represent 5 and 5 onsets,Always disclose onset/player counts and wide uncertainty; avoid precise comparative claims,true
+L03,high,Zero-positive temporal window,1 rolling validation window has zero positive player-days,"Use that window as a stress period only, not for discrimination or calibration estimation",true
+L04,high,Unseen-player support,38/50 held-out players have zero positive development days,Aggregate support-aware stress results; never average undefined player-level metrics,true
+L05,high,Outcome concentration,Only 73 primary player-date onsets exist,Use player-cluster and temporal-block uncertainty and disclose concentration,true
+L06,high,Outcome semantics,"Outcome is self-reported recorded onset, not confirmed tissue injury or availability loss",Use model-estimated availability-risk and review language; prohibit diagnosis/clearance claims,true
+L07,moderate,Wellness missingness,"Wellness coverage and reporting process vary by player, team and proximity to onset","Use lagged values, missing indicators, train-only imputation and missingness sensitivity",true
+L08,moderate,Sparse robust fatigue,Robust fatigue coverage is 8.4%,Keep F3 incremental/secondary and report availability alongside any result,true
+L09,moderate,Load representation redundancy,Daily load and session sRPE are near duplicates,"Use sRPE only as a replacement sensitivity, never alongside daily load",true
+L10,critical,Final-test multiplicity,Final test is small and currently uninspected,"Access once only after feature, model, calibration and alert rules are frozen",true
+L11,moderate,Outcome-definition uncertainty,Episode gap and 3/14-day horizons change support and positive-row dependence,Run pre-specified horizon/gap sensitivities without selecting a convenient winner,true
+L12,critical,Deployment validity,"No prospective club deployment, external team transfer or clinical validation exists","Do not claim operational deployment readiness, team transfer or medical utility",true
