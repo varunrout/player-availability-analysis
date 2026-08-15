@@ -1,0 +1,8 @@
+scenario_id,scenario_name,eligible_player_days,retained_player_count,retained_team_count,positive_player_days,eligible_prevalence,represented_onset_count,represented_event_player_count,first_prediction_date,last_prediction_date
+C0,broad_eligible,35992,50,2,370,0.010280062236052457,71,15,2020-01-01,2021-12-24
+C1,burn_in_28d,34600,50,2,343,0.009913294797687862,66,13,2020-01-29,2021-12-24
+C2,burn_in_56d,33204,50,2,337,0.010149379592820142,65,12,2020-02-26,2021-12-24
+C3,burn_in_90d,31535,50,2,281,0.00891073410496274,56,10,2020-03-31,2021-12-24
+C4,burn_28d_wellness_7,25636,50,2,276,0.010766110157590887,56,11,2020-01-29,2021-12-24
+C5,robust_load_baseline,25951,50,2,271,0.010442757504527764,55,11,2020-01-29,2021-12-24
+C7,combined_history_subset,25362,50,2,269,0.010606419052125227,54,11,2020-01-29,2021-12-24

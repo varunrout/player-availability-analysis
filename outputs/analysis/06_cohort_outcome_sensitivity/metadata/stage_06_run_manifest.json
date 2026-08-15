@@ -1,0 +1,18 @@
+{
+  "broad_eligible_player_days": 35992,
+  "broad_positive_player_days": 370,
+  "broad_represented_onsets": 71,
+  "failure_count": 0,
+  "gap_rule_count": 3,
+  "generated_at_utc": "2026-08-15T01:42:51.720494+00:00",
+  "horizon_count": 3,
+  "model_count": 0,
+  "player_count": 50,
+  "player_day_count": 36550,
+  "review_count": 2,
+  "scenario_count": 8,
+  "split_count": 0,
+  "stage": "06_cohort_outcome_sensitivity",
+  "status": "PASS",
+  "warning_count": 0
+}

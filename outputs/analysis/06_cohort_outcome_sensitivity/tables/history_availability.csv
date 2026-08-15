@@ -1,0 +1,11 @@
+history_dimension,threshold,eligible_player_days,retained_player_count,positive_player_days,represented_onset_count,represented_event_player_count
+calendar_burn_in,0,35992,50,370,71,15
+calendar_burn_in,28,34600,50,343,66,13
+calendar_burn_in,56,33204,50,337,65,12
+calendar_burn_in,90,31535,50,281,56,10
+prior_wellness_total,1,26777,50,315,64,13
+prior_wellness_total,7,25688,50,289,60,13
+prior_28d_wellness,1,23461,50,295,62,13
+prior_28d_wellness,7,21078,50,262,56,12
+prior_28d_wellness,14,17820,49,210,47,10
+robust_load_baseline,eligible,25951,50,271,55,11

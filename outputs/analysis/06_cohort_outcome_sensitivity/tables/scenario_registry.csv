@@ -1,0 +1,9 @@
+scenario_id,scenario_name,scenario_type,rule
+C0,broad_eligible,player_day_cohort,Production horizon eligibility only
+C1,burn_in_28d,player_day_cohort,At least 28 strictly prior calendar days
+C2,burn_in_56d,player_day_cohort,At least 56 strictly prior calendar days
+C3,burn_in_90d,player_day_cohort,At least 90 strictly prior calendar days
+C4,burn_28d_wellness_7,player_day_cohort,28 prior days and at least 7 strictly prior wellness reports
+C5,robust_load_baseline,player_day_cohort,"28 prior days, 7 recorded-session days and positive prior load variance"
+C6,isolated_onset_support,event_support_sensitivity,Outcome-support audit only; never a prospective cohort filter
+C7,combined_history_subset,player_day_cohort,Robust load baseline and at least 7 strictly prior wellness reports

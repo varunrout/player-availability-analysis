@@ -1,0 +1,6 @@
+dimension,provisional_primary,required_secondary,status,rationale
+episode gap,3 days,1 and 7 days,REVIEW,Accepted intermediate rule; support sensitivity remains material
+prediction horizon,7 days,3 and 14 days,REVIEW,Balances practitioner lead time with sparse event support
+burn-in,28 prior calendar days,"0, 56 and 90 days",REVIEW,Matches the longest compact operational accumulation window
+wellness history,no exclusion,at least 7 strictly prior reports,REVIEW,Avoids selecting a reporting-rich and outcome-concentrated cohort
+player baseline,not required for cohort entry,robust-load-baseline eligible subset,REVIEW,Baseline availability should not silently define the full cohort

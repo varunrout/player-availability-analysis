@@ -1,0 +1,7 @@
+step_rank,step,player_days,excluded_from_previous,player_count,represented_onset_count
+1,all player-days,36550,0,50,73
+2,complete 7-day horizon,36200,350,50,73
+3,new-onset eligible,35992,208,50,71
+4,28-day burn-in,34600,1392,50,66
+5,7 prior wellness reports,25636,8964,50,56
+6,combined robust history,25362,274,50,54

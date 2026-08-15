@@ -1,0 +1,15 @@
+scenario_id,team_id,eligible_player_days,positive_player_days,represented_onset_count,retained_player_count,event_player_count
+C0,TeamA,19353,330,64,27,11
+C0,TeamB,16639,40,7,23,4
+C1,TeamA,18597,330,64,27,11
+C1,TeamB,16003,13,2,23,2
+C2,TeamA,17841,330,64,27,11
+C2,TeamB,15363,7,1,23,1
+C3,TeamA,16954,274,55,27,9
+C3,TeamB,14581,7,1,23,1
+C4,TeamA,14478,263,54,27,9
+C4,TeamB,11158,13,2,23,2
+C5,TeamA,14452,258,53,27,9
+C5,TeamB,11499,13,2,23,2
+C7,TeamA,14442,256,52,27,9
+C7,TeamB,10920,13,2,23,2

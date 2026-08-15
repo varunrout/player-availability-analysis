@@ -1,0 +1,4 @@
+gap_days,distinct_onset_count,isolated_onset_count,overlapping_onset_count,maximum_nearby_onset_count
+1,108,16,92,17
+3,73,16,57,8
+7,55,20,35,7

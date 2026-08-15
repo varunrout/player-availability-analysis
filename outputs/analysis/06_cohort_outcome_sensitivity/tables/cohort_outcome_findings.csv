@@ -1,0 +1,9 @@
+check_id,scope,status,message
+primary_label_reproduction,3-day episode rule,PASS,0 field mismatches across 36550 rebuilt player-days
+horizon_nesting,all gap rules,PASS,0 nested-label violations
+gap_support_order,episode sensitivity,PASS,"Distinct onset support by 1/3/7-day gap is [108, 73, 55]"
+burn_in_nesting,cohort scenarios,PASS,0/28/56/90-day burn-in cohorts are monotonically nested
+future_outcome_cohort_isolation,isolated-onset sensitivity,PASS,Isolated-onset status is not used as a prospective player-day eligibility filter
+event_concentration,primary candidate cohort,REVIEW,Top five players contribute 74.6% of represented onsets
+combined_history_attrition,history-sensitive cohort,REVIEW,Combined history retains 70.5% of broad eligible days and 54 represented onsets
+non_modelling_boundary,Stage 6,PASS,"No model, split, feature ranking or discrimination metric is produced"
