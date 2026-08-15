@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 34
-Last Updated UTC: 2026-08-15T01:45:17Z
+State Version: 35
+Last Updated UTC: 2026-08-15T01:48:34Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: e719939a4430f7697de6a8633570185e7bba9b6f (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 6 Results Review
-Current Phase Status: Stage 6 specification was approved, implemented and executed. Automated integrity is PASS; primary outcome/cohort choices and required sensitivities await project-owner review. Stage 7 is not yet authorised.
+Git HEAD: fa70de112f257b38478d12637e0792da64114d33 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 7 Specification
+Current Phase Status: Stage 6 results and the primary/secondary outcome-cohort policy are approved under `DEC-035`. Stage 7 final protocol and leakage audit awaits project-owner specification approval; implementation is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 6 outcome-support and cohort-trade-off evidence, then approve or revise the primary episode gap, horizon, cohort eligibility and mandatory secondary sensitivities. No Stage 7 work may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 7 specification for the final predictor contract, preprocessing, chronological boundaries, leakage tests, metrics, uncertainty and operational alert rules. No Stage 7 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -100,6 +100,8 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Isolated-onset status is implemented only as an outcome-support sensitivity and never as a prospective eligibility filter. No model or chronological split was created.
 - Executed the canonical Stage 6 script and notebook against GCS products; no cloud data was changed. Committed implementation and retained outputs at `e719939`.
 - Full quality gate passes: lockfile, formatting across 63 files, Ruff, strict mypy across 51 source files and pytest (`75 passed`, one expected ZIP duplicate-name warning); notebook execution produced zero errors and the committed notebook remains output-free.
+- Project owner approved the Stage 6 results and recommended primary/secondary outcome-cohort policy on 2026-08-15.
+- Accepted `DEC-035`: primary three-day episode gap, seven-day target and 28-day burn-in; no wellness or baseline eligibility gate; mandatory 3/14-day horizon, 1/7-day gap and broad no-burn-in sensitivities; isolated onset is never a prospective filter.
 
 ## Current Repository State
 
@@ -179,13 +181,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-032` defines Stage 3 feature handling: preserve extremes, separate recording state from magnitude, carry justified `log1p` candidates, and exclude unstable existing z-scores from the primary operational contract.
 - `DEC-033` defines the target-blind full-contract catalogue and compact provisional operational feature-family policy; the exact predictor allow-list remains unfrozen until Stage 7.
 - `DEC-034` accepts Stage 5 only as constrained retrospective context evidence and authorises Stage 6 specification review without authorising implementation.
+- `DEC-035` freezes the primary and secondary Stage 6 outcome/cohort policy and authorises Stage 7 specification review without authorising implementation.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the Stage 6 primary episode gap, prediction horizon, burn-in/cohort policy and mandatory secondary sensitivities.
+- Approve or revise the Stage 7 final prospective protocol and leakage-audit specification.
 - Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -201,18 +204,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 7 is process-blocked until the project owner approves the Stage 6 results and final cohort/outcome policy.
+No technical blocker. Stage 7 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 6 results review is open. Implementation and canonical outputs are committed at `e719939`; no other control session is known to be modifying the working tree.
+Stage 7 specification review is open. No Stage 7 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present and discuss Stage 6 episode-gap, horizon, burn-in, wellness-history and baseline-history trade-offs.
-2. Obtain project-owner approval, revision or rejection of the provisional primary and secondary policies.
-3. If approved, append the material Stage 6 policy decision and present the Stage 7 final protocol/leakage-audit specification.
-4. Do not begin Stage 7 implementation until its separate specification approval.
+1. Present the Stage 7 final protocol/leakage-audit specification, including predictor allow-list, split boundaries, embargoes, preprocessing, metrics, uncertainty and alert-capacity rules.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval, implement Stage 7 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
+4. Run Stage 7, discuss the frozen protocol and obtain a separate results approval before Stage 8.
 
 ## Validation / Quality Gate Status
 
@@ -259,7 +262,9 @@ Stage 6 results review is open. Implementation and canonical outputs are committ
 | Stage 6 implementation | PASS | shared module, script, notebook, outputs and tests committed at `e719939` |
 | Stage 6 automated integrity | PASS | all nine gap/horizon combinations rebuilt; zero failures or warnings; two review findings |
 | Stage 6 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| Stage 6 results review | PENDING OWNER APPROVAL | primary/secondary outcome and cohort policies await review |
+| Stage 6 results review | PASS | project-owner approval received 2026-08-15; policy accepted under `DEC-035` |
+| Stage 7 specification | PENDING OWNER APPROVAL | final protocol and leakage-audit scope to approve |
+| Stage 7 implementation | NOT STARTED | blocked pending specification approval |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -267,10 +272,10 @@ Stage 6 results review is open. Implementation and canonical outputs are committ
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v34, 2026-08-15T01:45:17Z | v34, 2026-08-15T01:45:17Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-034 | DEC-001 to DEC-034 |
+| `PROJECT_STATE.md` | v35, 2026-08-15T01:48:34Z | v35, 2026-08-15T01:48:34Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-035 | DEC-001 to DEC-035 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `e719939`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `fa70de1`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

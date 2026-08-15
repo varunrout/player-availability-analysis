@@ -968,11 +968,39 @@ Stage 6 must report the sample-size, event-support, player/team representation a
 
 ---
 
+## DEC-035
+
+**Decision ID:** DEC-035
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+Stage 6 rebuilt all nine combinations of 1/3/7-day episode-gap rules and 3/7/14-day horizons through production outcome functions. Under the accepted three-day gap, the broad seven-day cohort contains 35,992 eligible player-days, 370 positive player-days and 71 represented onsets across 15 event-bearing players. A 28-day burn-in retains 34,600 eligible days, 66 represented onsets and 13 event-bearing players. Requiring seven prior wellness reports retains 60 onsets; requiring robust load-baseline eligibility retains 55. The combined history subset retains 70.5% of broad eligible days and 54 onsets. The top five players contribute 74.6% of broad represented onsets.
+
+**Decision:**
+Freeze the three-day episode-gap rule as the primary outcome construction and seven-day future player-date onset as the primary fixed-horizon target. Freeze a 28 strictly prior calendar-day burn-in in addition to horizon completeness and active-episode exclusion for the primary cohort. Do not require wellness-report history or player-baseline availability for primary cohort entry. Pre-specify three- and fourteen-day horizons as secondary targets; one- and seven-day episode-gap rules as outcome-definition sensitivities; and the broad no-burn-in cohort as a mandatory cohort sensitivity. Retain wellness-rich, robust-baseline, 56-day and 90-day history subsets as labelled secondary analyses rather than primary exclusions. Never use isolated-onset status as a prospective eligibility filter. Require later evaluation to disclose player/team/time concentration and represented-onset support.
+
+**Rationale:**
+The three-day episode rule remains the evidence-led intermediate between fragmentation and over-merging. Seven days preserves nearly all represented onset support while offering a more useful review horizon than three days and less temporal dilution than fourteen days. A 28-day burn-in aligns with the longest compact operational accumulation window and removes relatively few player-days, although its event-support cost must remain visible through the mandatory broad-cohort sensitivity. Wellness and robust-baseline gates would select materially narrower reporting-rich cohorts and reduce already limited event support.
+
+**Alternatives Considered:**
+Use a one-day episode gap, rejected as primary because it fragments repeated reports into 108 onset dates. Use a seven-day gap, rejected because it over-merges reports and leaves only 47 represented seven-day-horizon onsets. Use a three-day horizon, retained as secondary but rejected as primary because it represents only 68 onsets with shorter practitioner lead time. Use a fourteen-day horizon, retained as secondary but rejected as primary because it increases positive-row dependence around the same 71 onsets. Use no burn-in, retained as mandatory sensitivity but rejected as primary because 28-day operational features would have incomplete early history. Require wellness or robust-baseline eligibility, rejected as primary because these restrictions materially reduce event and event-player support.
+
+**Consequences:**
+Stage 7 must encode the primary and secondary cohort/outcome contracts, freeze the predictor allow-list and prediction-time feature construction, define train-only preprocessing, construct chronological boundaries with appropriate embargo controls, and pre-specify rolling-origin and unseen-player stress tests. Stage 8 must judge readiness using this frozen protocol. No modelling is authorised until Stage 8 returns `READY`.
+
+**Affected Components:** outcome labels, cohort eligibility, feature history, sensitivity analysis, validation, leakage controls, modelling protocol, claims
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Stage 6 must determine the primary horizon, episode-gap rule, cohort eligibility and required secondary sensitivities. The predictor contract and chronological split remain deliberately unfrozen until the relevant later gates.
+Stage 7 must freeze the predictor allow-list, preprocessing, chronological boundaries, uncertainty, metrics and operational alert rules. Final-test access remains unfrozen and prohibited until that protocol is approved.
 
 ### Resolved
 
