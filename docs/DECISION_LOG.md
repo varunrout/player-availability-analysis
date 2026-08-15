@@ -1114,11 +1114,39 @@ The modelling process block is lifted only for EXP-002 M0 development. All Stage
 
 ---
 
+## DEC-040
+
+**Decision ID:** DEC-040
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+EXP-002 M0 completed on the frozen training and validation partitions with no final-test performance access. The global training-prevalence baseline produced validation Brier 0.003405, average precision 0.003222 and ROC-AUC 0.500000. The pre-specified recent-load heuristic produced worse Brier 0.003544, average precision 0.002934 and ROC-AUC 0.477210, and captured zero of five represented validation onsets at the frozen 1%, 2.5% and 5% review budgets. Training prevalence was 1.711% versus 0.322% in validation, and the training 95th-percentile load threshold flagged 10.8% of validation rows, evidencing temporal outcome and feature-distribution shift. The project owner reviewed and accepted the benchmark evidence.
+
+**Decision:**
+Accept EXP-002 as the official M0 benchmark. Retain global training-period prevalence as the minimum probability benchmark for M1. Retain the recent-load result as a failed descriptive comparator demonstrating that seven-day load alone did not transfer prospectively in this validation period. Do not promote either M0 baseline as an operational model, do not infer a protective or causal load effect, and do not alter the frozen validation or final-test periods in response to the result. Authorise EXP-003 M1 specification review; model fitting still requires approval of the exact M1 implementation specification.
+
+**Rationale:**
+The M0 implementation passed partition, training-scope, prediction-validity, uncertainty and final-test-isolation controls. Its poor predictive utility is valid benchmark evidence rather than an implementation failure. Freezing the result preserves an honest comparison for learned models and prevents redesigning the benchmark after seeing validation outcomes.
+
+**Alternatives Considered:**
+Revise the load threshold to improve validation capture, rejected because that would tune the heuristic after inspecting validation outcomes. Reject M0 because it performs poorly, rejected because M0 exists to establish a minimum benchmark rather than to qualify as a useful model. Interpret below-chance recent-load ranking as biological protection, rejected because sparse outcomes, temporal shift and observational data do not support causal interpretation. Begin final-test evaluation, rejected because M1, calibration and alert-policy choices are not frozen.
+
+**Consequences:**
+M1 must be compared against the frozen global-prevalence benchmark on the same development dates and must demonstrate meaningful calibration or operational-capture value rather than merely a higher in-sample score. The recent-load comparator remains visible in reports. M1 specification review is open; final-test performance remains locked and M2+ remains deferred.
+
+**Affected Components:** M0 benchmark, M1 comparison criteria, temporal validation, alert simulation, claims, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-M0 implementation and development-only validation are authorised under `DEC-039`. M1 implementation remains pending project-owner review of the M0 results. Final-test performance access remains prohibited.
+EXP-002 M0 is accepted under `DEC-040`. EXP-003 M1 implementation remains pending approval of the exact implementation specification. Final-test performance access remains prohibited.
 
 ### Resolved
 
