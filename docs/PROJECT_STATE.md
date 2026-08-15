@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 38
-Last Updated UTC: 2026-08-15T14:02:27Z
+State Version: 39
+Last Updated UTC: 2026-08-15T18:27:52Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 7a17edd670ebc315e4a306d4a234600344f80c4b (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 8 Results Review
-Current Phase Status: Stage 8 methodology is accepted under `DEC-038`, implemented and executed. All 12 hard gates pass and the provisional recommendation is `READY` for a narrow exploratory M0/M1 programme with 12 mandatory constraints. Project-owner decision is pending; modelling remains prohibited.
+Git HEAD: 78e5a3fed4a82689a973845d45c5481ca978e6b8 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-002 M0
+Current Phase Status: The project owner accepted the Stage 8 `READY` recommendation under `DEC-039` and approved the staged M0/M1 plan. EXP-002 M0 implementation and development-only validation are authorised. M1 remains blocked pending M0 results review; final-test performance remains locked.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review the Stage 8 evidence, 12 hard gates, 12 mandatory constraints, frozen hypotheses and provisional `READY` recommendation, then record a separate owner decision of `READY`, `REVISE` or `DO NOT MODEL`. No baseline model may be fitted before owner approval of `READY`.
+Implement EXP-002 M0 as the first development-only modelling benchmark using the frozen Stage 7 protocol and all Stage 8 controls. Produce reproducible global-prevalence and pre-specified recent-load heuristic results on training and validation only, then stop for project-owner review before M1.
 
 ## Completed Foundation
 
@@ -179,7 +179,7 @@ Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/o
 
 ## Current Modelling State
 
-No model has been fitted. No chronological split is currently frozen. `DEC-027` is superseded by `DEC-028`. Stages 1 through 6 establish outcome, reporting-process, numerical-feature, structural-contract, retrospective-context and cohort-sensitivity integrity, while revealing low and concentrated event support, overlapping onsets, non-random reporting, zero inflation, calendar/team shifts, unstable z-score tails and substantial feature redundancy. They do not establish predictive value or generalisability. Baseline modelling is blocked until Stages 0 through 8 are completed and approved.
+No model or baseline has yet been fitted. The chronological train, validation, embargo and locked final-test partitions are frozen under `DEC-036`. Stage 8 passed 12/12 hard gates and the project owner accepted `READY` under `DEC-039` for a narrow exploratory M0/M1 programme. EXP-002 M0 is authorised for training and validation only. M1 remains blocked pending M0 review; M2+ is deferred and final-test predictions and performance remain prohibited.
 
 ## Current Product State
 
@@ -200,13 +200,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-036` freezes the Stage 7 predictor ladder, prohibited fields, chronological partitions and embargoes, development stress tests, train-only preprocessing, metrics, uncertainty and alert-capacity rules.
 - `DEC-037` accepts Stage 7 as `PASS WITH LIMITATIONS`, preserves the frozen protocol, constrains sparse-support interpretation and authorises Stage 8 specification review only.
 - `DEC-038` freezes the Stage 8 binary hard-gate readiness method, evidence provenance, mandatory limitation controls, hypothesis register, M0/M1-first launch sequence and owner decision gate.
+- `DEC-039` accepts the Stage 8 `READY` recommendation, authorises development-only EXP-002 M0 under the approved output contract, keeps M1 pending M0 review and preserves the final-test lock.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Decide whether to approve the Stage 8 provisional recommendation as `READY`, request `REVISE`, or choose `DO NOT MODEL`.
+- Review the completed EXP-002 M0 evidence and decide `BENCHMARK ACCEPT` or `REVISE` before M1 implementation.
 
 ## Known Issues / Technical Debt
 
@@ -225,18 +226,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Modelling is process-blocked until the project owner separately approves the Stage 8 recommendation as `READY`.
+No technical blocker for EXP-002 M0. M1 is process-blocked until M0 results review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-Stage 8 results review is open. Implementation and retained outputs are committed at `7a17edd`; no other control session is known to be modifying the working tree.
+EXP-002 M0 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present and discuss the Stage 8 evidence register, hard gates, mandatory controls, hypotheses and provisional `READY` recommendation.
-2. Obtain a project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`.
-3. If `READY`, record the modelling authorisation and present the first M0 baseline specification before implementation.
-4. Keep final-test performance locked until model-development choices and the final-test checklist are complete.
+1. Implement shared EXP-002 M0 logic, canonical job, matching output-free notebook, versioned configuration and focused tests.
+2. Run M0 against the frozen training and validation partitions without generating final-test predictions.
+3. Review probability, ranking, calibration, capacity-bounded alert and uncertainty evidence with the project owner.
+4. Obtain `BENCHMARK ACCEPT` or `REVISE` before M1 implementation.
 
 ## Validation / Quality Gate Status
 
@@ -294,18 +295,19 @@ Stage 8 results review is open. Implementation and retained outputs are committe
 | Stage 8 implementation | PASS | shared module, script, notebook, outputs and tests committed at `7a17edd` |
 | Stage 8 evidence and hard gates | PASS | 8 stages, 24 hashed artifacts, 12/12 hard gates and 12 mapped constraints |
 | Stage 8 notebook execution | PASS | executed against retained evidence with zero errors; committed notebook remains output-free |
-| Stage 8 provisional recommendation | READY PENDING OWNER DECISION | narrow exploratory M0/M1 scope only; stage run does not authorise modelling |
-| Stage 8 results review | PENDING OWNER DECISION | choose `READY`, `REVISE` or `DO NOT MODEL` |
-| Modelling | NOT STARTED | no model fitted |
+| Stage 8 provisional recommendation | READY | narrow exploratory M0/M1 scope accepted by the project owner under `DEC-039` |
+| Stage 8 results review | PASS | owner `READY` approval received 2026-08-15 |
+| EXP-002 M0 specification | APPROVED | global prevalence plus pre-specified recent-load heuristic; development only |
+| Modelling | AUTHORISED - M0 ONLY | M1 pending M0 review; final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v38, 2026-08-15T14:02:27Z | v38, 2026-08-15T14:02:27Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-038 | DEC-001 to DEC-038 |
+| `PROJECT_STATE.md` | v39, 2026-08-15T18:27:52Z | v39, 2026-08-15T18:27:52Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-039 | DEC-001 to DEC-039 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `7a17edd`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `78e5a3f`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

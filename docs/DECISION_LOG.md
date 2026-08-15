@@ -1084,11 +1084,41 @@ The completed Stage 8 report provisionally recommends `READY` for a narrow explo
 
 ---
 
+## DEC-039
+
+**Decision ID:** DEC-039
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+Stage 8 passed all 12 binary hard gates and provisionally recommended `READY` for a narrow exploratory M0/M1 subjective-data baseline programme subject to 12 mandatory modelling and claim controls. The project owner reviewed the modelling plan, explicitly approved `READY`, and approved the staged M0/M1 workflow. A concrete first experiment specification was required before any model-derived validation result could be produced.
+
+**Decision:**
+Accept the Stage 8 `READY` recommendation and authorise the narrow exploratory subjective-data baseline programme. Implement and run EXP-002 M0 on training and validation data only before M1. M0 comprises the global training-period prevalence baseline and one pre-specified recent-load heuristic based on the frozen `daily_load_sum_7d_log1p` predictor, with all heuristic thresholds and probability mappings learned from training only. Report probability quality where defined, rare-event ranking, fixed-capacity alerts, represented-onset capture, lead time, alert burden, support counts and player-cluster plus temporal-block uncertainty.
+
+Use shared modelling code, a canonical job, a matching output-free notebook, versioned configuration and retained outputs under `outputs/modelling/exp_002_m0_baselines/`. Do not evaluate or persist final-test predictions. M1 implementation remains blocked until the project owner reviews and accepts or revises the M0 benchmark. A later one-time final-test job requires a separate explicit authorisation after model, preprocessing, calibration, alert policy and sensitivities are frozen.
+
+**Rationale:**
+The readiness evidence supports a bounded baseline experiment but not broad predictive, medical or deployment claims. Running M0 first establishes an honest minimum benchmark and exposes prevalence shift, calibration and practitioner workload before fitting a learned multivariable model. Separating development jobs from the future final-test job reduces accidental test access and preserves the prospective protocol.
+
+**Alternatives Considered:**
+Begin M0 and M1 together, rejected because M0 results must establish and validate the benchmark before the learned model is interpreted. Evaluate the final test during baseline development, rejected because model and policy choices are not frozen. Add a past-injury recency heuristic now, rejected because no such feature is present in the frozen predictor contract. Treat the recent-load heuristic as a causal workload threshold, rejected because the data supports only a descriptive comparator.
+
+**Consequences:**
+The modelling process block is lifted only for EXP-002 M0 development. All Stage 8 limitations remain binding. The final test stays locked, M1 remains pending M0 review, M2+ remains deferred, and retained outputs must clearly describe self-reported injury-related onset risk and practitioner review rather than diagnosis or clearance.
+
+**Affected Components:** modelling authorisation, M0 baseline, development validation, alert simulation, uncertainty, output contract, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-The completed Stage 8 report provisionally recommends `READY` and requires a separate project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`. Modelling and final-test performance access remain prohibited until that decision is recorded.
+M0 implementation and development-only validation are authorised under `DEC-039`. M1 implementation remains pending project-owner review of the M0 results. Final-test performance access remains prohibited.
 
 ### Resolved
 
