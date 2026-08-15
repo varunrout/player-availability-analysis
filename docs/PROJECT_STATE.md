@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 44
-Last Updated UTC: 2026-08-15T20:58:42Z
+State Version: 45
+Last Updated UTC: 2026-08-15T21:56:05Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 375182ace5a6e5184ffe5bfe459e71b327986bb6 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-003 M1-F2/F3 Implementation
-Current Phase Status: The owner promoted F1 as the development reference under `DEC-042` and authorised the controlled F2/F3 feature-ladder extension. F1 is not operational or calibrated. Calibration selection, horizon alternatives, M2+ and final-test performance remain locked.
+Git HEAD: 226224c5b1502f854148218431024beca8218124 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-003 M1 Feature-Ladder Results Review
+Current Phase Status: F2/F3 implementation and development-only evaluation are complete with automated status `PASS WITH REVIEW`. F2 adds no value over F1. F3 leads held-period metrics and tight-budget capture, but calibration, uncertainty, temporal variation and unseen-player evidence remain limiting. Owner raw-candidate and calibration-scope review is required; final-test performance remains locked.
 
 ## Current Objective
 
-Implement and execute cumulative M1-F2 and M1-F3 under the frozen F1 model settings, compare the three raw feature sets on development evidence, and stop for raw-candidate and calibration-scope review without final-test access.
+Review the completed F1/F2/F3 development evidence, select or reject the raw feature-set candidate, and define whether a separate calibration experiment is justified. Preserve the final-test lock.
 
 ## Completed Foundation
 
@@ -140,6 +140,15 @@ Implement and execute cumulative M1-F2 and M1-F3 under the frozen F1 model setti
 - Full quality gate passes: lockfile, formatting across 80 Python files, Ruff, strict mypy across 63 source files, pytest (`90 passed`, one expected duplicate-ZIP-member warning), actual-data notebook execution and output-free notebook verification.
 - Owner selected `PROMOTE` for M1-F1 on 2026-08-15; accepted `DEC-042`. Promotion means reference-candidate advancement only, not deployment or acceptance of raw calibration.
 - Authorised cumulative F2 (17 predictors) and F3 (23 predictors) development evaluation with unchanged cohort, partitions, preprocessing, logistic model, regularisation grid, metrics, stress tests and final-test lock.
+- Generalised the proven F1 engine to exact cumulative 9/17/23-predictor F1/F2/F3 contracts while preserving F1 outputs and leakage controls.
+- Added the canonical feature-ladder configuration/job, matching output-free notebook, consolidated report, nine reviewed charts, paired uncertainty and three focused tests.
+- Executed the ladder against actual GCS development data. All three models selected `C=0.001`; zero final-test predictions or performance metrics were created.
+- F2 does not improve F1: Brier 0.003713 versus 0.003700, log loss 0.031378 versus 0.031272, AP 0.016377 versus 0.016640 and identical onset capture at all frozen budgets. Paired Brier intervals consistently favour F1.
+- F3 leads held-period point estimates: Brier 0.003613, log loss 0.030367, AP 0.019432 and ROC-AUC 0.851053. It captures 1/5 onsets at 1%, 2/5 at 2.5% and 4/5 at 5% review rates.
+- F3 raw mean prediction remains high at 1.965% versus 0.322% observed; calibration intercept is -0.356 and slope 1.433. No calibrator was fitted or selected.
+- F3 paired week-block Brier improvement over F2 excludes zero, but player-cluster Brier/AP and week-block AP intervals include zero. Rolling AP improves in RO1/RO3 but declines in RO2; one later fold has zero positives.
+- Unseen-player aggregate ranking does not improve: F1 AP/ROC-AUC 0.023316/0.642578 versus F3 0.022308/0.630928, with only 12/50 estimable held-out players.
+- Committed implementation and retained evidence at `226224c`. Full gates pass: lockfile, formatting across 83 Python files, Ruff, strict mypy across 65 source files, pytest (`93 passed`, one expected ZIP warning), actual-data notebook execution and output-free notebook verification.
 
 ## Current Repository State
 
@@ -148,7 +157,7 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      90 passing tests, including Stage 0-8 and M0/M1 tests
+tests/                      93 passing tests, including Stage 0-8 and M0/M1 ladder tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
@@ -171,7 +180,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 - Stage 4 read the compact GCS gold feature product but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/04_feature_redundancy/`.
 - Stage 5 read compact GCS silver episode and gold feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/05_outcome_context/`.
 - Stage 6 read compact GCS silver injury/registry and gold feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/06_cohort_outcome_sensitivity/`.
-- EXP-003 read compact gold features and silver episodes from GCS but made no cloud-data changes; retained modelling evidence is local under `outputs/modelling/exp_003_m1_logistic/f1/`.
+- EXP-003 read compact gold features and silver episodes from GCS but made no cloud-data changes; retained F1 and feature-ladder evidence is local under `outputs/modelling/exp_003_m1_logistic/`.
 - No objective/GPS archive has been extracted or processed.
 
 ## Current Data State
@@ -203,7 +212,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 is accepted as the minimum benchmark. EXP-003 M1-F1 is promoted as the active development reference with selected `C=0.001`: Brier 0.003700, log loss 0.031272, AP 0.016640 and ROC-AUC 0.807802. It ranks rare events materially better than M0 but is less accurate probabilistically and overpredicts the mean event rate by about 6.2 times. At frozen review budgets it captures 0/5, 2/5 and 4/5 represented onsets, with high alert burden. F2/F3 controlled ablation is authorised; calibration selection, M2+ and final-test performance remain blocked.
+EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. F2 is not supported as an improvement over F1. F3 is the leading held-period raw candidate with `C=0.001`, Brier 0.003613, log loss 0.030367, AP 0.019432 and ROC-AUC 0.851053, plus one onset captured at the tight 1% budget. However, it still overpredicts risk by about 6.1 times, player-bootstrap improvements include zero, temporal performance varies and unseen-player ranking remains below F1. Raw-candidate owner selection is pending; calibration selection, M2+ and final-test performance remain blocked.
 
 ## Current Product State
 
@@ -234,7 +243,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- After the F2/F3 run, select the raw M1 feature-set candidate and calibration-experiment scope.
+- Select or reject F3 as the raw M1 candidate and decide whether to authorise a separate calibration experiment.
 
 ## Known Issues / Technical Debt
 
@@ -252,21 +261,23 @@ No API, dashboard, product table or inference service is implemented. The intend
 - The robust fatigue predictor is available on only 8.4% of primary-cohort days because discrete prior scores often have zero robust scale; F3 must remain an incremental sensitivity unless Stage 8 revises it.
 - M1-F1 raw probabilities are materially overestimated on validation and have worse Brier/log loss than M0 despite better ranking; calibration strategy requires a separate owner-approved specification if M1-F1 is promoted.
 - Alert capture is based on only five represented validation onsets and approximately 107 false alerts per captured onset at the two non-zero-capture budgets; operational conclusions remain highly uncertain.
+- F3 improves held-period point estimates but not unseen-player aggregate ranking; its incremental player-cluster intervals include zero and one rolling fold degrades materially.
+- The F3 fatigue robust z-score has only 8.4% coverage, so its coefficient and apparent contribution are entangled with availability and missingness structure.
 
 ## Blockers
 
-No technical blocker for F2/F3 implementation. Post-hoc calibration remains blocked until raw feature-set review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker for feature-ladder results review. Post-hoc calibration remains blocked until raw-candidate selection and an exact calibration specification are approved. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-EXP-003 M1-F2/F3 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
+No implementation is in progress. The feature ladder is stopped at the required owner raw-candidate/calibration-scope gate. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Generalise the proven F1 pipeline for the frozen cumulative F2/F3 predictor contracts without changing F1 behavior.
-2. Add the canonical feature-ladder job, matching output-free notebook, retained comparison artifacts and focused leakage tests.
-3. Execute against GCS development data, visually inspect figures and run full quality gates.
-4. Stop for raw-candidate and calibration-scope review; keep final-test predictions and performance locked.
+1. Review the F2 non-improvement and F3 held-period gains against calibration, paired uncertainty, rolling-origin and unseen-player limitations.
+2. Record owner raw-candidate selection or rejection as a new material decision.
+3. If F3 is selected, specify EXP-009 raw-versus-Platt-versus-isotonic calibration without accessing final-test performance.
+4. Keep final-test predictions and performance locked.
 
 ## Validation / Quality Gate Status
 
@@ -274,9 +285,9 @@ EXP-003 M1-F2/F3 implementation is authorised and beginning. No other control se
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | format check clean across 80 Python files |
-| Type check | PASS | strict mypy, 63 source files |
-| Tests | PASS | 90 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | format check clean across 83 Python files |
+| Type check | PASS | strict mypy, 65 source files |
+| Tests | PASS | 93 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
@@ -339,16 +350,20 @@ EXP-003 M1-F2/F3 implementation is authorised and beginning. No other control se
 | EXP-003 M1-F1 notebook execution | PASS | executed against GCS; committed notebook remains output-free |
 | EXP-003 M1-F1 results review | PROMOTE | development reference advancement accepted under `DEC-042`; not operational |
 | EXP-003 M1-F2/F3 specification | APPROVED | cumulative frozen contracts under unchanged model/evaluation settings |
-| Modelling | M1-F2/F3 IMPLEMENTATION AUTHORISED | calibration selection and final test locked |
+| EXP-003 M1-F2/F3 implementation | PASS | committed at `226224c`; consolidated and per-set evidence retained |
+| EXP-003 M1 feature-ladder run | PASS WITH REVIEW | F2 non-improvement; F3 leads held-period metrics with material limitations |
+| EXP-003 feature-ladder final-test isolation | PASS | zero final-test predictions and zero performance access |
+| EXP-003 feature-ladder notebook execution | PASS | executed against GCS; committed notebook remains output-free |
+| Modelling | RAW CANDIDATE REVIEW REQUIRED | calibration selection and final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v44, 2026-08-15T20:58:42Z | v44, 2026-08-15T20:58:42Z |
+| `PROJECT_STATE.md` | v45, 2026-08-15T21:56:05Z | v45, 2026-08-15T21:56:05Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-042 | DEC-001 to DEC-042 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `375182a`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `226224c`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
