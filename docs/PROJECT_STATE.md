@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 37
-Last Updated UTC: 2026-08-15T13:24:46Z
+State Version: 38
+Last Updated UTC: 2026-08-15T14:02:27Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: ac321c082cd1ccf3fd9a8c0bde4e051c79e64ab0 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 8 Specification
-Current Phase Status: Stage 7 results interpretation is approved as `PASS WITH LIMITATIONS` under `DEC-037`. Stage 8 readiness-report specification awaits project-owner approval; implementation is not yet authorised and modelling remains prohibited.
+Git HEAD: 7a17edd670ebc315e4a306d4a234600344f80c4b (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 8 Results Review
+Current Phase Status: Stage 8 methodology is accepted under `DEC-038`, implemented and executed. All 12 hard gates pass and the provisional recommendation is `READY` for a narrow exploratory M0/M1 programme with 12 mandatory constraints. Project-owner decision is pending; modelling remains prohibited.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 8 specification for consolidating evidence, hypotheses, limitations, mandatory modelling controls and the final `READY`, `REVISE` or `DO NOT MODEL` recommendation. No baseline model may be fitted before the completed Stage 8 report is separately approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review the Stage 8 evidence, 12 hard gates, 12 mandatory constraints, frozen hypotheses and provisional `READY` recommendation, then record a separate owner decision of `READY`, `REVISE` or `DO NOT MODEL`. No baseline model may be fitted before owner approval of `READY`.
 
 ## Completed Foundation
 
@@ -111,6 +111,12 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Stage 7 automated status is PASS with zero failures, one warning and three review findings: one rolling validation window has zero positives; two partitions have fewer than 10 represented onsets; 38 player holdouts have zero development positives; robust fatigue coverage is 8.4%.
 - Executed canonical script and notebook against GCS; committed implementation and retained outputs at `9125b85`. Full gates pass: lock, 66-file formatting scope, Ruff, strict mypy across 29 source files and pytest (`79 passed`, one expected ZIP duplicate-name warning).
 - Project owner approved the Stage 7 results interpretation on 2026-08-15; accepted `DEC-037` as `PASS WITH LIMITATIONS` and authorised Stage 8 specification review without authorising implementation or modelling.
+- Project owner approved the Stage 8 readiness specification on 2026-08-15; accepted the binary hard-gate methodology under `DEC-038`.
+- Implemented shared Stage 8 code, canonical script, matching output-free notebook, ten public tables, four charts, report, manifest and four focused tests.
+- Consolidated 24 hashed evidence artifacts across Stages 0-7. All eight manifests are PASS, no retained findings register contains a failure and all eight notebooks are present and output-free.
+- All 12 readiness hard gates pass. The report preserves 12 mandatory controls, including sparse temporal/player support, self-reported outcome semantics, missing wellness, F3 coverage, load/sRPE redundancy, one-time final-test access and non-deployment claims.
+- Stage 8 provisionally recommends `READY` only for a narrow exploratory M0/M1 subjective-data baseline programme. The stage itself authorises no modelling and accessed no final-test performance.
+- Executed canonical script and notebook locally against retained evidence; committed implementation and outputs at `7a17edd`. Full gates pass: lock, formatting across 69 Python files, Ruff, strict mypy across 30 source files and pytest (`83 passed`, one expected ZIP duplicate-name warning).
 
 ## Current Repository State
 
@@ -119,13 +125,13 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      79 passing tests, including Stage 0 through Stage 7 tests
+tests/                      83 passing tests, including Stage 0 through Stage 8 tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
 ```
 
-Active Stage 0 through Stage 7 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. The Stage 7 split protocol is frozen as retained metadata; no split-assigned cloud dataset or model exists. Historical commits remain available locally by design.
+Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. The Stage 7 split protocol and Stage 8 launch controls are frozen as retained metadata; no split-assigned cloud dataset or model exists. Historical commits remain available locally by design.
 
 ## Current GCP State
 
@@ -193,14 +199,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-035` freezes the primary and secondary Stage 6 outcome/cohort policy and authorises Stage 7 specification review without authorising implementation.
 - `DEC-036` freezes the Stage 7 predictor ladder, prohibited fields, chronological partitions and embargoes, development stress tests, train-only preprocessing, metrics, uncertainty and alert-capacity rules.
 - `DEC-037` accepts Stage 7 as `PASS WITH LIMITATIONS`, preserves the frozen protocol, constrains sparse-support interpretation and authorises Stage 8 specification review only.
+- `DEC-038` freezes the Stage 8 binary hard-gate readiness method, evidence provenance, mandatory limitation controls, hypothesis register, M0/M1-first launch sequence and owner decision gate.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve the Stage 8 pre-model readiness specification before implementation.
-- After implementation and review, decide whether Stage 8 is `READY`, `REVISE` or `DO NOT MODEL`.
+- Decide whether to approve the Stage 8 provisional recommendation as `READY`, request `REVISE`, or choose `DO NOT MODEL`.
 
 ## Known Issues / Technical Debt
 
@@ -219,18 +225,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 8 implementation is process-blocked until the project owner approves its specification.
+No technical blocker. Modelling is process-blocked until the project owner separately approves the Stage 8 recommendation as `READY`.
 
 ## Work In Progress
 
-Stage 8 specification review is open. No Stage 8 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 8 results review is open. Implementation and retained outputs are committed at `7a17edd`; no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present the Stage 8 evidence-consolidation, hard-gate, hypothesis and modelling-control specification.
-2. Obtain project-owner approval or revision of that specification.
-3. After approval, implement Stage 8 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
-4. Review the completed report and obtain a separate `READY`, `REVISE` or `DO NOT MODEL` decision before any modelling.
+1. Present and discuss the Stage 8 evidence register, hard gates, mandatory controls, hypotheses and provisional `READY` recommendation.
+2. Obtain a project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`.
+3. If `READY`, record the modelling authorisation and present the first M0 baseline specification before implementation.
+4. Keep final-test performance locked until model-development choices and the final-test checklist are complete.
 
 ## Validation / Quality Gate Status
 
@@ -238,9 +244,9 @@ Stage 8 specification review is open. No Stage 8 code is in progress, and no oth
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | format check clean across 66 Python files |
-| Type check | PASS | strict mypy, 29 source files |
-| Tests | PASS | 79 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | format check clean across 69 Python files |
+| Type check | PASS | strict mypy, 30 source files |
+| Tests | PASS | 83 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
@@ -284,18 +290,22 @@ Stage 8 specification review is open. No Stage 8 code is in progress, and no oth
 | Stage 7 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
 | Stage 7 results review | PASS WITH LIMITATIONS | project-owner approval received 2026-08-15; interpretation accepted under `DEC-037` |
 | Leakage/split gate | FROZEN | exact partitions and embargoes retained; final-test performance locked |
-| Stage 8 specification | PENDING OWNER APPROVAL | readiness evidence, hard gates and decision rules to approve |
-| Stage 8 implementation | NOT STARTED | blocked pending specification approval |
+| Stage 8 specification | PASS | project-owner approval received 2026-08-15; method accepted under `DEC-038` |
+| Stage 8 implementation | PASS | shared module, script, notebook, outputs and tests committed at `7a17edd` |
+| Stage 8 evidence and hard gates | PASS | 8 stages, 24 hashed artifacts, 12/12 hard gates and 12 mapped constraints |
+| Stage 8 notebook execution | PASS | executed against retained evidence with zero errors; committed notebook remains output-free |
+| Stage 8 provisional recommendation | READY PENDING OWNER DECISION | narrow exploratory M0/M1 scope only; stage run does not authorise modelling |
+| Stage 8 results review | PENDING OWNER DECISION | choose `READY`, `REVISE` or `DO NOT MODEL` |
 | Modelling | NOT STARTED | no model fitted |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v37, 2026-08-15T13:24:46Z | v37, 2026-08-15T13:24:46Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-037 | DEC-001 to DEC-037 |
+| `PROJECT_STATE.md` | v38, 2026-08-15T14:02:27Z | v38, 2026-08-15T14:02:27Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-038 | DEC-001 to DEC-038 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `ac321c0`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `7a17edd`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

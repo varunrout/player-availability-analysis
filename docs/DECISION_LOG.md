@@ -1054,11 +1054,41 @@ Stage 8 must consolidate Stages 0-7 into one evidence register, map every limita
 
 ---
 
+## DEC-038
+
+**Decision ID:** DEC-038
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The project owner approved the Stage 8 pre-model readiness specification after Stage 7 was accepted as `PASS WITH LIMITATIONS`. The final gate needed to consolidate approved Stage 0-7 evidence without averaging away hard failures, convert material limitations into enforceable modelling controls, freeze hypotheses and launch sequencing, and protect the uninspected final test.
+
+**Decision:**
+Use a binary hard-gate readiness method rather than a numeric score. Consolidate each Stage 0-7 manifest, findings register and report with content hashes. Require hard gates for evidence completeness, stage integrity, outcome reproduction, missingness semantics, feature integrity, cohort/split integrity, leakage prevention, final-test governance, pre-model isolation, minimum exploratory outcome support, protocol completeness and notebook/lockfile reproducibility. Any failed gate returns `REVISE` unless its declared disposition is `DO NOT MODEL`; only zero failed gates may return `READY`.
+
+Require every material limitation to have a mandatory modelling or claim control. Freeze the final hypothesis register, M0/M1-first launch sequence, M2+ complexity deferral and ten-item final-test access checklist. Stage 8 must return exactly one provisional recommendation from `READY`, `REVISE` or `DO NOT MODEL`; that recommendation never authorises modelling by itself and requires separate project-owner approval. Stage 8 may not fit a model, generate predictions, select thresholds, compute performance metrics or inspect final-test performance.
+
+**Rationale:**
+Hard-gate logic prevents numerous routine passes from masking an outcome, leakage or governance failure. Explicit limitation-to-control mapping preserves sparse temporal/player support, reporting-process risks and validity constraints as obligations rather than footnotes. Separating the generated recommendation from owner authorisation preserves the agreed stage-gated control process.
+
+**Alternatives Considered:**
+Use a weighted readiness score, rejected because a fatal leakage or outcome failure could be averaged away. Treat sparse support as an automatic prohibition, rejected because all partitions retain positive onset support and a narrow exploratory baseline remains potentially informative under strict controls. Treat `READY` as deployment readiness, rejected because no prospective club, external-team or medical validation exists. Begin M2 tree or survival modelling immediately after readiness, rejected because complexity must be earned through M0/M1 evidence.
+
+**Consequences:**
+The completed Stage 8 report provisionally recommends `READY` for a narrow exploratory M0/M1 subjective-data baseline programme because all 12 hard gates pass. Twelve mandatory constraints remain binding. Modelling is still prohibited until the project owner separately approves the Stage 8 `READY` recommendation and that approval is recorded as a new decision. Final-test performance remains locked.
+
+**Affected Components:** readiness methodology, evidence provenance, hypothesis register, modelling sequence, limitation controls, final-test governance, owner approval gate
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Stage 8 specification requires project-owner approval. The completed Stage 8 report must then receive a separate project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`. Final-test performance access remains prohibited.
+The completed Stage 8 report provisionally recommends `READY` and requires a separate project-owner decision of `READY`, `REVISE` or `DO NOT MODEL`. Modelling and final-test performance access remain prohibited until that decision is recorded.
 
 ### Resolved
 
