@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 41
-Last Updated UTC: 2026-08-15T19:40:57Z
+State Version: 42
+Last Updated UTC: 2026-08-15T19:46:00Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: e2b5f8757c0e970e65aca2bee3c28d5d68819328 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-003 M1 Specification Review
-Current Phase Status: EXP-002 M0 is accepted under `DEC-040`. Global training prevalence is the official minimum probability benchmark; recent load is retained as a failed descriptive comparator and is not an operational or causal result. EXP-003 M1 specification review is authorised. M1 fitting remains blocked until exact specification approval; final-test performance remains locked.
+Git HEAD: 05273899d64d5d91fa590122862f187fae3c519f (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-003 M1-F1 Implementation
+Current Phase Status: The exact development-only M1-F1 regularised-logistic specification is approved under `DEC-041`. Implementation and development evaluation are authorised. F2/F3, post-hoc calibration selection and final-test performance remain locked pending F1 results review.
 
 ## Current Objective
 
-Present and approve the exact EXP-003 M1 regularised-logistic implementation specification, including feature-set sequence, finite tuning grid, train-only preprocessing, development evaluation, calibration boundary, uncertainty, retained artifacts and stopping rules. No model fit begins before specification approval.
+Implement and execute EXP-003 M1-F1 using the frozen nine-predictor contract, finite regularisation grid, train-only preprocessing and development-only evaluation. Produce reproducible metrics, diagnostics, stress tests, uncertainty, model artifact and retained report, then stop for project-owner `PROMOTE`, `REVISE` or `REJECT` review.
 
 ## Completed Foundation
 
@@ -214,13 +214,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-038` freezes the Stage 8 binary hard-gate readiness method, evidence provenance, mandatory limitation controls, hypothesis register, M0/M1-first launch sequence and owner decision gate.
 - `DEC-039` accepts the Stage 8 `READY` recommendation, authorises development-only EXP-002 M0 under the approved output contract, keeps M1 pending M0 review and preserves the final-test lock.
 - `DEC-040` accepts EXP-002 M0, freezes global training prevalence as the official minimum probability benchmark, retains recent load as a failed descriptive comparator and authorises M1 specification review only.
+- `DEC-041` authorises development-only M1-F1 regularised logistic regression, freezes predictors, preprocessing, tuning, diagnostics, stress tests and output contract, and keeps F2/F3, calibration selection and final test blocked.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the exact EXP-003 M1 implementation specification before model fitting.
+- Review completed M1-F1 evidence and decide `PROMOTE`, `REVISE` or `REJECT` before F2.
 
 ## Known Issues / Technical Debt
 
@@ -239,18 +240,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. M1 fitting is process-blocked until exact specification approval. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker for M1-F1. F2/F3 and post-hoc calibration are blocked until F1 results review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-EXP-003 M1 specification review is open. No M1 dependency, code, fit or prediction exists; no other control session is known to be modifying the working tree.
+EXP-003 M1-F1 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present the exact EXP-003 M1 implementation specification.
-2. Obtain project-owner approval or requested revisions before implementation.
-3. If approved, add the bounded modelling dependency and implement M1-F1 first under development-only controls.
-4. Stop for F1 results review before incremental F2/F3 execution; keep final-test predictions and performance locked.
+1. Add bounded modelling dependencies and implement shared M1-F1 preprocessing, fitting and evaluation.
+2. Add the canonical job, matching output-free notebook, retained artifacts and focused leakage tests.
+3. Execute against GCS development data, visually inspect charts and run full quality gates.
+4. Stop for F1 results review before F2/F3; keep final-test predictions and performance locked.
 
 ## Validation / Quality Gate Status
 
@@ -316,17 +317,17 @@ EXP-003 M1 specification review is open. No M1 dependency, code, fit or predicti
 | EXP-002 M0 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-002 M0 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
 | EXP-002 M0 results review | PASS | project-owner `BENCHMARK ACCEPT` received 2026-08-15; decision recorded under `DEC-040` |
-| EXP-003 M1 specification | PENDING OWNER APPROVAL | no M1 code, fit or prediction exists |
-| Modelling | M1 SPECIFICATION REVIEW | final test locked |
+| EXP-003 M1-F1 specification | APPROVED | development-only contract accepted under `DEC-041` |
+| Modelling | M1-F1 IMPLEMENTATION AUTHORISED | F2/F3 and final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v41, 2026-08-15T19:40:57Z | v41, 2026-08-15T19:40:57Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-040 | DEC-001 to DEC-040 |
+| `PROJECT_STATE.md` | v42, 2026-08-15T19:46:00Z | v42, 2026-08-15T19:46:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-041 | DEC-001 to DEC-041 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `e2b5f87`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `0527389`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

@@ -1142,11 +1142,41 @@ M1 must be compared against the frozen global-prevalence benchmark on the same d
 
 ---
 
+## DEC-041
+
+**Decision ID:** DEC-041
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+After accepting M0 under `DEC-040`, the project required an exact first learned-model specification before fitting. The approved specification limits EXP-003 initially to F1 absolute load and strictly prior wellness predictors, preserves the frozen chronological development partitions, and separates raw-model comparison from later post-hoc calibration selection.
+
+**Decision:**
+Authorise development-only EXP-003 M1-F1 regularised logistic regression. Use the nine frozen F1 predictors: current/7-day/28-day `log1p` daily load; lag-one fatigue/readiness; and strictly prior 7-day/28-day fatigue/readiness means. Fit training-only median imputation with explicit missing indicators and standard scaling. Use L2 logistic regression with `lbfgs`, maximum 5,000 iterations and finite `C` grid `[0.001, 0.01, 0.1, 1.0, 10.0]`; keep the primary model unweighted. Select by validation Brier, then average precision, then stronger regularisation for ties.
+
+Compare the selected raw F1 model with the frozen M0 global-prevalence benchmark using Brier, log loss, average precision, ROC-AUC, calibration diagnostics, 1%/2.5%/5% capacity-bounded alert simulation, onset capture and lead time. Run expanding rolling-origin and support-aware leave-one-player-out development stress tests plus player-cluster and temporal-week uncertainty. Persist shared code, versioned configuration, canonical job, matching output-free notebook, validation-only predictions, candidate model and reports under `outputs/modelling/exp_003_m1_logistic/f1/`. Do not select Platt or isotonic calibration yet. Do not fit F2/F3 or access final-test performance before F1 owner review.
+
+**Rationale:**
+F1 is the smallest interpretable learned model that tests whether absolute load and legitimate prior wellness add prospective value beyond prevalence. A finite, strongly regularised grid constrains search under limited events. Delaying post-hoc calibration until feature-family comparison avoids separately tuning every feature set to the sparse validation outcome, while raw calibration diagnostics keep probability quality visible.
+
+**Alternatives Considered:**
+Fit F1/F2/F3 together, rejected because incremental feature-family value should be reviewed sequentially. Use same-day wellness, rejected under the prediction-time and outcome-entanglement controls. Make balanced class weighting primary, rejected because it can distort probability calibration; it remains a later labelled sensitivity if required. Select by AUROC, rejected because rare-event probability quality and operational capture are primary. Tune on final test, rejected outright.
+
+**Consequences:**
+M1-F1 code and development evaluation are authorised. M1-F2, M1-F3, post-hoc calibration selection, horizon sensitivities, M2+ and final-test performance remain blocked. The resulting F1 candidate requires a separate owner `PROMOTE`, `REVISE` or `REJECT` decision.
+
+**Affected Components:** modelling dependencies, preprocessing, logistic regression, development validation, calibration diagnostics, alert simulation, uncertainty, model artifacts, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-EXP-002 M0 is accepted under `DEC-040`. EXP-003 M1 implementation remains pending approval of the exact implementation specification. Final-test performance access remains prohibited.
+EXP-003 M1-F1 implementation and development evaluation are authorised under `DEC-041`. F1 results require `PROMOTE`, `REVISE` or `REJECT` before F2. Final-test performance access remains prohibited.
 
 ### Resolved
 
