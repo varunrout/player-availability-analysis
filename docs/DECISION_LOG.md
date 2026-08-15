@@ -996,11 +996,41 @@ Stage 7 must encode the primary and secondary cohort/outcome contracts, freeze t
 
 ---
 
+## DEC-036
+
+**Decision ID:** DEC-036
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+After Stage 6 froze the primary outcome and cohort, the project required a complete prospective protocol before the pre-model readiness gate. Same-day wellness remains outcome-entangled and its intraday ordering is unavailable. Existing prior z-scores are unstable, daily load and session sRPE are near duplicates, and effective outcomes are concentrated across a small number of players and periods. The project owner approved the Stage 7 specification before implementation.
+
+**Decision:**
+Freeze the Stage 7 prospective protocol as follows. Use a model ladder in which F0 is global training prevalence with no predictors; F1 contains current/7-day/28-day `log1p` daily-load representations plus strictly lagged fatigue/readiness and prior 7-day/28-day wellness means; F2 adds session-recording state, session count, current/7-day/28-day `log1p` duration and strictly prior reporting indicators/counts; F3 adds nullable strictly prior robust player-relative load, fatigue and readiness features with explicit availability indicators. Test session sRPE only as a replacement for the daily-load family, never alongside it. Prohibit identities, raw dates, same-day wellness/reporting, outcomes, active-episode/follow-up fields, source identifiers and existing unstable z-scores.
+
+Freeze the primary chronological partitions at training `2020-01-29` through `2020-12-24`, validation `2021-01-01` through `2021-06-23`, and locked final test `2021-07-01` through `2021-12-24`, with seven-day embargo periods between partitions. Use matching horizon-length embargoes for 3-day and 14-day sensitivities. Use expanding rolling-origin development folds and leave-one-player-out development stress tests; prohibit random row-level headline splitting. Fit imputation, scaling, feature selection, weighting and calibration only within the appropriate training/development scope. Pre-specify Brier score and average precision as primary later metrics; calibration, log loss, ROC-AUC and practitioner-facing alert/event-capture measures as secondary or operational metrics; 1%, 2.5% and 5% review-rate budgets; and player-cluster plus temporal-block uncertainty.
+
+**Rationale:**
+This contract preserves legitimate end-of-day exposure information while rebuilding wellness and personalisation features from strictly earlier observations. The feature ladder tests added information in interpretable stages and prevents redundant load representations from masquerading as independent evidence. Calendar partitions and embargoes preserve temporal order and prevent target windows from crossing evaluation boundaries. Pre-specifying evaluation, uncertainty and alert-capacity rules reduces opportunistic model selection and keeps outputs aligned with practitioner review rather than diagnosis.
+
+**Alternatives Considered:**
+Use same-day wellness, rejected because prediction-time ordering is unresolved and reporting changes around onset. Include all candidate rolling windows and both load/sRPE families, rejected because Stage 4 demonstrated severe redundancy. Use player/team identifiers, rejected because memorisation would undermine transfer claims. Use random row splits, rejected because repeated player-days and temporal dependence would leak context. Choose split dates after model performance inspection, rejected; boundaries are frozen before modelling. Require robust-feature availability for cohort entry, rejected because Stage 6 showed material support loss. Use a single unconstrained threshold, rejected because practitioner capacity must be explicit.
+
+**Consequences:**
+Stage 7 may inspect only cohort, predictor coverage, partition support and leakage evidence; it may not fit models or inspect final-test performance. The completed audit records sparse validation/test onset support, one zero-positive rolling validation window, 38 zero-positive player holdouts and very low robust-fatigue coverage. Stage 8 must determine whether these limitations are compatible with a narrow baseline experiment and must return `READY` before any model is fitted. Final-test performance remains locked until model selection and calibration choices are complete.
+
+**Affected Components:** feature engineering, predictor contracts, cohort assignment, chronological validation, leakage controls, preprocessing, metrics, uncertainty, alert policy, modelling gate
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Stage 7 must freeze the predictor allow-list, preprocessing, chronological boundaries, uncertainty, metrics and operational alert rules. Final-test access remains unfrozen and prohibited until that protocol is approved.
+Stage 7 results require project-owner interpretation approval. Stage 8 must then determine `READY` or `NOT READY` for modelling under the frozen protocol. Final-test performance access remains prohibited.
 
 ### Resolved
 

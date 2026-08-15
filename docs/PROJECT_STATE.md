@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 35
-Last Updated UTC: 2026-08-15T01:48:34Z
+State Version: 36
+Last Updated UTC: 2026-08-15T02:24:45Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: fa70de112f257b38478d12637e0792da64114d33 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 7 Specification
-Current Phase Status: Stage 6 results and the primary/secondary outcome-cohort policy are approved under `DEC-035`. Stage 7 final protocol and leakage audit awaits project-owner specification approval; implementation is not yet authorised.
+Git HEAD: 9125b85d6e2f9c73cd719882b2b6e0ade04ef658 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 7 Results Review
+Current Phase Status: Stage 7 specification was approved and frozen under `DEC-036`, then implemented and executed. Automated protocol/leakage status is PASS with one warning and three review findings. Project-owner results interpretation is pending; Stage 8 is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 7 specification for the final predictor contract, preprocessing, chronological boundaries, leakage tests, metrics, uncertainty and operational alert rules. No Stage 7 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 7's frozen protocol, leakage evidence and sparse-support limitations, then approve or revise the interpretation before Stage 8 specification review. No baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -102,6 +102,14 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Full quality gate passes: lockfile, formatting across 63 files, Ruff, strict mypy across 51 source files and pytest (`75 passed`, one expected ZIP duplicate-name warning); notebook execution produced zero errors and the committed notebook remains output-free.
 - Project owner approved the Stage 6 results and recommended primary/secondary outcome-cohort policy on 2026-08-15.
 - Accepted `DEC-035`: primary three-day episode gap, seven-day target and 28-day burn-in; no wellness or baseline eligibility gate; mandatory 3/14-day horizon, 1/7-day gap and broad no-burn-in sensitivities; isolated onset is never a prospective filter.
+- Project owner approved the Stage 7 prospective protocol and leakage-audit specification on 2026-08-15; accepted `DEC-036`.
+- Implemented shared Stage 7 code, canonical script, matching output-free notebook, 14 public tables, eight charts, report, manifest and four focused tests.
+- Rebuilt 26 allowed prediction-time predictors across the F1-F3 ladder plus sRPE replacement sensitivity; F0 remains a no-predictor global-rate baseline.
+- Strictly lagged wellness and prior robust features pass future-append invariance across 27,350 earlier rows; same-day wellness, identities, outcomes and future/follow-up fields are excluded.
+- Frozen partitions contain 16,365 training, 8,690 validation and 8,845 final-test player-days, with 56, 5 and 5 represented onsets respectively; 700 player-days are deliberately embargoed.
+- The final test was audited for support only and remains locked: no model, prediction, threshold or performance metric was produced.
+- Stage 7 automated status is PASS with zero failures, one warning and three review findings: one rolling validation window has zero positives; two partitions have fewer than 10 represented onsets; 38 player holdouts have zero development positives; robust fatigue coverage is 8.4%.
+- Executed canonical script and notebook against GCS; committed implementation and retained outputs at `9125b85`. Full gates pass: lock, 66-file formatting scope, Ruff, strict mypy across 29 source files and pytest (`79 passed`, one expected ZIP duplicate-name warning).
 
 ## Current Repository State
 
@@ -110,13 +118,13 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      75 passing tests, including Stage 0 through Stage 6 tests
+tests/                      79 passing tests, including Stage 0 through Stage 7 tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
 ```
 
-Active Stage 0 through Stage 6 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. There is no active split implementation, split-assigned dataset or model. Historical commits remain available locally by design.
+Active Stage 0 through Stage 7 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. The Stage 7 split protocol is frozen as retained metadata; no split-assigned cloud dataset or model exists. Historical commits remain available locally by design.
 
 ## Current GCP State
 
@@ -182,14 +190,15 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-033` defines the target-blind full-contract catalogue and compact provisional operational feature-family policy; the exact predictor allow-list remains unfrozen until Stage 7.
 - `DEC-034` accepts Stage 5 only as constrained retrospective context evidence and authorises Stage 6 specification review without authorising implementation.
 - `DEC-035` freezes the primary and secondary Stage 6 outcome/cohort policy and authorises Stage 7 specification review without authorising implementation.
+- `DEC-036` freezes the Stage 7 predictor ladder, prohibited fields, chronological partitions and embargoes, development stress tests, train-only preprocessing, metrics, uncertainty and alert-capacity rules.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve or revise the Stage 7 final prospective protocol and leakage-audit specification.
-- Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
+- Approve or revise the Stage 7 results interpretation, including sparse temporal and unseen-player support limitations.
+- Approve the Stage 8 pre-model readiness specification before implementation.
 
 ## Known Issues / Technical Debt
 
@@ -201,21 +210,25 @@ No API, dashboard, product table or inference service is implemented. The intend
 - Feature magnitudes and recording intensity differ by team and calendar period; later validation must measure temporal and player/team transfer sensitivity.
 - The current and rolling daily-load and session-sRPE fields are near duplicates; carrying both as independent operational signals would inflate dimensionality without independent information.
 - Full objective/GPS ingestion remains deliberately deferred.
+- Validation and final-test partitions each represent only five onsets; inferential precision and model-selection capacity will be limited.
+- One rolling-origin validation window has zero positive player-days, so it cannot support discrimination or calibration estimation and must remain a temporal stress window.
+- Thirty-eight of 50 leave-one-player-out development folds have zero positive held-out days; unseen-player metrics require support-aware aggregation and cautious claims.
+- The robust fatigue predictor is available on only 8.4% of primary-cohort days because discrete prior scores often have zero robust scale; F3 must remain an incremental sensitivity unless Stage 8 revises it.
 
 ## Blockers
 
-No technical blocker. Stage 7 implementation is process-blocked until the project owner approves its specification.
+No technical blocker. Stage 8 is process-blocked until the project owner approves the Stage 7 results interpretation and then approves the Stage 8 specification.
 
 ## Work In Progress
 
-Stage 7 specification review is open. No Stage 7 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 7 results review is open. Implementation and retained outputs are committed at `9125b85`; no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present the Stage 7 final protocol/leakage-audit specification, including predictor allow-list, split boundaries, embargoes, preprocessing, metrics, uncertainty and alert-capacity rules.
-2. Obtain project-owner approval or revision of that specification.
-3. After approval, implement Stage 7 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
-4. Run Stage 7, discuss the frozen protocol and obtain a separate results approval before Stage 8.
+1. Present and discuss Stage 7 protocol, leakage checks, predictor coverage and temporal/player support limitations.
+2. Obtain project-owner approval, revision or rejection of the Stage 7 results interpretation.
+3. If approved, present the Stage 8 pre-model readiness-report specification.
+4. Do not implement Stage 8 before specification approval and do not fit a model before Stage 8 returns `READY`.
 
 ## Validation / Quality Gate Status
 
@@ -223,9 +236,9 @@ Stage 7 specification review is open. No Stage 7 code is in progress, and no oth
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | repository format check clean across 63 files |
-| Type check | PASS | strict mypy, 51 source files |
-| Tests | PASS | 75 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | format check clean across 66 Python files |
+| Type check | PASS | strict mypy, 29 source files |
+| Tests | PASS | 79 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
@@ -263,19 +276,22 @@ Stage 7 specification review is open. No Stage 7 code is in progress, and no oth
 | Stage 6 automated integrity | PASS | all nine gap/horizon combinations rebuilt; zero failures or warnings; two review findings |
 | Stage 6 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
 | Stage 6 results review | PASS | project-owner approval received 2026-08-15; policy accepted under `DEC-035` |
-| Stage 7 specification | PENDING OWNER APPROVAL | final protocol and leakage-audit scope to approve |
-| Stage 7 implementation | NOT STARTED | blocked pending specification approval |
-| Leakage/split gate | NOT ACTIVE | no split currently frozen |
+| Stage 7 specification | PASS | project-owner approval received 2026-08-15; protocol accepted under `DEC-036` |
+| Stage 7 implementation | PASS | shared module, script, notebook, outputs and tests committed at `9125b85` |
+| Stage 7 automated protocol/leakage audit | PASS WITH LIMITATIONS | zero failures, one warning, three review findings |
+| Stage 7 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
+| Stage 7 results review | PENDING OWNER APPROVAL | sparse temporal, player and robust-feature support requires interpretation |
+| Leakage/split gate | FROZEN PENDING RESULTS APPROVAL | exact partitions and embargoes retained; final-test performance locked |
 | Modelling | NOT STARTED | no model fitted |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v35, 2026-08-15T01:48:34Z | v35, 2026-08-15T01:48:34Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-035 | DEC-001 to DEC-035 |
+| `PROJECT_STATE.md` | v36, 2026-08-15T02:24:45Z | v36, 2026-08-15T02:24:45Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-036 | DEC-001 to DEC-036 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `fa70de1`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `9125b85`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
