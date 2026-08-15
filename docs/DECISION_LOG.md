@@ -1022,7 +1022,7 @@ Stage 7 may inspect only cohort, predictor coverage, partition support and leaka
 **Affected Components:** feature engineering, predictor contracts, cohort assignment, chronological validation, leakage controls, preprocessing, metrics, uncertainty, alert policy, modelling gate
 
 **Supersedes:** none
-**Superseded By:** none
+**Superseded By:** `DEC-047`, in respect of headline-evaluation designation only. All other frozen elements of this decision, including partition boundaries, embargoes, predictor contracts, prohibited fields, preprocessing scope and the final-test lock, remain in force unchanged.
 
 ---
 
@@ -1310,13 +1310,131 @@ Renormalisation settled all twenty-seven files with no content change; only the 
 
 ---
 
+## DEC-046
+
+**Decision ID:** DEC-046
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The project needed an explicit definition of a shippable V1 before further development. Partition support was quantified as 56 onsets in train, five in validation and five in final test, against 66 represented onsets in the frozen cohort and 71 in the broad candidate cohort. Reported onsets fall roughly tenfold from 2020 to 2021 while player-days remain flat, which combined with the Stage 2 reporting-engagement evidence indicates decaying self-report participation rather than reduced injury incidence. Five players contribute 74.6% of onsets, so the effective sample is closer to a dozen athletes than fifty.
+
+**Decision:**
+V1 is defined as a complete subjective-data decision-support system whose primary evidence is methodological rigour and product completeness, not discrimination performance.
+
+V1 scope:
+1. `EXP-009` calibration of the F3 candidate.
+2. A Cox proportional-hazards survival model, providing the charter-required conclusion on whether time-to-event framing adds value.
+3. M2 gradient boosting executed as a deliberate complexity test under `DEC-006`.
+4. Explainability and uncertainty surfaces.
+5. Batch inference into `paa_product`.
+6. A practitioner dashboard on Cloud Run covering squad, player, data-quality and model-health views.
+7. A model card leading with limitations.
+8. Containerisation, CI and reproducibility.
+9. Exactly one pre-registered final-test evaluation, spent once on the single champion at the end of the programme.
+10. Portfolio artefacts: README, architecture diagram, case study and interview narrative.
+
+Explicitly deferred to V2: objective GPS ingestion and processing, neural survival models, online serving.
+
+**Rationale:**
+The available outcome support cannot sustain a claim of the form "this system predicts injuries". Pursuing a headline discrimination figure would produce a number that collapses under scrutiny, and the concentration and reporting-decay findings mean it would not transfer. Defining V1 around a leak-safe pipeline, calibrated risk with visible uncertainty, quantified support limits and an operable practitioner product converts the dataset's weakness into demonstrated judgement.
+
+This is consistent with the charter, which states that success is not defined by a single AUROC and lists methodological judgement, responsible predictive modelling and stakeholder communication as the success criteria.
+
+Including Cox is not optional dressing. Time-to-event framing uses censoring and the full event set rather than a five-event fixed window, so it is the modelling response most appropriate to sparse support, and the charter requires an explicit conclusion on whether it adds value.
+
+Including M2 is expected to yield a negative result at this sample size. That is a deliberate and reportable outcome demonstrating the `DEC-006` ladder discipline in practice.
+
+**Alternatives Considered:**
+A lean V1 taking calibrated M1-F3 straight to product, rejected because it drops the survival conclusion the charter requires and discards the strongest available response to sparse events. An extended V1 including a GPS pilot, rejected because it adds material time and cost while being unable to relieve the outcome-support limit that constrains every model claim; it remains the natural V2 opening.
+
+**Consequences:**
+- Delivery is governed by `docs/V1_DELIVERY_PLAN.md`, with owner approval gates preserved as used since Stage 0.
+- No V1 artefact may present discrimination performance as the headline result.
+- The final-test partition is spent exactly once, on a pre-registered champion and pre-registered claims. Any second access requires a new superseding decision.
+- GPS work remains prohibited for the duration of V1.
+
+**Affected Components:** delivery scope, modelling programme, product, documentation, portfolio material, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
+## DEC-047
+
+**Decision ID:** DEC-047
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-036` froze a single chronological validation window as the headline evaluation. That window contains five represented onsets across three players. Every comparison made against it is therefore underpowered, and the EXP-003 feature ladder demonstrated the consequence directly: only one of four paired intervals excluded zero, and a single event separated the feature sets at the tight review budget.
+
+**Decision:**
+Pooled rolling-origin evaluation across the full development period becomes the **headline** evaluation. The fixed chronological validation window is retained as a secondary temporal stress result.
+
+This supersedes `DEC-036` in respect of headline designation only. Partition boundaries, embargoes, predictor contracts, prohibited fields, preprocessing scope, leakage controls and the final-test lock are unchanged and remain in force.
+
+**Rationale:**
+Rolling-origin evaluation respects chronology exactly as the fixed window does, since every fold trains only on the past and tests on the future. It aggregates across substantially more events, which is the only way to obtain usable inferential precision from this dataset without weakening any leakage control. Changing which chronologically valid view is primary does not relax rigour; retaining a five-event window as the headline would knowingly report conclusions the data cannot support.
+
+**Alternatives Considered:**
+Retaining the single window as headline, rejected because it guarantees that most comparisons resolve to "not distinguishable" while still inviting readers to over-read point estimates. Reporting both with equal weight and no designated primary, rejected because it leaves a reviewer without an answer and creates room for post-hoc selection between two views.
+
+**Consequences:**
+- Pooled rolling-origin metrics are the primary reported result for all V1 model comparisons.
+- Folds with zero positive held-out days must be reported as such and excluded from discrimination aggregation rather than silently dropped, with the count of estimable folds stated alongside every pooled figure.
+- Per-fold results accompany every pooled figure so that instability, such as the F3 second-fold degradation, remains visible rather than averaged away.
+- The fixed-window result continues to be reported as a temporal stress test.
+- Existing EXP-002 and EXP-003 conclusions were reached under the previous designation and are not retrospectively restated; V1 reporting uses the new primary.
+- The final-test evaluation remains a single fixed chronological assessment and is unaffected.
+
+**Affected Components:** evaluation protocol, model comparison, reporting, model card, uncertainty quantification
+
+**Supersedes:** `DEC-036`, in respect of headline-evaluation designation only
+**Superseded By:** none
+
+---
+
+## DEC-048
+
+**Decision ID:** DEC-048
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The three-day episode gap accepted under `DEC-030` yields 73 distinct onsets. A one-day gap yields 108, roughly 48% more events, which would materially help every model given the sparse support documented in `DEC-046`.
+
+**Decision:**
+Retain the three-day episode gap as the primary rule. Report the one-day gap as a pre-registered mandatory sensitivity for every V1 headline result. The seven-day gap remains a secondary sensitivity.
+
+**Rationale:**
+`DEC-030` selected the three-day rule after inspecting reporting patterns and before any model was fitted. Loosening it now, after model results are known and specifically because it would increase event counts, is selection on the outcome. The gain would be real but the resulting figures would be indefensible under the most obvious question a reviewer would ask.
+
+Pre-registering the one-day variant as a mandatory sensitivity captures the same information honestly: if conclusions hold under both rules they are stronger, and if they do not, that instability is itself a finding worth reporting.
+
+**Alternatives Considered:**
+Switching the primary rule to the one-day gap, rejected on the outcome-selection grounds above despite the genuine statistical benefit.
+
+**Consequences:**
+- Every V1 headline result carries a one-day-gap sensitivity.
+- Divergence between rules must be reported explicitly rather than resolved by preferring the more favourable rule.
+- `DEC-030` remains in force and is not superseded.
+
+**Affected Components:** outcome definition, sensitivity analysis, reporting, model card
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-`EXP-009` calibration is authorised in scope under `DEC-044` but its exact specification requires owner approval before implementation, consistent with the stage-gated model. Final-test performance access remains prohibited.
+The `EXP-009` calibration specification requires owner approval before implementation, consistent with the stage-gated model. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete.
 
-Outstanding methodological risk, not yet a decision: effective outcome support is five onsets in each of the validation and final-test partitions. Whether to address this through a cohort, horizon or episode-rule change before further model comparison remains open and will limit every conclusion until resolved.
+Resolved in this revision: V1 scope is defined by `DEC-046`; the headline evaluation question is settled by `DEC-047`; the episode-gap question is settled by `DEC-048`.
 
 ### Resolved
 

@@ -1,16 +1,26 @@
 # Player Availability Analysis - Project State
 
-State Version: 46
-Last Updated UTC: 2026-08-15T22:40:00Z
+State Version: 47
+Last Updated UTC: 2026-08-15T23:20:00Z
 Coordination Session ID: PAA-CTRL-20260815-02
 Git Branch: main
-Git HEAD: df735d5 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-009 Calibration Specification
-Current Phase Status: EXP-003 is closed. F2 rejected; F3 promoted as the raw M1 candidate under `DEC-043`, with five limitations recorded as binding on all downstream reporting. `EXP-009` raw/Platt/isotonic calibration is authorised in scope under `DEC-044` and now requires an approved specification before implementation. Final-test performance remains locked.
+Git HEAD: 377436d (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: V1 Delivery Programme - Phase V1-P1 Calibration (`EXP-009`)
+Current Phase Status: V1 scope is defined and accepted under `DEC-046`. Pooled rolling-origin becomes the headline evaluation under `DEC-047`; the three-day episode gap is retained with a mandatory one-day sensitivity under `DEC-048`. The V1 delivery plan and the `EXP-009` calibration specification are drafted and await project-owner approval. Final-test performance remains locked and is spent once, in phase V1-P5.
 
 ## Current Objective
 
-Produce and obtain approval for the `EXP-009` calibration specification: raw against Platt against isotonic on the F3 candidate, development data only, with the five-onset power limitation stated inline in every reported conclusion. Preserve the final-test lock.
+Obtain project-owner approval of the `EXP-009` calibration specification, then implement and execute phase V1-P1 against development data only. Preserve the final-test lock.
+
+## V1 Delivery Context
+
+V1 is a complete subjective-data decision-support system whose primary evidence is methodological rigour and product completeness, not discrimination performance (`DEC-046`).
+
+The binding constraint is outcome support: 66 represented onsets in the frozen cohort, split 56 in train, five in validation and five in final test, with 74.6% of onsets from five players and only 12 of 50 players carrying any event. Reported onsets fall roughly tenfold from 2020 to 2021 at flat player-days, tracking decaying self-report engagement rather than reduced injury incidence.
+
+Phases: V1-P1 calibration, V1-P2 Cox survival, V1-P3 gradient-boosting complexity test, V1-P4 champion selection and explainability, V1-P5 pre-registration and single-use final test, V1-P6 product, V1-P7 operationalisation, V1-P8 release evidence. Governed by `docs/V1_DELIVERY_PLAN.md`.
+
+Deferred to V2: objective GPS ingestion, neural survival models, online serving.
 
 ## Completed Foundation
 
@@ -160,6 +170,16 @@ State v45 to v46, under coordination session `PAA-CTRL-20260815-02`.
 - Recorded five binding limitations against the F3 promotion: five-onset support, the unseen-player reversal against F1, rolling-origin instability, only one of four paired intervals excluding zero, and the 8.4%-coverage robust fatigue predictor entangled with reporting structure. These must accompany every downstream citation of F3.
 - Accepted `DEC-044`: authorised `EXP-009` raw/Platt/isotonic calibration on F3, development data only, with the power limitation binding and "no method distinguishable at this support" recorded in advance as an acceptable and expected result.
 
+State v46 to v47, under coordination session `PAA-CTRL-20260815-02`.
+
+- Diagnosed the outcome-support constraint as a temporal property of the dataset rather than a split-design fault: onsets fall from 56 in 2020 to five and five in the two 2021 partitions while player-days remain flat, consistent with the Stage 2 reporting-engagement evidence.
+- Established that no cohort adjustment resolves this. Moving to a one-day episode gap would raise total onsets from 73 to 108, which does not change the inferential situation materially.
+- Accepted `DEC-046`: defined V1 as a complete subjective-data decision-support system whose headline evidence is methodological rigour and product completeness, not discrimination performance. Scope covers calibration, Cox survival, a gradient-boosting complexity test, explainability, batch inference, a Cloud Run dashboard, model card, CI, containerisation, one single-use final-test evaluation and portfolio artefacts. GPS, neural survival and online serving are deferred to V2.
+- Accepted `DEC-047`: pooled rolling-origin evaluation becomes the headline, superseding `DEC-036` in respect of headline designation only. All frozen partitions, embargoes, contracts, preprocessing scope and the final-test lock remain in force.
+- Accepted `DEC-048`: retained the three-day episode gap as primary and pre-registered the one-day gap as a mandatory sensitivity on every V1 headline result, rejecting a switch that would have been selection on the outcome.
+- Authored `docs/V1_DELIVERY_PLAN.md`: eight phases with specification and results gates, an explicit definition of done, sequencing rules, scope-control cut order and a risk register.
+- Authored `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`: raw against Platt against isotonic on F3, fold-wise calibrator fitting disjoint from evaluation, eight automated integrity checks, the mandatory sparse-predictor availability audit and binding power-limitation reporting rules.
+
 ## Current Repository State
 
 ```text
@@ -250,6 +270,9 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-043` rejects F2, promotes F3 as the raw M1 development candidate, and binds five limitations to every downstream citation of F3; it authorises no deployment, no performance claim outside those limitations and no final-test access.
 - `DEC-044` authorises `EXP-009` raw/Platt/isotonic calibration on F3 using development data only, with the five-onset power limitation binding on every reported conclusion.
 - `DEC-045` fixes LF line endings in the repository and working tree, with explicit binary protection for Parquet, model artefacts and images.
+- `DEC-046` defines V1 scope and definition of done; no V1 artefact may present discrimination performance as the headline result, and the final test is spent exactly once.
+- `DEC-047` makes pooled rolling-origin the headline evaluation, superseding `DEC-036` in respect of headline designation only; zero-positive folds must be reported and excluded from discrimination aggregation with counts stated.
+- `DEC-048` retains the three-day episode gap as primary with the one-day gap as a mandatory pre-registered sensitivity on every V1 headline result.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
@@ -257,8 +280,9 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- Approve the exact `EXP-009` calibration specification before implementation: method set, fitting partition, output contract and the required inline power caveat.
-- Decide whether the five-onset effective support is addressed through a cohort, horizon or episode-rule change before further model comparison. This is not yet a decision record and it limits every conclusion until resolved.
+- Approve `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`. Both are drafted; implementation of V1-P1 is blocked until approval.
+
+Resolved since the previous revision: V1 scope (`DEC-046`), headline evaluation protocol (`DEC-047`) and the episode-gap question (`DEC-048`). The outcome-support limitation is no longer an open decision; it is an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
 
 ## Known Issues / Technical Debt
 
@@ -289,16 +313,17 @@ Standing analytical constraint, not a blocker: effective outcome support is five
 
 ## Work In Progress
 
-No implementation is in progress. The project is stopped at the `EXP-009` specification-approval gate. No other control session is known to be modifying the working tree.
+No implementation is in progress. The V1 delivery plan and the `EXP-009` specification are drafted and awaiting approval. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Draft the `EXP-009` calibration specification: raw against Platt against isotonic on F3, fitting partition, output contract, and the mandatory inline five-onset power caveat.
-2. Obtain owner approval of the specification before any implementation, consistent with the stage-gated model used since Stage 0.
-3. Implement and execute against development data only, retaining reliability curves, calibration slope and intercept, expected calibration error, Brier and log loss.
-4. Audit calibration sensitivity to the 8.4%-coverage robust fatigue predictor, per `DEC-043`.
-5. Keep final-test predictions and performance locked.
-6. Separately, decide whether to address the five-onset support limitation before further model comparison.
+1. Obtain project-owner approval of `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`.
+2. Implement V1-P1 as shared analysis code, canonical script, matching output-free notebook, retained tables and figures, and focused tests, per `DEC-029`.
+3. Execute against development data only. Fit calibrators fold-wise on partitions disjoint from evaluation.
+4. Complete the mandatory sparse-predictor availability audit for the 8.4%-coverage robust fatigue z-score, per `DEC-043`.
+5. Report pooled rolling-origin as primary with estimable-fold counts and per-fold values, plus the one-day-gap sensitivity, per `DEC-047` and `DEC-048`.
+6. Review results at the V1-P1 gate, then proceed to V1-P2 Cox survival.
+7. Keep final-test predictions and performance locked until V1-P5.
 
 ## Validation / Quality Gate Status
 
@@ -380,7 +405,12 @@ No implementation is in progress. The project is stopped at the `EXP-009` specif
 | EXP-009 specification | PENDING | owner approval required before implementation |
 | Line-ending policy | PASS | `.gitattributes` added and repository renormalised at `df735d5` under `DEC-045` |
 | Independent gate re-verification | PASS | all five gates reproduced from a clean environment in session `PAA-CTRL-20260815-02` |
-| Modelling | CALIBRATION SPECIFICATION REQUIRED | final test locked |
+| V1 scope definition | ACCEPTED | `DEC-046`; definition of done recorded in `docs/V1_DELIVERY_PLAN.md` |
+| V1 headline evaluation protocol | ACCEPTED | `DEC-047`; pooled rolling-origin primary, fixed window as temporal stress |
+| V1 outcome sensitivity policy | ACCEPTED | `DEC-048`; three-day gap primary, one-day gap mandatory sensitivity |
+| V1 delivery plan | PENDING APPROVAL | eight phases, gates, definition of done, risk register |
+| EXP-009 specification | PENDING APPROVAL | methods, fitting discipline, eight integrity checks, sparse-predictor audit |
+| Modelling | AWAITING V1-P1 APPROVAL | final test locked until V1-P5 |
 
 Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 83 files, strict mypy clean across 65 source files, `93 passed` with one expected ZIP warning, and `poetry check --lock` passing.
 
@@ -388,10 +418,12 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v46, 2026-08-15T22:40:00Z | v46, 2026-08-15T22:40:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-045 | DEC-001 to DEC-045 |
+| `PROJECT_STATE.md` | v47, 2026-08-15T23:20:00Z | v47, 2026-08-15T23:20:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-048 | DEC-001 to DEC-048 |
+| `V1_DELIVERY_PLAN.md` | created this revision | created this revision |
+| `EXP_009_CALIBRATION_SPECIFICATION.md` | created this revision | created this revision |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Both copies were compared field by field at the start of session `PAA-CTRL-20260815-02` and agreed on state version, timestamp, coordination session, Git reference and decision range. No reconciliation was required. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `df735d5`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were compared field by field at the start of session `PAA-CTRL-20260815-02` and agreed on state version, timestamp, coordination session, Git reference and decision range. No reconciliation was required. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `377436d`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
