@@ -1204,11 +1204,119 @@ M1-F2 and M1-F3 implementation and development evaluation are authorised under t
 
 ---
 
+## DEC-043
+
+**Decision ID:** DEC-043
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The EXP-003 feature ladder completed development-only evaluation of three cumulative predictor sets: F1 with 9 predictors, F2 with 17 and F3 with 23. Automated status was `PASS WITH REVIEW`, with `LADDER-04` raw feature-set selection and `LADDER-06` calibration scope left explicitly to the project owner. No calibrator was fitted and no final-test prediction or performance was produced.
+
+**Decision:**
+Reject F2. Promote **F3** as the raw M1 candidate feature set, carried forward into calibration under `DEC-044`.
+
+F3 is promoted as a *development candidate only*. This decision does not establish deployment readiness, does not authorise any final-test access, and does not license any performance claim outside the constraints recorded below.
+
+**Rationale:**
+F3 leads every held-period metric: Brier 0.003613 against 0.003700 for F1, log loss 0.030367 against 0.031272, average precision 0.019432 against 0.016640, and ROC-AUC 0.851053 against 0.807802. It is the only feature set to capture an onset at the tight 1% review budget, and it records the lowest false-alerts-per-capture at the 5% budget. Under temporal week-block resampling the F2-to-F3 Brier interval is [-0.000151, -0.000044], excluding zero in the candidate's favour. Since `DEC-007` makes calibration a first-class metric, the probability-quality gain in Brier and log loss is the most directly relevant evidence for the calibration experiment that follows.
+
+F2 is rejected on clean evidence: its Brier intervals exclude zero in the *wrong* direction under both resampling schemes, [0.000000, 0.000029] and [0.000007, 0.000017], while average precision is no better. Eight additional predictors delivered no measurable gain, which is exactly the outcome `DEC-006` requires to be acted on.
+
+**Alternatives Considered:**
+Retaining F1 as the reference and rejecting F3. This was the analytically recommended option and the counter-evidence for it is material, recorded below rather than omitted. Carrying both F1 and F3 into calibration, rejected as deferring a selection the owner elected to settle now.
+
+**Counter-evidence accepted with this decision.**
+This decision is taken with the following limitations understood and on record. They are binding on all downstream reporting.
+
+1. **Support is critically thin.** The validation period contains five onsets. The entire alert-budget comparison rests on those five events, and F3's tight-budget advantage is a single event, 1/5 against 0/5. No operational claim may be made from this comparison.
+2. **The advantage reverses on unseen players.** F1 records unseen-player AP 0.023316 and ROC-AUC 0.642578; F3 records 0.022308 and 0.630928. Under `DEC-004` unseen-player generalisation is mandatory evidence, and on that axis F3 is the weaker set. Only 12 of 50 players are estimable.
+3. **Temporal stability is poor.** Rolling-origin average precision for F3 is 0.232634, 0.016345, 0.047624 across the three folds. The second fold is roughly half the F1 value of 0.030987.
+4. **Only one of four paired intervals excludes zero.** Under player-cluster resampling, the more conservative and more deployment-relevant scheme, neither the Brier nor the average-precision interval excludes zero.
+5. **The distinguishing predictor is sparse and entangled.** The robust fatigue z-score is observed on 8.4% of primary-cohort days, triggering `LADDER-05`. Its coefficient is confounded with availability and reporting structure, the precise risk `DEC-031` was written to control. Any apparent contribution from this predictor must be treated as potentially a reporting-process artefact rather than a physiological signal.
+
+**Consequences:**
+- F3 becomes the raw candidate entering `EXP-009`. F1 is retained as the comparison reference and is not deleted.
+- Every model card, report, dashboard surface and portfolio or interview artefact that cites F3 must also carry limitations 1 through 5. Reporting F3's held-period metrics without the unseen-player reversal and the five-onset support is prohibited.
+- The unseen-player reversal must be re-examined once support improves. If F3 does not recover on unseen-player evidence at a later gate, this decision is revisited through a new superseding record.
+- The 8.4%-coverage robust fatigue predictor is placed under explicit audit in `EXP-009`. If calibration behaviour proves sensitive to its availability pattern, it is a candidate for removal.
+- Final-test predictions and performance remain locked.
+
+**Affected Components:** M1 feature-set selection, calibration experiment scope, model card, reporting constraints, portfolio and interview claims, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
+## DEC-044
+
+**Decision ID:** DEC-044
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+M1 raw probabilities are materially overestimated on validation and record worse Brier and log loss than the M0 operational baseline despite better ranking. `DEC-007` makes calibration a first-class metric, so a ranking improvement that degrades probability quality cannot be promoted as-is. `LADDER-06` left calibration scope open pending an explicit specification.
+
+**Decision:**
+Authorise `EXP-009`: a separate calibration experiment comparing raw, Platt and isotonic calibration on the F3 candidate, using development data only.
+
+**Rationale:**
+Practitioners act on the magnitude of a risk estimate, not only its order. A model that ranks well but states probabilities that are systematically too high would misdirect review effort and cannot be defended. Isolating calibration into its own experiment keeps the method choice separable from feature-set selection and prevents calibration decisions being made implicitly inside a modelling run.
+
+**Alternatives Considered:**
+Deferring calibration until the five-onset support problem is addressed through a cohort or horizon change. This has real force, since calibration curves estimated on five events will be close to uninformative, and it is recorded here as a live methodological risk rather than dismissed. Not selected: the overestimation is already measured and characterising it now is cheap and reversible.
+
+**Consequences:**
+- Scope is raw against Platt against isotonic on F3. F1 is retained as a reference comparison.
+- Development data only. No final-test prediction or performance may be produced, read or reported.
+- Required outputs: reliability curves, calibration slope and intercept, expected calibration error, Brier and log loss, each reported with the five-onset support caveat stated inline rather than in a footnote.
+- Calibration must be assessed for sensitivity to the 8.4%-coverage robust fatigue predictor, per `DEC-043`.
+- **Power limitation is binding.** With five validation onsets, calibration estimates carry very wide uncertainty. Any conclusion that one calibration method beats another must state this explicitly. "No method is distinguishable at this support" is an acceptable and expected result, and must be reported as such rather than resolved by picking the best point estimate.
+- A specification must be approved before implementation, consistent with the stage-gated model used since Stage 0.
+
+**Affected Components:** calibration methodology, M1 promotion path, model card, evaluation reporting, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
+## DEC-045
+
+**Decision ID:** DEC-045
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+Twenty-seven committed analysis reports, run manifests and configuration files persistently showed as fully modified with no content change: 1051 insertions against 1051 deletions, with an end-of-line-insensitive diff returning empty. The repository held LF, `core.autocrlf` was unset and no `.gitattributes` existed, so Windows-side tooling rewrote endings on every write.
+
+**Decision:**
+Adopt an explicit line-ending policy. `.gitattributes` fixes LF in both the repository and the working tree via `* text=auto eol=lf`, with explicit binary rules for Parquet, model artefacts, archives and images. The repository was renormalised in a single isolated commit.
+
+**Rationale:**
+The affected files are analysis reports and run manifests carrying experimental evidence. Whole-file phantom diffs make it impossible to see what genuinely changed between experiment runs, which directly undermines review. Fixing the working tree to LF rather than native endings additionally keeps local files byte-identical to what executes inside the Linux containers used for cloud execution, removing a class of CRLF failure in shell scripts and Docker builds before it can occur.
+
+**Alternatives Considered:**
+Setting `core.autocrlf` locally, rejected because it is per-machine configuration rather than a property of the repository and would not travel with a clone. Leaving the churn in place, rejected because it recurs on every write and degrades reviewability of the evidence trail.
+
+**Consequences:**
+Renormalisation settled all twenty-seven files with no content change; only the new `.gitattributes` and an end-of-line-only update to `.gitignore` were recorded, at commit `df735d5`. Binary artefacts are explicitly protected from transformation. Future contributors inherit the policy automatically on clone.
+
+**Affected Components:** repository architecture, version control hygiene, review process, container build reliability
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-M1-F2 and M1-F3 implementation and development evaluation are authorised under `DEC-042`. The completed feature-ladder evidence requires owner raw-candidate and calibration-scope review. Final-test performance access remains prohibited.
+`EXP-009` calibration is authorised in scope under `DEC-044` but its exact specification requires owner approval before implementation, consistent with the stage-gated model. Final-test performance access remains prohibited.
+
+Outstanding methodological risk, not yet a decision: effective outcome support is five onsets in each of the validation and final-test partitions. Whether to address this through a cohort, horizon or episode-rule change before further model comparison remains open and will limit every conclusion until resolved.
 
 ### Resolved
 

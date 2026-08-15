@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 45
-Last Updated UTC: 2026-08-15T21:56:05Z
-Coordination Session ID: PAA-CTRL-20260815-01
+State Version: 46
+Last Updated UTC: 2026-08-15T22:40:00Z
+Coordination Session ID: PAA-CTRL-20260815-02
 Git Branch: main
-Git HEAD: 226224c5b1502f854148218431024beca8218124 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-003 M1 Feature-Ladder Results Review
-Current Phase Status: F2/F3 implementation and development-only evaluation are complete with automated status `PASS WITH REVIEW`. F2 adds no value over F1. F3 leads held-period metrics and tight-budget capture, but calibration, uncertainty, temporal variation and unseen-player evidence remain limiting. Owner raw-candidate and calibration-scope review is required; final-test performance remains locked.
+Git HEAD: df735d5 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-009 Calibration Specification
+Current Phase Status: EXP-003 is closed. F2 rejected; F3 promoted as the raw M1 candidate under `DEC-043`, with five limitations recorded as binding on all downstream reporting. `EXP-009` raw/Platt/isotonic calibration is authorised in scope under `DEC-044` and now requires an approved specification before implementation. Final-test performance remains locked.
 
 ## Current Objective
 
-Review the completed F1/F2/F3 development evidence, select or reject the raw feature-set candidate, and define whether a separate calibration experiment is justified. Preserve the final-test lock.
+Produce and obtain approval for the `EXP-009` calibration specification: raw against Platt against isotonic on the F3 candidate, development data only, with the five-onset power limitation stated inline in every reported conclusion. Preserve the final-test lock.
 
 ## Completed Foundation
 
@@ -150,6 +150,16 @@ Review the completed F1/F2/F3 development evidence, select or reject the raw fea
 - Unseen-player aggregate ranking does not improve: F1 AP/ROC-AUC 0.023316/0.642578 versus F3 0.022308/0.630928, with only 12/50 estimable held-out players.
 - Committed implementation and retained evidence at `226224c`. Full gates pass: lockfile, formatting across 83 Python files, Ruff, strict mypy across 65 source files, pytest (`93 passed`, one expected ZIP warning), actual-data notebook execution and output-free notebook verification.
 
+State v45 to v46, under coordination session `PAA-CTRL-20260815-02`.
+
+- Independently re-ran every quality gate from a clean Linux environment built to the declared constraints, rather than accepting the recorded status. All five reproduce exactly: Ruff clean, format clean across 83 files, strict mypy clean across 65 source files, `93 passed` with one expected ZIP warning, and `poetry check --lock` passing.
+- Verified local and Drive control documents agree on state version, timestamp, coordination session, Git reference and decision range `DEC-001` to `DEC-042`. No reconciliation was required.
+- Diagnosed 27 persistently modified files as pure CRLF churn: 1051 insertions against 1051 deletions with an end-of-line-insensitive diff returning empty. No content had changed and no work was at risk.
+- Accepted `DEC-045`: adopted an explicit LF line-ending policy with binary protection for Parquet, model artefacts and images; renormalised the repository at `df735d5`, settling all 27 files with no content change.
+- Accepted `DEC-043`: rejected F2 on evidence that its Brier intervals exclude zero in the wrong direction under both resampling schemes; promoted F3 as the raw M1 development candidate at owner direction.
+- Recorded five binding limitations against the F3 promotion: five-onset support, the unseen-player reversal against F1, rolling-origin instability, only one of four paired intervals excluding zero, and the 8.4%-coverage robust fatigue predictor entangled with reporting structure. These must accompany every downstream citation of F3.
+- Accepted `DEC-044`: authorised `EXP-009` raw/Platt/isotonic calibration on F3, development data only, with the power limitation binding and "no method distinguishable at this support" recorded in advance as an acceptable and expected result.
+
 ## Current Repository State
 
 ```text
@@ -237,13 +247,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-040` accepts EXP-002 M0, freezes global training prevalence as the official minimum probability benchmark, retains recent load as a failed descriptive comparator and authorises M1 specification review only.
 - `DEC-041` authorises development-only M1-F1 regularised logistic regression, freezes predictors, preprocessing, tuning, diagnostics, stress tests and output contract, and keeps F2/F3, calibration selection and final test blocked.
 - `DEC-042` promotes F1 as the development reference and authorises cumulative F2/F3 controlled ablation under unchanged model and validation settings; it does not authorise deployment, calibration selection or final-test access.
+- `DEC-043` rejects F2, promotes F3 as the raw M1 development candidate, and binds five limitations to every downstream citation of F3; it authorises no deployment, no performance claim outside those limitations and no final-test access.
+- `DEC-044` authorises `EXP-009` raw/Platt/isotonic calibration on F3 using development data only, with the five-onset power limitation binding on every reported conclusion.
+- `DEC-045` fixes LF line endings in the repository and working tree, with explicit binary protection for Parquet, model artefacts and images.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
+- F3 held-period metrics may not be reported without the unseen-player reversal and the five-onset support stated alongside them.
 
 ## Open Decisions
 
-- Select or reject F3 as the raw M1 candidate and decide whether to authorise a separate calibration experiment.
+- Approve the exact `EXP-009` calibration specification before implementation: method set, fitting partition, output contract and the required inline power caveat.
+- Decide whether the five-onset effective support is addressed through a cohort, horizon or episode-rule change before further model comparison. This is not yet a decision record and it limits every conclusion until resolved.
 
 ## Known Issues / Technical Debt
 
@@ -262,22 +277,28 @@ No API, dashboard, product table or inference service is implemented. The intend
 - M1-F1 raw probabilities are materially overestimated on validation and have worse Brier/log loss than M0 despite better ranking; calibration strategy requires a separate owner-approved specification if M1-F1 is promoted.
 - Alert capture is based on only five represented validation onsets and approximately 107 false alerts per captured onset at the two non-zero-capture budgets; operational conclusions remain highly uncertain.
 - F3 improves held-period point estimates but not unseen-player aggregate ranking; its incremental player-cluster intervals include zero and one rolling fold degrades materially.
-- The F3 fatigue robust z-score has only 8.4% coverage, so its coefficient and apparent contribution are entangled with availability and missingness structure.
+- The F3 fatigue robust z-score has only 8.4% coverage, so its coefficient and apparent contribution are entangled with availability and missingness structure. F3 is now the promoted candidate under `DEC-043`, so this predictor is under explicit audit in `EXP-009` and is a removal candidate if calibration proves sensitive to its availability pattern.
+- F3 was promoted despite recording weaker unseen-player generalisation than F1 (AP 0.022308 versus 0.023316; ROC-AUC 0.630928 versus 0.642578). This is an accepted, documented trade-off under `DEC-043`, not an oversight, and must be restated wherever F3 performance is cited.
+- Line-ending policy is now fixed by `.gitattributes` under `DEC-045`. Contributors on Windows should confirm their editor honours it, since the previous churn recurred silently on every write.
 
 ## Blockers
 
-No technical blocker for feature-ladder results review. Post-hoc calibration remains blocked until raw-candidate selection and an exact calibration specification are approved. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker. The raw-candidate gate is closed by `DEC-043` and calibration scope is authorised by `DEC-044`. `EXP-009` implementation is blocked until its exact specification is approved. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+
+Standing analytical constraint, not a blocker: effective outcome support is five onsets per evaluation partition. This limits the inferential capacity of every comparison made at this stage, including the calibration comparison now authorised.
 
 ## Work In Progress
 
-No implementation is in progress. The feature ladder is stopped at the required owner raw-candidate/calibration-scope gate. No other control session is known to be modifying the working tree.
+No implementation is in progress. The project is stopped at the `EXP-009` specification-approval gate. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review the F2 non-improvement and F3 held-period gains against calibration, paired uncertainty, rolling-origin and unseen-player limitations.
-2. Record owner raw-candidate selection or rejection as a new material decision.
-3. If F3 is selected, specify EXP-009 raw-versus-Platt-versus-isotonic calibration without accessing final-test performance.
-4. Keep final-test predictions and performance locked.
+1. Draft the `EXP-009` calibration specification: raw against Platt against isotonic on F3, fitting partition, output contract, and the mandatory inline five-onset power caveat.
+2. Obtain owner approval of the specification before any implementation, consistent with the stage-gated model used since Stage 0.
+3. Implement and execute against development data only, retaining reliability curves, calibration slope and intercept, expected calibration error, Brier and log loss.
+4. Audit calibration sensitivity to the 8.4%-coverage robust fatigue predictor, per `DEC-043`.
+5. Keep final-test predictions and performance locked.
+6. Separately, decide whether to address the five-onset support limitation before further model comparison.
 
 ## Validation / Quality Gate Status
 
@@ -354,16 +375,23 @@ No implementation is in progress. The feature ladder is stopped at the required 
 | EXP-003 M1 feature-ladder run | PASS WITH REVIEW | F2 non-improvement; F3 leads held-period metrics with material limitations |
 | EXP-003 feature-ladder final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-003 feature-ladder notebook execution | PASS | executed against GCS; committed notebook remains output-free |
-| Modelling | RAW CANDIDATE REVIEW REQUIRED | calibration selection and final test locked |
+| EXP-003 raw-candidate review | CLOSED | F2 rejected; F3 promoted with five binding limitations under `DEC-043` |
+| EXP-009 calibration scope | AUTHORISED | raw/Platt/isotonic on F3, development data only, under `DEC-044` |
+| EXP-009 specification | PENDING | owner approval required before implementation |
+| Line-ending policy | PASS | `.gitattributes` added and repository renormalised at `df735d5` under `DEC-045` |
+| Independent gate re-verification | PASS | all five gates reproduced from a clean environment in session `PAA-CTRL-20260815-02` |
+| Modelling | CALIBRATION SPECIFICATION REQUIRED | final test locked |
+
+Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 83 files, strict mypy clean across 65 source files, `93 passed` with one expected ZIP warning, and `poetry check --lock` passing.
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v45, 2026-08-15T21:56:05Z | v45, 2026-08-15T21:56:05Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-042 | DEC-001 to DEC-042 |
+| `PROJECT_STATE.md` | v46, 2026-08-15T22:40:00Z | v46, 2026-08-15T22:40:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-045 | DEC-001 to DEC-045 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `226224c`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were compared field by field at the start of session `PAA-CTRL-20260815-02` and agreed on state version, timestamp, coordination session, Git reference and decision range. No reconciliation was required. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `df735d5`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
