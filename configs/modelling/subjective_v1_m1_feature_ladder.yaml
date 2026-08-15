@@ -1,0 +1,5 @@
+base_config: subjective_v1_m1_f1.yaml
+feature_sets: [F2, F3]
+include_f1_reference: true
+posthoc_calibration_selection: false
+final_test_access: false

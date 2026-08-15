@@ -1,0 +1,4 @@
+model_id,review_rate,eligible_player_days,alert_count,alerts_per_100_player_days,positive_alert_days,represented_onsets,captured_onsets,event_capture_rate,false_alerts_per_captured_onset
+M1-F3,0.01,8690,87,1.001150747986191,1,5,1,0.2,86.0
+M1-F3,0.025,8690,218,2.5086306098964326,4,5,2,0.4,107.0
+M1-F3,0.05,8690,435,5.005753739930955,12,5,4,0.8,105.75

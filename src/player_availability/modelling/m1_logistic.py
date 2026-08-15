@@ -35,7 +35,7 @@ from player_availability.modelling.metrics import (
 )
 from player_availability.modelling.preprocessing import (
     F1_FEATURES,
-    build_f1_pipeline,
+    build_feature_pipeline,
     transformed_feature_names,
 )
 from player_availability.modelling.uncertainty import prediction_bootstrap_intervals
@@ -153,11 +153,30 @@ def load_m1_f1_from_gcp(*, project_id: str, data_bucket: str, config: M1F1Config
 
 def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Config) -> M1F1Result:
     """Fit and evaluate F1 on development data without final-test predictions."""
-    protocol = run_stage_07_prospective_protocol(features=features, episodes=episodes)
-    cohort = protocol.tables["_primary_cohort"]
-    missing = sorted({config.target, *F1_FEATURES} - set(cohort.columns))
+    return run_m1_feature_set(
+        features=features,
+        episodes=episodes,
+        config=config,
+        feature_names=F1_FEATURES,
+    )
+
+
+def run_m1_feature_set(
+    *,
+    features: pl.DataFrame,
+    episodes: pl.DataFrame,
+    config: M1F1Config,
+    feature_names: tuple[str, ...],
+    prepared_cohort: pl.DataFrame | None = None,
+) -> M1F1Result:
+    """Fit one frozen cumulative M1 feature set on development data."""
+    cohort = prepared_cohort
+    if cohort is None:
+        protocol = run_stage_07_prospective_protocol(features=features, episodes=episodes)
+        cohort = protocol.tables["_primary_cohort"]
+    missing = sorted({config.target, *feature_names} - set(cohort.columns))
     if missing:
-        raise ValueError(f"M1-F1 cohort is missing frozen columns: {missing}")
+        raise ValueError(f"M1-{config.feature_set} cohort is missing frozen columns: {missing}")
     train = _partition(cohort, PARTITIONS[0])
     validation = _partition(cohort, PARTITIONS[1])
     test = _partition(cohort, PARTITIONS[2])
@@ -165,8 +184,10 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
     candidate_rows: list[dict[str, Any]] = []
     candidate_models: dict[float, Pipeline] = {}
     for regularisation_c in config.regularisation_c_grid:
-        pipeline, convergence_warnings = _fit_pipeline(train, config, regularisation_c)
-        probabilities = _predict_probabilities(pipeline, validation)
+        pipeline, convergence_warnings = _fit_pipeline(
+            train, config, regularisation_c, feature_names
+        )
+        probabilities = _predict_probabilities(pipeline, validation, feature_names)
         metrics = classification_metrics(_targets(validation, config.target), probabilities)
         candidate_rows.append(
             {
@@ -189,7 +210,7 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
     for row in candidate_rows:
         row["selected"] = row["regularisation_c"] == selected_c
     selected_model = candidate_models[selected_c]
-    probabilities = _predict_probabilities(selected_model, validation)
+    probabilities = _predict_probabilities(selected_model, validation, feature_names)
     predictions = _prediction_frame(validation, probabilities, config)
     selected_metrics = classification_metrics(_targets(validation, config.target), probabilities)
     calibration = calibration_diagnostics(_targets(validation, config.target), probabilities)
@@ -203,8 +224,10 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
         review_rates=config.alert_review_rates,
         model_id=config.model_id,
     )
-    rolling = _rolling_origin_results(cohort, config, selected_c)
-    unseen_players, unseen_aggregate = _unseen_player_results(cohort, config, selected_c)
+    rolling = _rolling_origin_results(cohort, config, selected_c, feature_names)
+    unseen_players, unseen_aggregate = _unseen_player_results(
+        cohort, config, selected_c, feature_names
+    )
     uncertainty = prediction_bootstrap_intervals(
         predictions=predictions,
         target=config.target,
@@ -212,7 +235,7 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
         random_seed=config.random_seed,
         model_id=config.model_id,
     )
-    coefficients, feature_context = _coefficient_tables(selected_model)
+    coefficients, feature_context = _coefficient_tables(selected_model, feature_names)
     model_comparison = _model_comparison(config, selected_metrics)
     support = _support_table(train, validation, test, config)
     findings = _findings(
@@ -224,14 +247,15 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
         alerts=alerts,
         event_capture=event_capture,
         rolling=rolling,
+        feature_names=feature_names,
     )
     failures = findings.filter(pl.col("status") == "FAIL").height
     reviews = findings.filter(pl.col("status") == "REVIEW").height
     parameters = {
         "selected_regularisation_c": selected_c,
         "selection_rule": "lowest validation Brier, then higher AP, then smaller C",
-        "feature_set": "F1",
-        "features": list(F1_FEATURES),
+        "feature_set": config.feature_set,
+        "features": list(feature_names),
         "preprocessing": "training-only median imputation with indicators and scaling",
         "posthoc_calibration_selected": False,
         "class_weight": None,
@@ -239,7 +263,7 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
     tables = {
         "dataset_manifest": _dataset_manifest(config),
         "cohort_and_split_support": support,
-        "feature_manifest": _feature_manifest(),
+        "feature_manifest": _feature_manifest(feature_names, config.feature_set),
         "hyperparameter_results": pl.DataFrame(candidate_rows),
         "selected_validation_metrics": pl.DataFrame(
             [{"model_id": config.model_id, **selected_metrics}]
@@ -265,7 +289,7 @@ def run_m1_f1(*, features: pl.DataFrame, episodes: pl.DataFrame, config: M1F1Con
         "decision_gate": "PROJECT_OWNER_PROMOTE_REVISE_REJECT",
         "data_version": config.data_version,
         "target": config.target,
-        "feature_count": len(F1_FEATURES),
+        "feature_count": len(feature_names),
         "selected_regularisation_c": selected_c,
         "train_player_days": train.height,
         "validation_player_days": validation.height,
@@ -320,26 +344,31 @@ def _targets(frame: pl.DataFrame, target: str) -> list[int]:
     return [int(value) for value in frame[target]]
 
 
-def _matrix(frame: pl.DataFrame) -> Any:
-    return frame.select(F1_FEATURES).to_numpy()
+def _matrix(frame: pl.DataFrame, feature_names: tuple[str, ...]) -> Any:
+    return frame.select(feature_names).to_numpy()
 
 
 def _fit_pipeline(
-    frame: pl.DataFrame, config: M1F1Config, regularisation_c: float
+    frame: pl.DataFrame,
+    config: M1F1Config,
+    regularisation_c: float,
+    feature_names: tuple[str, ...],
 ) -> tuple[Pipeline, int]:
-    pipeline = build_f1_pipeline(
+    pipeline = build_feature_pipeline(
         regularisation_c=regularisation_c,
         max_iterations=config.max_iterations,
     )
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always", ConvergenceWarning)
-        pipeline.fit(_matrix(frame), _targets(frame, config.target))
+        pipeline.fit(_matrix(frame, feature_names), _targets(frame, config.target))
     convergence_count = sum(issubclass(item.category, ConvergenceWarning) for item in caught)
     return pipeline, convergence_count
 
 
-def _predict_probabilities(pipeline: Pipeline, frame: pl.DataFrame) -> list[float]:
-    values = pipeline.predict_proba(_matrix(frame))[:, 1]
+def _predict_probabilities(
+    pipeline: Pipeline, frame: pl.DataFrame, feature_names: tuple[str, ...]
+) -> list[float]:
+    values = pipeline.predict_proba(_matrix(frame, feature_names))[:, 1]
     return [float(value) for value in values]
 
 
@@ -367,7 +396,10 @@ def _prediction_frame(
 
 
 def _rolling_origin_results(
-    cohort: pl.DataFrame, config: M1F1Config, selected_c: float
+    cohort: pl.DataFrame,
+    config: M1F1Config,
+    selected_c: float,
+    feature_names: tuple[str, ...],
 ) -> pl.DataFrame:
     rows: list[dict[str, Any]] = []
     for fold_id, train_start, train_end, validation_start, validation_end in ROLLING_FOLDS:
@@ -382,8 +414,8 @@ def _rolling_origin_results(
             convergence_count = 0
             fit_status = "not_estimable_single_class_training"
         else:
-            pipeline, convergence_count = _fit_pipeline(train, config, selected_c)
-            probabilities = _predict_probabilities(pipeline, validation)
+            pipeline, convergence_count = _fit_pipeline(train, config, selected_c, feature_names)
+            probabilities = _predict_probabilities(pipeline, validation, feature_names)
             metrics = classification_metrics(validation_targets, probabilities)
             fit_status = "fitted"
         rows.append(
@@ -410,7 +442,10 @@ def _rolling_origin_results(
 
 
 def _unseen_player_results(
-    cohort: pl.DataFrame, config: M1F1Config, selected_c: float
+    cohort: pl.DataFrame,
+    config: M1F1Config,
+    selected_c: float,
+    feature_names: tuple[str, ...],
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
     development = cohort.filter(pl.col("prediction_date") <= date(2021, 6, 23))
     rows: list[dict[str, Any]] = []
@@ -426,8 +461,8 @@ def _unseen_player_results(
             convergence_count = 0
             fit_status = "not_estimable_single_class_training"
         else:
-            pipeline, convergence_count = _fit_pipeline(train, config, selected_c)
-            probabilities = _predict_probabilities(pipeline, heldout)
+            pipeline, convergence_count = _fit_pipeline(train, config, selected_c, feature_names)
+            probabilities = _predict_probabilities(pipeline, heldout, feature_names)
             metrics = classification_metrics(targets, probabilities)
             aggregate_targets.extend(targets)
             aggregate_probabilities.extend(probabilities)
@@ -473,8 +508,10 @@ def _unseen_player_results(
     return pl.DataFrame(rows), summary
 
 
-def _coefficient_tables(pipeline: Pipeline) -> tuple[pl.DataFrame, pl.DataFrame]:
-    names = transformed_feature_names(pipeline)
+def _coefficient_tables(
+    pipeline: Pipeline, feature_names: tuple[str, ...]
+) -> tuple[pl.DataFrame, pl.DataFrame]:
+    names = transformed_feature_names(pipeline, feature_names)
     classifier = pipeline.named_steps["classifier"]
     scaler = pipeline.named_steps["scaler"]
     coefficients = [float(value) for value in classifier.coef_[0]]
@@ -568,17 +605,17 @@ def _dataset_manifest(config: M1F1Config) -> pl.DataFrame:
     )
 
 
-def _feature_manifest() -> pl.DataFrame:
+def _feature_manifest(feature_names: tuple[str, ...], feature_set: str) -> pl.DataFrame:
     return pl.DataFrame(
         [
             {
-                "feature_set": "F1",
+                "feature_set": feature_set,
                 "predictor": feature,
                 "same_day_wellness": False,
                 "identity_feature": False,
                 "allowed": True,
             }
-            for feature in F1_FEATURES
+            for feature in feature_names
         ]
     )
 
@@ -593,6 +630,7 @@ def _findings(
     alerts: pl.DataFrame,
     event_capture: pl.DataFrame,
     rolling: pl.DataFrame,
+    feature_names: tuple[str, ...],
 ) -> pl.DataFrame:
     captures = cast(int, alerts["captured_onsets"].max())
     zero_positive_folds = rolling.filter(pl.col("positive_days") == 0).height
@@ -600,13 +638,16 @@ def _findings(
     return pl.DataFrame(
         [
             {
-                "finding_id": "F1-01",
+                "finding_id": f"{config.feature_set}-01",
                 "status": "PASS",
                 "domain": "predictor_contract",
-                "evidence": f"exact frozen F1 allow-list used: {len(F1_FEATURES)} predictors",
+                "evidence": (
+                    f"exact frozen {config.feature_set} allow-list used: "
+                    f"{len(feature_names)} predictors"
+                ),
             },
             {
-                "finding_id": "F1-02",
+                "finding_id": f"{config.feature_set}-02",
                 "status": "PASS"
                 if sum(int(row["convergence_warning_count"]) for row in candidate_rows) == 0
                 else "FAIL",
@@ -614,7 +655,7 @@ def _findings(
                 "evidence": "finite grid fitted with convergence warnings counted",
             },
             {
-                "finding_id": "F1-03",
+                "finding_id": f"{config.feature_set}-03",
                 "status": "PASS"
                 if predictions["predicted_probability"].is_between(0.0, 1.0).all()
                 else "FAIL",
@@ -622,13 +663,13 @@ def _findings(
                 "evidence": "all validation probabilities are in [0, 1]",
             },
             {
-                "finding_id": "F1-04",
+                "finding_id": f"{config.feature_set}-04",
                 "status": "PASS",
                 "domain": "final_test_isolation",
                 "evidence": "zero final-test predictions or performance metrics",
             },
             {
-                "finding_id": "F1-05",
+                "finding_id": f"{config.feature_set}-05",
                 "status": "REVIEW",
                 "domain": "m0_comparison",
                 "evidence": (
@@ -639,13 +680,13 @@ def _findings(
                 ),
             },
             {
-                "finding_id": "F1-06",
+                "finding_id": f"{config.feature_set}-06",
                 "status": "REVIEW",
                 "domain": "operational_capture",
                 "evidence": f"maximum captured onsets={captures}/{represented_onsets}",
             },
             {
-                "finding_id": "F1-07",
+                "finding_id": f"{config.feature_set}-07",
                 "status": "REVIEW",
                 "domain": "raw_calibration",
                 "evidence": (
@@ -655,7 +696,7 @@ def _findings(
                 ),
             },
             {
-                "finding_id": "F1-08",
+                "finding_id": f"{config.feature_set}-08",
                 "status": "REVIEW",
                 "domain": "temporal_support",
                 "evidence": f"{zero_positive_folds} rolling folds have zero positive days",

@@ -1,0 +1,9 @@
+finding_id,status,domain,evidence
+F2-01,PASS,predictor_contract,exact frozen F2 allow-list used: 17 predictors
+F2-02,PASS,optimisation,finite grid fitted with convergence warnings counted
+F2-03,PASS,prediction_validity,"all validation probabilities are in [0, 1]"
+F2-04,PASS,final_test_isolation,zero final-test predictions or performance metrics
+F2-05,REVIEW,m0_comparison,F1 Brier=0.003713 vs M0=0.003405; F1 AP=0.016377 vs M0=0.003222
+F2-06,REVIEW,operational_capture,maximum captured onsets=4/5
+F2-07,REVIEW,raw_calibration,mean prediction=0.020186; observed=0.003222; post-hoc calibration not selected
+F2-08,REVIEW,temporal_support,1 rolling folds have zero positive days

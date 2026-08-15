@@ -1,0 +1,9 @@
+reference_model_id,candidate_model_id,method,metric,difference_direction,requested_iterations,valid_iterations,undefined_iterations,lower_95,median,upper_95,reference_feature_set,candidate_feature_set
+M1-F1,M1-F2,player_cluster_bootstrap,brier_score,candidate_minus_reference,500,500,0,4.794849004796069e-7,0.000012275009428988582,0.000029049678109291855,F1,F2
+M1-F1,M1-F2,player_cluster_bootstrap,average_precision,candidate_minus_reference,500,478,22,-0.0007258996059476852,-0.00019371568571745776,0.001690405968997198,F1,F2
+M1-F1,M1-F2,temporal_week_block_bootstrap,brier_score,candidate_minus_reference,500,500,0,7.302308139035254e-6,0.000013171657889708829,0.000017123852370386457,F1,F2
+M1-F1,M1-F2,temporal_week_block_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.0008726002082493307,-0.00023122629513039426,0.00009017573605847785,F1,F2
+M1-F2,M1-F3,player_cluster_bootstrap,brier_score,candidate_minus_reference,500,500,0,-0.00031308017699884253,-0.00008287554815595839,0.0000672764698005757,F2,F3
+M1-F2,M1-F3,player_cluster_bootstrap,average_precision,candidate_minus_reference,500,481,19,-0.0018049404266951268,0.0035060900331811504,0.04771357331712986,F2,F3
+M1-F2,M1-F3,temporal_week_block_bootstrap,brier_score,candidate_minus_reference,500,500,0,-0.00015070653256221358,-0.00009949041308596998,-0.00004447378178342483,F2,F3
+M1-F2,M1-F3,temporal_week_block_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.00022993377676177993,0.003126640213049721,0.00909537627508111,F2,F3

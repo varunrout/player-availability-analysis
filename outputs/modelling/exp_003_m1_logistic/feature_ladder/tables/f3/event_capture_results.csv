@@ -1,0 +1,16 @@
+model_id,review_rate,onset_id,player_id,team_id,onset_date,captured,first_alert_lead_days,last_alert_lead_days,alert_days_in_window
+M1-F3,0.01,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-22,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-22,false,,,0
+M1-F3,0.01,TeamA-74afe68c-f348-414c-9754-6d6f9df12587|2021-03-25,TeamA-74afe68c-f348-414c-9754-6d6f9df12587,TeamA,2021-03-25,false,,,0
+M1-F3,0.01,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-27,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-27,true,5,5,1
+M1-F3,0.01,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-23,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-23,false,,,0
+M1-F3,0.01,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-14,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-14,false,,,0
+M1-F3,0.025,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-22,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-22,false,,,0
+M1-F3,0.025,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-14,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-14,false,,,0
+M1-F3,0.025,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-27,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-27,true,7,4,3
+M1-F3,0.025,TeamA-74afe68c-f348-414c-9754-6d6f9df12587|2021-03-25,TeamA-74afe68c-f348-414c-9754-6d6f9df12587,TeamA,2021-03-25,true,1,1,1
+M1-F3,0.025,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-23,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-23,false,,,0
+M1-F3,0.05,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-22,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-22,true,5,5,1
+M1-F3,0.05,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-27,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-27,true,7,1,6
+M1-F3,0.05,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-02-23,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-02-23,true,6,6,1
+M1-F3,0.05,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e|2021-01-14,TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,TeamA,2021-01-14,false,,,0
+M1-F3,0.05,TeamA-74afe68c-f348-414c-9754-6d6f9df12587|2021-03-25,TeamA-74afe68c-f348-414c-9754-6d6f9df12587,TeamA,2021-03-25,true,5,1,5

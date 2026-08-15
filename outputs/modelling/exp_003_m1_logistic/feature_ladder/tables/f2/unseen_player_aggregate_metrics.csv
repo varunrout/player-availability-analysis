@@ -1,0 +1,2 @@
+model_id,player_days,positive_days,prevalence,brier_score,log_loss,average_precision,roc_auc,heldout_player_count,estimable_player_count,zero_positive_player_count,training_not_estimable_player_count
+M1-F2,25405.0,308.0,0.012123597716984846,0.011986727405630894,0.06427407236163973,0.021857291315767476,0.6262568118815879,50,12,38,0

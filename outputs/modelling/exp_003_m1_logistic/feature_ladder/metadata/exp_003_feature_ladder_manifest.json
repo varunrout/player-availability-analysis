@@ -1,0 +1,111 @@
+{
+  "model_parameters": {
+    "F1": {
+      "class_weight": null,
+      "feature_set": "F1",
+      "features": [
+        "daily_load_log1p",
+        "daily_load_sum_7d_log1p",
+        "daily_load_sum_28d_log1p",
+        "fatigue_lag1",
+        "readiness_lag1",
+        "fatigue_mean_prior_7d",
+        "fatigue_mean_prior_28d",
+        "readiness_mean_prior_7d",
+        "readiness_mean_prior_28d"
+      ],
+      "posthoc_calibration_selected": false,
+      "preprocessing": "training-only median imputation with indicators and scaling",
+      "selected_regularisation_c": 0.001,
+      "selection_rule": "lowest validation Brier, then higher AP, then smaller C"
+    },
+    "F2": {
+      "class_weight": null,
+      "feature_set": "F2",
+      "features": [
+        "daily_load_log1p",
+        "daily_load_sum_7d_log1p",
+        "daily_load_sum_28d_log1p",
+        "fatigue_lag1",
+        "readiness_lag1",
+        "fatigue_mean_prior_7d",
+        "fatigue_mean_prior_28d",
+        "readiness_mean_prior_7d",
+        "readiness_mean_prior_28d",
+        "session_recorded",
+        "session_count",
+        "session_duration_minutes_log1p",
+        "session_duration_sum_7d_log1p",
+        "session_duration_sum_28d_log1p",
+        "wellness_report_present_lag1",
+        "wellness_report_count_prior_7d",
+        "wellness_report_count_prior_28d"
+      ],
+      "posthoc_calibration_selected": false,
+      "preprocessing": "training-only median imputation with indicators and scaling",
+      "selected_regularisation_c": 0.001,
+      "selection_rule": "lowest validation Brier, then higher AP, then smaller C"
+    },
+    "F3": {
+      "class_weight": null,
+      "feature_set": "F3",
+      "features": [
+        "daily_load_log1p",
+        "daily_load_sum_7d_log1p",
+        "daily_load_sum_28d_log1p",
+        "fatigue_lag1",
+        "readiness_lag1",
+        "fatigue_mean_prior_7d",
+        "fatigue_mean_prior_28d",
+        "readiness_mean_prior_7d",
+        "readiness_mean_prior_28d",
+        "session_recorded",
+        "session_count",
+        "session_duration_minutes_log1p",
+        "session_duration_sum_7d_log1p",
+        "session_duration_sum_28d_log1p",
+        "wellness_report_present_lag1",
+        "wellness_report_count_prior_7d",
+        "wellness_report_count_prior_28d",
+        "daily_load_robust_z_prior28",
+        "daily_load_robust_available",
+        "fatigue_lag1_robust_z_prior",
+        "fatigue_robust_available",
+        "readiness_lag1_robust_z_prior",
+        "readiness_robust_available"
+      ],
+      "posthoc_calibration_selected": false,
+      "preprocessing": "training-only median imputation with indicators and scaling",
+      "selected_regularisation_c": 0.001,
+      "selection_rule": "lowest validation Brier, then higher AP, then smaller C"
+    }
+  },
+  "source_paths": {
+    "episodes": "silver/subjective/soccermon/zenodo-10033832/injury_episodes.parquet",
+    "features": "gold/subjective/soccermon/zenodo-10033832/player_day_features.parquet"
+  },
+  "source_sha256": {
+    "episodes": "e5077c16db69b88e07828d456739603b22a523c7d7e832bab8007e15a6d1f3da",
+    "features": "775cb3c73bb62affebdb9bd5156d4b32bdec6707bf9bbafb70149ba293b16ac6"
+  },
+  "summary": {
+    "decision_gate": "OWNER_RAW_CANDIDATE_AND_CALIBRATION_SCOPE_REVIEW",
+    "experiment_id": "EXP-003",
+    "feature_counts": {
+      "F1": 9,
+      "F2": 17,
+      "F3": 23
+    },
+    "final_test_performance_accessed": false,
+    "final_test_predictions_created": false,
+    "final_test_rows_evaluated": 0,
+    "generated_at_utc": "2026-08-15T21:31:32.823199+00:00",
+    "model_ids": [
+      "M1-F1",
+      "M1-F2",
+      "M1-F3"
+    ],
+    "posthoc_calibration_selected": false,
+    "status": "PASS"
+  }
+}

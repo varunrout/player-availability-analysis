@@ -1,0 +1,10 @@
+feature_set,predictor,same_day_wellness,identity_feature,allowed
+F1,daily_load_log1p,false,false,true
+F1,daily_load_sum_7d_log1p,false,false,true
+F1,daily_load_sum_28d_log1p,false,false,true
+F1,fatigue_lag1,false,false,true
+F1,readiness_lag1,false,false,true
+F1,fatigue_mean_prior_7d,false,false,true
+F1,fatigue_mean_prior_28d,false,false,true
+F1,readiness_mean_prior_7d,false,false,true
+F1,readiness_mean_prior_28d,false,false,true

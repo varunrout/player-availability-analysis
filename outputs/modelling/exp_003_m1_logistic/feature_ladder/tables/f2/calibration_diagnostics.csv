@@ -1,0 +1,2 @@
+model_id,observed_rate,mean_prediction,mean_calibration_error,calibration_intercept,calibration_slope
+M1-F2,0.003222094361334868,0.02018626413080723,0.016964169769472362,-0.3757209569300988,1.4251925237025893

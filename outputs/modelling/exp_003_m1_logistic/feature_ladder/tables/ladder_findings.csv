@@ -1,0 +1,7 @@
+finding_id,status,domain,evidence
+LADDER-01,PASS,model_integrity,child model failure findings: 0
+LADDER-02,PASS,predictor_contract,"frozen cumulative counts expected F1=9, F2=17, F3=23"
+LADDER-03,PASS,final_test_isolation,zero final-test predictions or performance across all feature sets
+LADDER-04,REVIEW,raw_feature_set_selection,lowest Brier=F3; highest AP=F3
+LADDER-05,REVIEW,predictor_availability,predictors below 20% observed coverage: 1
+LADDER-06,REVIEW,calibration_scope,raw comparison only; no post-hoc calibrator fitted or selected

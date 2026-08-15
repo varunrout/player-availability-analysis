@@ -1,0 +1,5 @@
+model_id,method,metric,requested_iterations,valid_iterations,undefined_iterations,lower_95,median,upper_95
+M1-F1,player_cluster_bootstrap,brier_score,500,500,0,0.000576380933436111,0.0035355923835291387,0.007634577097193933
+M1-F1,player_cluster_bootstrap,average_precision,500,482,18,0.005232724823890897,0.01910443336138084,0.04699222349042352
+M1-F1,temporal_week_block_bootstrap,brier_score,500,500,0,0.0018761205885863496,0.0036854686127914013,0.005928499114260421
+M1-F1,temporal_week_block_bootstrap,average_precision,500,500,0,0.004623696244616895,0.017470850660961663,0.04061305569850929
