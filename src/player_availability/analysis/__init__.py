@@ -35,6 +35,13 @@ from player_availability.analysis.stage_04_feature_redundancy import (
     run_stage_04_feature_redundancy,
     write_stage_04_outputs,
 )
+from player_availability.analysis.stage_05_outcome_context import (
+    Stage05OutcomeContextResult,
+    build_stage_05_figures,
+    load_stage_05_from_gcp,
+    run_stage_05_outcome_context,
+    write_stage_05_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -62,4 +69,9 @@ __all__ = [
     "load_stage_04_from_gcp",
     "run_stage_04_feature_redundancy",
     "write_stage_04_outputs",
+    "Stage05OutcomeContextResult",
+    "build_stage_05_figures",
+    "load_stage_05_from_gcp",
+    "run_stage_05_outcome_context",
+    "write_stage_05_outputs",
 ]

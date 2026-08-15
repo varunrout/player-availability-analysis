@@ -1,0 +1,6 @@
+stage,event_count,excluded_from_previous
+distinct onsets,73,0
+complete -28..0 history,68,5
+calendar reference available,68,0
+reporting reference available,68,0
+isolated onset sensitivity,15,53

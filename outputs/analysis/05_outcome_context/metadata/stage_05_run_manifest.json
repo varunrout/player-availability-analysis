@@ -1,0 +1,17 @@
+{
+  "bootstrap_replicates": 500,
+  "calendar_matched_onset_count": 68,
+  "context_feature_count": 12,
+  "distinct_onset_count": 73,
+  "failure_count": 0,
+  "generated_at_utc": "2026-08-15T00:28:59.862588+00:00",
+  "history_complete_onset_count": 68,
+  "isolated_onset_count": 15,
+  "model_count": 0,
+  "player_count": 50,
+  "player_day_count": 36550,
+  "review_count": 3,
+  "stage": "05_outcome_context",
+  "status": "PASS",
+  "warning_count": 0
+}
