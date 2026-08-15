@@ -944,7 +944,7 @@ Stage 5 descriptive outcome-context analysis may compare approved descriptive fe
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-No open project decision blocks Stage 0 specification review. The primary horizon, final cohort, predictor contract and chronological split remain deliberately unfrozen until the relevant pre-model analysis gates.
+Stage 5 descriptive findings and their constrained interpretation await project-owner approval. The primary horizon, final cohort, predictor contract and chronological split remain deliberately unfrozen until the relevant pre-model analysis gates.
 
 ### Resolved
 

@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 31
-Last Updated UTC: 2026-08-14T23:46:46Z
-Coordination Session ID: PAA-CTRL-20260814-01
+State Version: 32
+Last Updated UTC: 2026-08-15T00:31:45Z
+Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 17421c77738cf617aace00ba4ba6d48797d0df6b (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 5 Specification
-Current Phase Status: Stage 4 results and target-blind feature-family policy are approved under `DEC-033`. Stage 5 descriptive outcome-context analysis awaits project-owner specification approval; no Stage 5 implementation is authorised yet.
+Git HEAD: e31e5bac24d3b2cc07064ef26ef900f28844564b (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 5 Results Review
+Current Phase Status: Stage 5 specification was approved, implemented and executed. Automated integrity is PASS; descriptive findings await project-owner review. Stage 6 is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 5 specification for descriptive pre-onset trajectories, matched/reference periods, player/team concentration and reporting-process checks. No Stage 5 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 5 retrospective outcome-context evidence and decide which patterns, if any, merit later prospective testing. No Stage 6 work may begin before Stage 5 results approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -79,6 +79,15 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Committed Stage 4 implementation and retained outputs at `93a95fc`. Full quality gate passes: lockfile, formatting, Ruff, strict mypy, pytest (`67 passed`, one expected ZIP duplicate-name warning), JSON notebook validation and notebook execution.
 - Project owner approved the Stage 4 results and recommended target-blind feature-family policy on 2026-08-15 local time.
 - Accepted `DEC-033`: retain the full contract as an alternatives catalogue; carry a compact provisional operational policy using recording state, `log1p` magnitudes, daily load as the primary internal-load family, session duration as distinct context, and 7/28-day anchors; defer session-sRPE duplication, 3/14-day windows, prior baselines and lagged wellness to explicit later sensitivities and controls.
+- Project owner approved the Stage 5 descriptive outcome-context specification on 2026-08-15.
+- Implemented Stage 5 as shared analysis code, canonical script, matching output-free notebook, ten retained tables, nine retained charts and four focused tests.
+- Collapsed 147 location episodes to 73 distinct player-date onsets. Sixty-eight onsets have complete -28 through day-0 histories, and all 68 have clean same-player calendar and reporting-matched references.
+- Primary matched summaries use only days -28 through -1; day 0 is displayed separately. No fixed-horizon labels entered feature measurement and no model was fitted.
+- Fifty-three of 68 eligible onsets overlap another onset within plus/minus 28 days; only 15 are isolated. The 68 matched events come from 13 players, with the top five contributing 80.9%.
+- Event windows generally show lower recorded-session rate, load and duration than calendar references. Player-equal intervals are wide and isolated-onset sensitivity commonly crosses zero, so these are unstable retrospective context patterns rather than predictive or causal evidence.
+- Observed fatigue trends slightly higher and readiness lower near onsets, but wellness reporting itself differs between event and reference periods and same-day wellness remains descriptive-only under `DEC-031`.
+- Executed the canonical script and notebook against GCS products; no cloud data was changed. Committed implementation and retained outputs at `e31e5ba`.
+- Full quality gate passes: lockfile, formatting, Ruff, strict mypy and pytest (`71 passed`, one expected ZIP duplicate-name warning); notebook execution produced zero errors and the committed notebook remains output-free.
 
 ## Current Repository State
 
@@ -87,13 +96,13 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      64 passing tests, including Stage 0 through Stage 3 tests
+tests/                      71 passing tests, including Stage 0 through Stage 5 tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
 ```
 
-Active Stage 0 through Stage 4 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. There is no active split implementation, split-assigned dataset or model. Historical commits remain available locally by design.
+Active Stage 0 through Stage 5 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. There is no active split implementation, split-assigned dataset or model. Historical commits remain available locally by design.
 
 ## Current GCP State
 
@@ -108,6 +117,7 @@ Active Stage 0 through Stage 4 assets follow the shared module/script/notebook/o
 - Stage 2 read compact GCS reporting and feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/02_missingness_eda/`.
 - Stage 3 read the compact GCS gold feature product but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/03_feature_distribution_eda/`.
 - Stage 4 read the compact GCS gold feature product but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/04_feature_redundancy/`.
+- Stage 5 read compact GCS silver episode and gold feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/05_outcome_context/`.
 - No objective/GPS archive has been extracted or processed.
 
 ## Current Data State
@@ -129,11 +139,14 @@ Active Stage 0 through Stage 4 assets follow the shared module/script/notebook/o
 - Existing prior z-scores can be extreme under near-zero historical variance and require a later robustness decision; statistical extremeness alone is not a deletion rule.
 - Target-blind Stage 4 structure shows extensive representation redundancy: load/session current values form one high-correlation group, rolling load representations form another, and prior player baselines remain structurally separate.
 - Daily load and session sRPE are near-duplicate current and rolling representations, while session duration retains more distinct positive-session information. Adjacent rolling windows are all strongly correlated.
+- Stage 5 retains 68 complete-history matched onsets from 13 players. Fifty-three overlap another onset within plus/minus 28 days, only 15 are isolated, and the top five players contribute 80.9% of matched events.
+- Retrospective event windows show lower recording/load/duration context than same-player calendar references, but player-cluster intervals are wide and isolated-onset sensitivity often includes zero. This does not establish predictive value, causality or a feature-selection mandate.
+- Wellness values and reporting behavior vary around onsets; current/same-day wellness remains outcome-entangled and descriptive-only under `DEC-031`.
 - Objective/GPS data remains archive-only under the subjective-first decision.
 
 ## Current Modelling State
 
-No model has been fitted. No chronological split is currently frozen. `DEC-027` is superseded by `DEC-028`. Stages 1 through 4 establish outcome, reporting-process, numerical-feature and structural-contract integrity but reveal low event support, non-random reporting, zero inflation, calendar/team shifts, unstable z-score tails and substantial feature redundancy. They do not establish predictive value or generalisability. Baseline modelling is blocked until Stages 0 through 8 are completed and approved.
+No model has been fitted. No chronological split is currently frozen. `DEC-027` is superseded by `DEC-028`. Stages 1 through 5 establish outcome, reporting-process, numerical-feature, structural-contract and retrospective context integrity, while revealing low and concentrated event support, overlapping onsets, non-random reporting, zero inflation, calendar/team shifts, unstable z-score tails and substantial feature redundancy. They do not establish predictive value or generalisability. Baseline modelling is blocked until Stages 0 through 8 are completed and approved.
 
 ## Current Product State
 
@@ -155,7 +168,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- Approve or revise the Stage 5 descriptive outcome-context analysis specification.
+- Approve, revise or reject the Stage 5 descriptive findings and their constrained interpretation.
 - Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -171,18 +184,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 5 implementation is process-blocked until the project owner approves its specification.
+No technical blocker. Stage 6 is process-blocked until the project owner approves the Stage 5 results and interpretation.
 
 ## Work In Progress
 
-Stage 5 specification review is open. No Stage 5 code is in progress, and no other control session is known to be modifying the working tree.
+Stage 5 results review is open. Implementation and canonical outputs are committed at `e31e5ba`; no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present the Stage 5 descriptive outcome-context specification, including event indexing, reference periods, feature families, stratification, outputs and non-predictive interpretation boundaries.
-2. Obtain project-owner approval or revision of that specification.
-3. After approval, implement Stage 5 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
-4. Run Stage 5 against canonical products, complete quality checks, discuss results and obtain a separate results approval before Stage 6.
+1. Present and discuss the Stage 5 descriptive outcome-context results, uncertainty and limitations.
+2. Obtain project-owner approval, revision or rejection of the Stage 5 interpretation.
+3. If approved, append the material Stage 5 policy decision and present the Stage 6 cohort/history sensitivity specification.
+4. Do not begin Stage 6 implementation until its separate specification approval.
 
 ## Validation / Quality Gate Status
 
@@ -190,9 +203,9 @@ Stage 5 specification review is open. No Stage 5 code is in progress, and no oth
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | Stage 2 files formatted; repository format check clean |
-| Type check | PASS | strict mypy, 45 source files |
-| Tests | PASS | 67 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | repository format check clean across 60 files |
+| Type check | PASS | strict mypy, 49 source files |
+| Tests | PASS | 71 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
@@ -220,8 +233,11 @@ Stage 5 specification review is open. No Stage 5 code is in progress, and no oth
 | Stage 4 automated integrity | PASS | 0 outcome columns used; 15 transforms valid; 0 hard failures |
 | Stage 4 notebook execution | PASS | 4/4 code cells executed against GCS with zero errors; committed notebook remains output-free |
 | Stage 4 results review | PASS | project-owner approval received 2026-08-15 local time; policy accepted under `DEC-033` |
-| Stage 5 specification | PENDING OWNER APPROVAL | descriptive outcome-context scope and safeguards to approve |
-| Stage 5 implementation | NOT STARTED | blocked pending specification approval |
+| Stage 5 specification | PASS | project-owner approval received 2026-08-15 |
+| Stage 5 implementation | PASS | shared module, script, notebook, outputs and tests committed at `e31e5ba` |
+| Stage 5 automated integrity | PASS | 68/68 eligible onsets matched; zero failures or warnings; three review findings |
+| Stage 5 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
+| Stage 5 results review | PENDING OWNER APPROVAL | descriptive patterns, concentration and uncertainty await review |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -229,10 +245,10 @@ Stage 5 specification review is open. No Stage 5 code is in progress, and no oth
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v31, 2026-08-14T23:46:46Z | v31, 2026-08-14T23:46:46Z |
+| `PROJECT_STATE.md` | v32, 2026-08-15T00:31:45Z | v32, 2026-08-15T00:31:45Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-033 | DEC-001 to DEC-033 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `17421c7`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `e31e5ba`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
