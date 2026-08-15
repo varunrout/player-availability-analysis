@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 42
-Last Updated UTC: 2026-08-15T19:46:00Z
+State Version: 43
+Last Updated UTC: 2026-08-15T20:29:59Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 05273899d64d5d91fa590122862f187fae3c519f (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-003 M1-F1 Implementation
-Current Phase Status: The exact development-only M1-F1 regularised-logistic specification is approved under `DEC-041`. Implementation and development evaluation are authorised. F2/F3, post-hoc calibration selection and final-test performance remain locked pending F1 results review.
+Git HEAD: 146edcc4a745fc491e01e0dbe9fb5680ed20d574 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-003 M1-F1 Results Review
+Current Phase Status: EXP-003 M1-F1 implementation and development-only evaluation are complete with automated status `PASS WITH REVIEW`. Ranking improves materially over M0, but raw probabilities are overestimated and Brier score is worse. Owner `PROMOTE`, `REVISE` or `REJECT` review is required; F2/F3, post-hoc calibration selection and final-test performance remain locked.
 
 ## Current Objective
 
-Implement and execute EXP-003 M1-F1 using the frozen nine-predictor contract, finite regularisation grid, train-only preprocessing and development-only evaluation. Produce reproducible metrics, diagnostics, stress tests, uncertainty, model artifact and retained report, then stop for project-owner `PROMOTE`, `REVISE` or `REJECT` review.
+Review EXP-003 M1-F1 development evidence and decide `PROMOTE`, `REVISE` or `REJECT`. Preserve the final-test lock and do not begin F2/F3 or select a post-hoc calibrator before that decision.
 
 ## Completed Foundation
 
@@ -129,6 +129,15 @@ Implement and execute EXP-003 M1-F1 using the frozen nine-predictor contract, fi
 - Visually reviewed all six retained charts and replaced empty zero-capture plots with explicit no-capture states.
 - Committed implementation and retained outputs at `28a4b3b`. Final-test rows were support-counted only; zero final-test predictions or performance metrics were created.
 - Full quality gate passes: lockfile check, Ruff, strict mypy across 58 source files, pytest (`87 passed`, one expected duplicate-ZIP-member warning), actual-data notebook execution and output-free notebook verification.
+- Accepted the exact EXP-003 M1-F1 development specification under `DEC-041`.
+- Added bounded scikit-learn/joblib dependencies, the frozen configuration, shared train-only preprocessing/evaluation modules, canonical job, matching output-free notebook and three focused tests.
+- Executed M1-F1 against actual GCS gold/silver development data. The selected `C=0.001` model evaluates 8,690 validation player-days, 28 positive days and five represented onsets; zero final-test predictions or performance metrics were created.
+- Validation M1-F1 results: Brier 0.003700, log loss 0.031272, average precision 0.016640 and ROC-AUC 0.807802. Ranking improves over M0, while probability accuracy is worse than M0 Brier 0.003405.
+- Raw mean prediction is 2.005% versus 0.322% observed prevalence; calibration intercept is -0.374 and slope 1.422. No post-hoc calibrator was fitted or selected.
+- Alert simulation captures 0/5, 2/5 and 4/5 represented onsets at 1%, 2.5% and 5% review rates. The latter two require approximately 107 false alerts per captured onset.
+- Rolling-origin AP is 0.1994, 0.0310 and 0.0427 in three estimable folds; the fourth has zero positive validation days. Support-aware unseen-player aggregate AP is 0.0233, but only 12/50 held-out players contain positive days.
+- Generated the retained report, 17 tables, nine visually reviewed figures, model/prediction artifacts and metadata. Committed public implementation and retained evidence at `146edcc`.
+- Full quality gate passes: lockfile, formatting across 80 Python files, Ruff, strict mypy across 63 source files, pytest (`90 passed`, one expected duplicate-ZIP-member warning), actual-data notebook execution and output-free notebook verification.
 
 ## Current Repository State
 
@@ -137,13 +146,13 @@ jobs/analysis/              approved-stage script runners
 notebooks/analysis/         matching output-cleared notebooks
 outputs/analysis/           retained script-generated analysis artifacts
 src/player_availability/    ingestion, outcomes, features, quality and configuration
-tests/                      83 passing tests, including Stage 0 through Stage 8 tests
+tests/                      90 passing tests, including Stage 0-8 and M0/M1 tests
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
 ```
 
-Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. The Stage 7 split protocol and Stage 8 launch controls are frozen as retained metadata; no split-assigned cloud dataset or model exists. Historical commits remain available locally by design.
+Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/notebook/output contract. All notebooks are committed with no outputs or execution counts. The Stage 7 split protocol and Stage 8 launch controls remain frozen; M1 development predictions/model artifacts exist locally under ignored output subdirectories, while public retained evidence is committed. Historical commits remain available locally by design.
 
 ## Current GCP State
 
@@ -160,6 +169,7 @@ Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/o
 - Stage 4 read the compact GCS gold feature product but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/04_feature_redundancy/`.
 - Stage 5 read compact GCS silver episode and gold feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/05_outcome_context/`.
 - Stage 6 read compact GCS silver injury/registry and gold feature products but made no cloud-data changes; retained analysis artifacts are local under `outputs/analysis/06_cohort_outcome_sensitivity/`.
+- EXP-003 read compact gold features and silver episodes from GCS but made no cloud-data changes; retained modelling evidence is local under `outputs/modelling/exp_003_m1_logistic/f1/`.
 - No objective/GPS archive has been extracted or processed.
 
 ## Current Data State
@@ -168,7 +178,7 @@ Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/o
 - Silver: player registry, daily load, daily wellness, sessions, source event reports and 147 three-day-gap injury episodes.
 - Gold labels: 36,550 player-days with censored 3/7/14-day future episode-start labels.
 - Gold features: 36,550 unsplit `subjective_v1` player-days with current, rolling and prior-only player-relative features.
-- Episode-gap, horizon, burn-in, missingness and final cohort choices must be reviewed in the new staged analysis before modelling protocol freeze.
+- Episode-gap, horizon, burn-in, missingness and primary cohort choices are frozen for the baseline programme under `DEC-030` to `DEC-038`.
 - The 162 injury reports contain 306 parsed components and 299 unique components. Under the current three-day rule these form 147 location episodes but only 73 distinct player-date onset events.
 - Gap sensitivity is substantial: 1/3/7-day rules produce 232/147/101 location episodes and 108/73/55 distinct onset days respectively.
 - Outcome support is highly concentrated: 35 of 50 players have no episode, the top five players account for 75.3% of onset days, and the leading team accounts for 90.4%.
@@ -191,7 +201,7 @@ Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/o
 
 ## Current Modelling State
 
-EXP-002 M0 is the first completed development experiment. The constant global baseline assigns the 1.711% training prevalence and has no estimable ranking; the recent-load comparator uses the training-only 95th percentile of `daily_load_sum_7d_log1p` and training target rates above/below that threshold. Validation prevalence falls to 0.322%. The global baseline has lower Brier/log loss and prevalence-level AP; recent load is below prevalence-level AP, below-chance ROC-AUC and captures zero of five represented onsets at 1%, 2.5% and 5% review rates. This is benchmark evidence, not an operational candidate or a causal workload result. M0 owner review is pending, M1 remains blocked, M2+ is deferred and final-test predictions/performance remain prohibited.
+EXP-002 M0 is accepted as the minimum benchmark. EXP-003 M1-F1 is complete on development data with selected `C=0.001`: Brier 0.003700, log loss 0.031272, AP 0.016640 and ROC-AUC 0.807802. It ranks rare events materially better than M0 but is less accurate probabilistically and overpredicts the mean event rate by about 6.2 times. At frozen review budgets it captures 0/5, 2/5 and 4/5 represented onsets, with high alert burden. This is exploratory decision-support evidence, not a medical or deployment claim. Owner result review is pending; F2/F3, calibration selection, M2+ and final-test performance remain blocked.
 
 ## Current Product State
 
@@ -237,21 +247,23 @@ No API, dashboard, product table or inference service is implemented. The intend
 - One rolling-origin validation window has zero positive player-days, so it cannot support discrimination or calibration estimation and must remain a temporal stress window.
 - Thirty-eight of 50 leave-one-player-out development folds have zero positive held-out days; unseen-player metrics require support-aware aggregation and cautious claims.
 - The robust fatigue predictor is available on only 8.4% of primary-cohort days because discrete prior scores often have zero robust scale; F3 must remain an incremental sensitivity unless Stage 8 revises it.
+- M1-F1 raw probabilities are materially overestimated on validation and have worse Brier/log loss than M0 despite better ranking; calibration strategy requires a separate owner-approved specification if M1-F1 is promoted.
+- Alert capture is based on only five represented validation onsets and approximately 107 false alerts per captured onset at the two non-zero-capture budgets; operational conclusions remain highly uncertain.
 
 ## Blockers
 
-No technical blocker for M1-F1. F2/F3 and post-hoc calibration are blocked until F1 results review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker for M1-F1 results review. F2/F3 and post-hoc calibration are blocked until that review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-EXP-003 M1-F1 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
+No implementation is in progress. EXP-003 M1-F1 is stopped at the required owner results gate. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Add bounded modelling dependencies and implement shared M1-F1 preprocessing, fitting and evaluation.
-2. Add the canonical job, matching output-free notebook, retained artifacts and focused leakage tests.
-3. Execute against GCS development data, visually inspect charts and run full quality gates.
-4. Stop for F1 results review before F2/F3; keep final-test predictions and performance locked.
+1. Review M1-F1 discrimination, raw calibration, alert burden, temporal stability, unseen-player support and uncertainty.
+2. Record owner `PROMOTE`, `REVISE` or `REJECT` as a new material decision.
+3. Only if promoted, specify the next bounded experiment; do not implicitly authorise F2/F3 or calibration selection.
+4. Keep final-test predictions and performance locked.
 
 ## Validation / Quality Gate Status
 
@@ -259,9 +271,9 @@ EXP-003 M1-F1 implementation is authorised and beginning. No other control sessi
 |---|---|---|
 | Lockfile integrity | PASS | `poetry check --lock` |
 | Lint | PASS | Ruff, all checks passed |
-| Format | PASS | format check clean across 69 Python files |
-| Type check | PASS | strict mypy, 30 source files |
-| Tests | PASS | 83 passed; one expected duplicate-ZIP-member warning |
+| Format | PASS | format check clean across 80 Python files |
+| Type check | PASS | strict mypy, 63 source files |
+| Tests | PASS | 90 passed; one expected duplicate-ZIP-member warning |
 | Analysis reset - local | PASS | former Phase A/Phase B code and outputs removed |
 | Analysis reset - Drive | PASS | five former report/chart files removed |
 | Analysis reset - GCS | PASS | report prefix empty; split-assigned dataset removed |
@@ -318,16 +330,20 @@ EXP-003 M1-F1 implementation is authorised and beginning. No other control sessi
 | EXP-002 M0 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
 | EXP-002 M0 results review | PASS | project-owner `BENCHMARK ACCEPT` received 2026-08-15; decision recorded under `DEC-040` |
 | EXP-003 M1-F1 specification | APPROVED | development-only contract accepted under `DEC-041` |
-| Modelling | M1-F1 IMPLEMENTATION AUTHORISED | F2/F3 and final test locked |
+| EXP-003 M1-F1 implementation | PASS | committed at `146edcc`; report, 17 tables and nine reviewed figures retained |
+| EXP-003 M1-F1 development run | PASS WITH REVIEW | ranking improves; Brier/log loss and raw calibration require owner review |
+| EXP-003 M1-F1 final-test isolation | PASS | zero final-test predictions and zero performance access |
+| EXP-003 M1-F1 notebook execution | PASS | executed against GCS; committed notebook remains output-free |
+| Modelling | M1-F1 RESULTS REVIEW REQUIRED | F2/F3, calibration selection and final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v42, 2026-08-15T19:46:00Z | v42, 2026-08-15T19:46:00Z |
+| `PROJECT_STATE.md` | v43, 2026-08-15T20:29:59Z | v43, 2026-08-15T20:29:59Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-041 | DEC-001 to DEC-041 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `0527389`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `146edcc`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
