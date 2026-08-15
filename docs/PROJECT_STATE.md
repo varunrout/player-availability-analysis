@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 39
-Last Updated UTC: 2026-08-15T18:27:52Z
+State Version: 40
+Last Updated UTC: 2026-08-15T19:05:16Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 78e5a3fed4a82689a973845d45c5481ca978e6b8 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-002 M0
-Current Phase Status: The project owner accepted the Stage 8 `READY` recommendation under `DEC-039` and approved the staged M0/M1 plan. EXP-002 M0 implementation and development-only validation are authorised. M1 remains blocked pending M0 results review; final-test performance remains locked.
+Git HEAD: 28a4b3b (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-002 M0 Results Review
+Current Phase Status: EXP-002 M0 is implemented and executed on training and validation only. Automated status is PASS with zero failures and three review findings. The global prevalence benchmark outperforms the recent-load heuristic on validation probability and ranking metrics; recent load captures zero of five represented onsets at all frozen review budgets. Project-owner `BENCHMARK ACCEPT` or `REVISE` is pending. M1 and final-test performance remain locked.
 
 ## Current Objective
 
-Implement EXP-002 M0 as the first development-only modelling benchmark using the frozen Stage 7 protocol and all Stage 8 controls. Produce reproducible global-prevalence and pre-specified recent-load heuristic results on training and validation only, then stop for project-owner review before M1.
+Review EXP-002 M0 evidence and decide `BENCHMARK ACCEPT` or `REVISE`. M0 establishes the minimum comparison for M1; it is not a candidate operational model. No M1 implementation or final-test evaluation may begin before the applicable owner gate.
 
 ## Completed Foundation
 
@@ -118,6 +118,18 @@ Implement EXP-002 M0 as the first development-only modelling benchmark using the
 - Stage 8 provisionally recommends `READY` only for a narrow exploratory M0/M1 subjective-data baseline programme. The stage itself authorises no modelling and accessed no final-test performance.
 - Executed canonical script and notebook locally against retained evidence; committed implementation and outputs at `7a17edd`. Full gates pass: lock, formatting across 69 Python files, Ruff, strict mypy across 30 source files and pytest (`83 passed`, one expected ZIP duplicate-name warning).
 
+- Accepted the Stage 8 `READY` recommendation and M0 specification under `DEC-039`; synchronised local and Drive control documents before modelling.
+- Added versioned M0 configuration, shared modelling code, canonical EXP-002 job, matching output-free notebook and four focused tests.
+- Implemented global training-prevalence and training-only 95th-percentile seven-day recent-load baselines, with no arbitrary ranking for the constant baseline.
+- Added validation Brier, log loss, average precision, ROC-AUC, 1%/2.5%/5% alert simulation, represented-onset capture, lead time and support-aware player/week bootstrap uncertainty.
+- Executed EXP-002 against actual GCS gold/silver products: 16,365 training and 8,690 validation player-days; 28 validation positive days and five represented validation onsets.
+- Global prevalence validation results: Brier 0.003405, log loss 0.030310, average precision 0.003222 and ROC-AUC 0.500000.
+- Recent-load validation results: Brier 0.003544, log loss 0.032241, average precision 0.002934 and ROC-AUC 0.477210; zero of five onsets captured at all frozen alert budgets.
+- Verified 500 player-cluster and 500 temporal-week bootstrap requests per baseline/metric; undefined zero-positive AP resamples are counted and excluded from interval estimation rather than silently scored.
+- Visually reviewed all six retained charts and replaced empty zero-capture plots with explicit no-capture states.
+- Committed implementation and retained outputs at `28a4b3b`. Final-test rows were support-counted only; zero final-test predictions or performance metrics were created.
+- Full quality gate passes: lockfile check, Ruff, strict mypy across 58 source files, pytest (`87 passed`, one expected duplicate-ZIP-member warning), actual-data notebook execution and output-free notebook verification.
+
 ## Current Repository State
 
 ```text
@@ -179,7 +191,7 @@ Active Stage 0 through Stage 8 assets follow the shared module/script/notebook/o
 
 ## Current Modelling State
 
-No model or baseline has yet been fitted. The chronological train, validation, embargo and locked final-test partitions are frozen under `DEC-036`. Stage 8 passed 12/12 hard gates and the project owner accepted `READY` under `DEC-039` for a narrow exploratory M0/M1 programme. EXP-002 M0 is authorised for training and validation only. M1 remains blocked pending M0 review; M2+ is deferred and final-test predictions and performance remain prohibited.
+EXP-002 M0 is the first completed development experiment. The constant global baseline assigns the 1.711% training prevalence and has no estimable ranking; the recent-load comparator uses the training-only 95th percentile of `daily_load_sum_7d_log1p` and training target rates above/below that threshold. Validation prevalence falls to 0.322%. The global baseline has lower Brier/log loss and prevalence-level AP; recent load is below prevalence-level AP, below-chance ROC-AUC and captures zero of five represented onsets at 1%, 2.5% and 5% review rates. This is benchmark evidence, not an operational candidate or a causal workload result. M0 owner review is pending, M1 remains blocked, M2+ is deferred and final-test predictions/performance remain prohibited.
 
 ## Current Product State
 
@@ -226,18 +238,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker for EXP-002 M0. M1 is process-blocked until M0 results review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker. M1 is process-blocked until M0 results review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-EXP-002 M0 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
+EXP-002 M0 results review is open. Implementation and retained outputs are committed at `28a4b3b`; no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Implement shared EXP-002 M0 logic, canonical job, matching output-free notebook, versioned configuration and focused tests.
-2. Run M0 against the frozen training and validation partitions without generating final-test predictions.
-3. Review probability, ranking, calibration, capacity-bounded alert and uncertainty evidence with the project owner.
-4. Obtain `BENCHMARK ACCEPT` or `REVISE` before M1 implementation.
+1. Present and discuss EXP-002 M0 probability, ranking, capacity-bounded alert, onset-capture and uncertainty evidence.
+2. Obtain project-owner `BENCHMARK ACCEPT` or `REVISE`.
+3. If accepted, present the exact EXP-003 M1 implementation specification before adding the modelling dependency or fitting logistic regression.
+4. Keep final-test predictions and performance locked.
 
 ## Validation / Quality Gate Status
 
@@ -298,16 +310,20 @@ EXP-002 M0 implementation is authorised and beginning. No other control session 
 | Stage 8 provisional recommendation | READY | narrow exploratory M0/M1 scope accepted by the project owner under `DEC-039` |
 | Stage 8 results review | PASS | owner `READY` approval received 2026-08-15 |
 | EXP-002 M0 specification | APPROVED | global prevalence plus pre-specified recent-load heuristic; development only |
-| Modelling | AUTHORISED - M0 ONLY | M1 pending M0 review; final test locked |
+| EXP-002 M0 implementation | PASS | shared module, canonical job, notebook, retained outputs and four tests committed at `28a4b3b` |
+| EXP-002 M0 development run | PASS WITH REVIEW | 8,690 validation days, 28 positive days, five onsets; zero failures and three review findings |
+| EXP-002 M0 final-test isolation | PASS | zero final-test predictions and zero performance access |
+| EXP-002 M0 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
+| Modelling | M0 RESULTS REVIEW | M1 pending M0 review; final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v39, 2026-08-15T18:27:52Z | v39, 2026-08-15T18:27:52Z |
+| `PROJECT_STATE.md` | v40, 2026-08-15T19:05:16Z | v40, 2026-08-15T19:05:16Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-039 | DEC-001 to DEC-039 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `78e5a3f`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `28a4b3b`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
