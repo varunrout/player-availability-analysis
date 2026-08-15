@@ -1,0 +1,4 @@
+partition_rank,partition,start_date,end_date,access_policy,horizon_days,next_partition_embargo_days,model_performance_allowed_stage_07
+1,train,2020-01-29,2020-12-24,development,7,7,false
+2,validation,2021-01-01,2021-06-23,development,7,7,false
+3,test,2021-07-01,2021-12-24,locked_after_support_audit,7,0,false

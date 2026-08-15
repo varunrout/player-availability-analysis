@@ -1,0 +1,4 @@
+review_rate,alerts_per_100_player_days,threshold_fit_scope,reporting_rule
+0.01,1.0,validation_only,"report precision, sensitivity, event capture and lead time"
+0.025,2.5,validation_only,"report precision, sensitivity, event capture and lead time"
+0.05,5.0,validation_only,"report precision, sensitivity, event capture and lead time"

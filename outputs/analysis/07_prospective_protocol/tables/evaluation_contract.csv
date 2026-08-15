@@ -1,0 +1,10 @@
+metric_role,metric,direction,purpose
+primary,brier_score,lower,probability accuracy and calibration
+primary,average_precision,higher,rare-outcome ranking
+secondary,log_loss,lower,penalises overconfident probabilities
+secondary,roc_auc,higher,reported with imbalance caveat
+calibration,calibration_intercept,near_zero,systematic risk bias
+calibration,calibration_slope,near_one,probability spread
+operational,event_capture,higher,represented onsets preceded by an alert
+operational,lead_time_days,higher,time available for practitioner review
+operational,alerts_per_100_player_days,capacity_bound,review burden

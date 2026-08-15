@@ -1,0 +1,6 @@
+feature_set,definition,comparison_role
+F0,Global training prevalence only; no predictors,Operational baseline
+F1,Absolute load plus strictly lagged absolute wellness,Subjective state baseline
+F2,F1 plus session exposure and prior reporting/missingness,Operational context
+F3,F2 plus strictly prior robust player-relative features,Personalisation hypothesis
+S_SRPE,Replace the daily-load family with sRPE; never add both,Redundancy sensitivity

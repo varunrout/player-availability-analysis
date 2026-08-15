@@ -1,0 +1,4 @@
+method,unit,interval,purpose
+player_cluster_bootstrap,player,95% percentile,repeated player-day dependence
+temporal_block_bootstrap,calendar week,95% percentile,calendar dependence and event clustering
+point_estimate_plus_support,represented onset and event player,always disclose counts,prevent precise-looking sparse estimates

@@ -49,6 +49,13 @@ from player_availability.analysis.stage_06_cohort_outcome_sensitivity import (
     run_stage_06_cohort_outcome_sensitivity,
     write_stage_06_outputs,
 )
+from player_availability.analysis.stage_07_prospective_protocol import (
+    Stage07ProtocolResult,
+    build_stage_07_figures,
+    load_stage_07_from_gcp,
+    run_stage_07_prospective_protocol,
+    write_stage_07_outputs,
+)
 
 __all__ = [
     "Stage00AuditResult",
@@ -86,4 +93,9 @@ __all__ = [
     "load_stage_06_from_gcp",
     "run_stage_06_cohort_outcome_sensitivity",
     "write_stage_06_outputs",
+    "Stage07ProtocolResult",
+    "build_stage_07_figures",
+    "load_stage_07_from_gcp",
+    "run_stage_07_prospective_protocol",
+    "write_stage_07_outputs",
 ]

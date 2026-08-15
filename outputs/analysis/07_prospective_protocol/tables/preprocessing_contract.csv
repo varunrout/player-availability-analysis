@@ -1,0 +1,8 @@
+component,rule,fit_scope
+numeric_missing,median imputation,fit on training partition only
+missingness,explicit indicators,preserve reporting and baseline availability
+scaling,standard scaling for scale-sensitive models,fit on training only
+tree_models,native missing handling where supported,no global pre-imputation
+feature_selection,frozen sets then training-only selection,validation comparison only
+calibration,post-model calibration,fit on validation or nested development fold
+class_weighting,candidate sensitivity,select using development data only

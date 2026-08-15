@@ -1,0 +1,8 @@
+prohibition_group,prohibited_fields_or_pattern,reason
+identity,player_id; team_id; report_id; episode_id,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+same_day_wellness,fatigue; readiness; wellness_report_present; wellness_metric_count,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+outcome,injury_next_*; eligible_new_onset_*; active_injury_episode; days_to_next_injury,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+future_or_followup,observation_end; episode_start; episode_end; recovery fields,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+unstable_relative,daily_load_zscore_prior; fatigue_zscore_prior; readiness_zscore_prior,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+memorisation,prediction_date raw value; source row identifiers,"Excluded by the frozen prediction-time, leakage or redundancy contract"
+redundant_primary,session_srpe family alongside daily_load family; 3d/14d rolling windows,"Excluded by the frozen prediction-time, leakage or redundancy contract"

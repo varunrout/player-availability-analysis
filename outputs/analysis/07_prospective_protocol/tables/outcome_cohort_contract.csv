@@ -1,0 +1,9 @@
+contract_role,parameter,value,rationale
+primary,episode_gap_days,3,DEC-035 primary episode construction
+primary,prediction_horizon_days,7,Future player-date onset target
+primary,burn_in_days,28,Strictly prior calendar history
+primary,eligibility,complete horizon; outside active episode,Production labels
+secondary,prediction_horizons_days,3; 14,Lead-time sensitivity
+sensitivity,episode_gap_days,1; 7,Outcome-definition sensitivity
+sensitivity,cohort,broad no-burn-in,Mandatory support sensitivity
+prohibited_filter,isolated_onset,never,Retrospective outcome information
