@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 43
-Last Updated UTC: 2026-08-15T20:29:59Z
+State Version: 44
+Last Updated UTC: 2026-08-15T20:58:42Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: 146edcc4a745fc491e01e0dbe9fb5680ed20d574 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Baseline Modelling - EXP-003 M1-F1 Results Review
-Current Phase Status: EXP-003 M1-F1 implementation and development-only evaluation are complete with automated status `PASS WITH REVIEW`. Ranking improves materially over M0, but raw probabilities are overestimated and Brier score is worse. Owner `PROMOTE`, `REVISE` or `REJECT` review is required; F2/F3, post-hoc calibration selection and final-test performance remain locked.
+Git HEAD: 375182ace5a6e5184ffe5bfe459e71b327986bb6 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Baseline Modelling - EXP-003 M1-F2/F3 Implementation
+Current Phase Status: The owner promoted F1 as the development reference under `DEC-042` and authorised the controlled F2/F3 feature-ladder extension. F1 is not operational or calibrated. Calibration selection, horizon alternatives, M2+ and final-test performance remain locked.
 
 ## Current Objective
 
-Review EXP-003 M1-F1 development evidence and decide `PROMOTE`, `REVISE` or `REJECT`. Preserve the final-test lock and do not begin F2/F3 or select a post-hoc calibrator before that decision.
+Implement and execute cumulative M1-F2 and M1-F3 under the frozen F1 model settings, compare the three raw feature sets on development evidence, and stop for raw-candidate and calibration-scope review without final-test access.
 
 ## Completed Foundation
 
@@ -138,6 +138,8 @@ Review EXP-003 M1-F1 development evidence and decide `PROMOTE`, `REVISE` or `REJ
 - Rolling-origin AP is 0.1994, 0.0310 and 0.0427 in three estimable folds; the fourth has zero positive validation days. Support-aware unseen-player aggregate AP is 0.0233, but only 12/50 held-out players contain positive days.
 - Generated the retained report, 17 tables, nine visually reviewed figures, model/prediction artifacts and metadata. Committed public implementation and retained evidence at `146edcc`.
 - Full quality gate passes: lockfile, formatting across 80 Python files, Ruff, strict mypy across 63 source files, pytest (`90 passed`, one expected duplicate-ZIP-member warning), actual-data notebook execution and output-free notebook verification.
+- Owner selected `PROMOTE` for M1-F1 on 2026-08-15; accepted `DEC-042`. Promotion means reference-candidate advancement only, not deployment or acceptance of raw calibration.
+- Authorised cumulative F2 (17 predictors) and F3 (23 predictors) development evaluation with unchanged cohort, partitions, preprocessing, logistic model, regularisation grid, metrics, stress tests and final-test lock.
 
 ## Current Repository State
 
@@ -201,7 +203,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 is accepted as the minimum benchmark. EXP-003 M1-F1 is complete on development data with selected `C=0.001`: Brier 0.003700, log loss 0.031272, AP 0.016640 and ROC-AUC 0.807802. It ranks rare events materially better than M0 but is less accurate probabilistically and overpredicts the mean event rate by about 6.2 times. At frozen review budgets it captures 0/5, 2/5 and 4/5 represented onsets, with high alert burden. This is exploratory decision-support evidence, not a medical or deployment claim. Owner result review is pending; F2/F3, calibration selection, M2+ and final-test performance remain blocked.
+EXP-002 M0 is accepted as the minimum benchmark. EXP-003 M1-F1 is promoted as the active development reference with selected `C=0.001`: Brier 0.003700, log loss 0.031272, AP 0.016640 and ROC-AUC 0.807802. It ranks rare events materially better than M0 but is less accurate probabilistically and overpredicts the mean event rate by about 6.2 times. At frozen review budgets it captures 0/5, 2/5 and 4/5 represented onsets, with high alert burden. F2/F3 controlled ablation is authorised; calibration selection, M2+ and final-test performance remain blocked.
 
 ## Current Product State
 
@@ -225,13 +227,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-039` accepts the Stage 8 `READY` recommendation, authorises development-only EXP-002 M0 under the approved output contract, keeps M1 pending M0 review and preserves the final-test lock.
 - `DEC-040` accepts EXP-002 M0, freezes global training prevalence as the official minimum probability benchmark, retains recent load as a failed descriptive comparator and authorises M1 specification review only.
 - `DEC-041` authorises development-only M1-F1 regularised logistic regression, freezes predictors, preprocessing, tuning, diagnostics, stress tests and output contract, and keeps F2/F3, calibration selection and final test blocked.
+- `DEC-042` promotes F1 as the development reference and authorises cumulative F2/F3 controlled ablation under unchanged model and validation settings; it does not authorise deployment, calibration selection or final-test access.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Review completed M1-F1 evidence and decide `PROMOTE`, `REVISE` or `REJECT` before F2.
+- After the F2/F3 run, select the raw M1 feature-set candidate and calibration-experiment scope.
 
 ## Known Issues / Technical Debt
 
@@ -252,18 +255,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker for M1-F1 results review. F2/F3 and post-hoc calibration are blocked until that review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
+No technical blocker for F2/F3 implementation. Post-hoc calibration remains blocked until raw feature-set review. Final-test performance is blocked until the frozen checklist is completed and one-time access is explicitly authorised.
 
 ## Work In Progress
 
-No implementation is in progress. EXP-003 M1-F1 is stopped at the required owner results gate. No other control session is known to be modifying the working tree.
+EXP-003 M1-F2/F3 implementation is authorised and beginning. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review M1-F1 discrimination, raw calibration, alert burden, temporal stability, unseen-player support and uncertainty.
-2. Record owner `PROMOTE`, `REVISE` or `REJECT` as a new material decision.
-3. Only if promoted, specify the next bounded experiment; do not implicitly authorise F2/F3 or calibration selection.
-4. Keep final-test predictions and performance locked.
+1. Generalise the proven F1 pipeline for the frozen cumulative F2/F3 predictor contracts without changing F1 behavior.
+2. Add the canonical feature-ladder job, matching output-free notebook, retained comparison artifacts and focused leakage tests.
+3. Execute against GCS development data, visually inspect figures and run full quality gates.
+4. Stop for raw-candidate and calibration-scope review; keep final-test predictions and performance locked.
 
 ## Validation / Quality Gate Status
 
@@ -334,16 +337,18 @@ No implementation is in progress. EXP-003 M1-F1 is stopped at the required owner
 | EXP-003 M1-F1 development run | PASS WITH REVIEW | ranking improves; Brier/log loss and raw calibration require owner review |
 | EXP-003 M1-F1 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-003 M1-F1 notebook execution | PASS | executed against GCS; committed notebook remains output-free |
-| Modelling | M1-F1 RESULTS REVIEW REQUIRED | F2/F3, calibration selection and final test locked |
+| EXP-003 M1-F1 results review | PROMOTE | development reference advancement accepted under `DEC-042`; not operational |
+| EXP-003 M1-F2/F3 specification | APPROVED | cumulative frozen contracts under unchanged model/evaluation settings |
+| Modelling | M1-F2/F3 IMPLEMENTATION AUTHORISED | calibration selection and final test locked |
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v43, 2026-08-15T20:29:59Z | v43, 2026-08-15T20:29:59Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-041 | DEC-001 to DEC-041 |
+| `PROJECT_STATE.md` | v44, 2026-08-15T20:58:42Z | v44, 2026-08-15T20:58:42Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-042 | DEC-001 to DEC-042 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `146edcc`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `375182a`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

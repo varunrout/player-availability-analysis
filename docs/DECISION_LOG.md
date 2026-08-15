@@ -1172,11 +1172,43 @@ M1-F1 code and development evaluation are authorised. M1-F2, M1-F3, post-hoc cal
 
 ---
 
+## DEC-042
+
+**Decision ID:** DEC-042
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+EXP-003 M1-F1 completed development-only evaluation with validation Brier 0.003700, log loss 0.031272, average precision 0.016640 and ROC-AUC 0.807802. Relative to M0, F1 materially improves rare-event ranking and captures four of five represented onsets at the 5% review budget, but worsens probability accuracy and overestimates mean risk at 2.005% versus 0.322% observed. The project owner reviewed this trade-off and selected `PROMOTE` so that the frozen incremental feature ladder can be evaluated.
+
+**Decision:**
+Promote M1-F1 as the active development reference for further feature-family ablation. This promotion does not make F1 an operational or deployed model, does not accept its raw probabilities as calibrated risk, and does not authorise final-test access.
+
+Authorise the development-only EXP-003 extension for both M1-F2 and M1-F3. F2 is cumulative F1 plus the eight frozen session-exposure and strictly prior reporting-process predictors. F3 is cumulative F2 plus the six frozen strictly prior robust player-relative values and availability indicators. Fit each feature set independently using the same primary cohort, target, chronological train/validation partitions, embargoes, training-only median imputation with indicators, scaling, unweighted L2 logistic regression, `lbfgs`, 5,000-iteration limit and `C` grid `[0.001, 0.01, 0.1, 1.0, 10.0]` used for F1. Select `C` within each feature set by lowest validation Brier, then higher average precision, then stronger regularisation.
+
+Compare F1, F2 and F3 using raw Brier, log loss, average precision, ROC-AUC, calibration intercept/slope, reliability, fixed 1%/2.5%/5% review budgets, represented-onset capture, false alerts per captured onset, rolling-origin evidence, support-aware leave-one-player-out evidence and player/week bootstrap uncertainty. Report incremental feature-family effects and predictor availability explicitly. Do not select a post-hoc calibrator, run horizon alternatives or access final-test predictions/performance. Stop after the F2/F3 development report for owner selection of the raw feature-set candidate and calibration-experiment scope.
+
+**Rationale:**
+F1 demonstrates enough prospective ranking signal to justify testing whether operational session context and player-relative state add stable value. Keeping model class, splits, tuning grid and evaluation constant makes F2 and F3 controlled feature-family ablations rather than new modelling searches. Running the already frozen F2 and F3 contracts in one extension avoids another validation-dependent redesign while preserving a decision gate before calibration and final test.
+
+**Alternatives Considered:**
+Reject F1 because raw Brier is worse than M0, rejected because ranking and capacity-bounded onset capture provide sufficient exploratory value for controlled ablation. Treat F1 as deployment-ready, rejected because calibration and sparse-support limitations are material. Add F2 only and defer F3, rejected because both contracts were frozen before F1 fitting and the owner explicitly authorised moving through F2/F3. Tune new hyperparameters or class weights per feature set, rejected because that would confound feature-family comparison. Select calibration now, rejected because the raw feature set must be chosen first. Access final-test performance, rejected because model and calibration choices remain open.
+
+**Consequences:**
+M1-F2 and M1-F3 implementation and development evaluation are authorised under the existing script/notebook/output contract. F1 remains the comparison reference, not an operational model. Calibration selection, horizon sensitivities, M2+, product serving and final-test performance remain blocked. The completed extension requires a new owner decision before any calibrator is fitted or final-test access is considered.
+
+**Affected Components:** M1 feature ladder, preprocessing, regularised logistic regression, development validation, feature ablation, calibration diagnostics, alert simulation, uncertainty, model artifacts, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-EXP-003 M1-F1 implementation and development evaluation are authorised under `DEC-041`. F1 results require `PROMOTE`, `REVISE` or `REJECT` before F2. Final-test performance access remains prohibited.
+M1-F2 and M1-F3 implementation and development evaluation are authorised under `DEC-042`. The completed feature-ladder evidence requires owner raw-candidate and calibration-scope review. Final-test performance access remains prohibited.
 
 ### Resolved
 
