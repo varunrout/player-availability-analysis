@@ -940,11 +940,39 @@ Stage 5 descriptive outcome-context analysis may compare approved descriptive fe
 
 ---
 
+## DEC-034
+
+**Decision ID:** DEC-034
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+Stage 5 compared 68 complete-history player-date onsets with clean same-player calendar and reporting-matched reference periods. The matched events come from 13 players; the top five contribute 80.9%, 53 events overlap another onset within plus or minus 28 days, and only 15 are isolated. Event windows generally show lower recorded-session frequency, daily load and session duration than calendar references. Observed fatigue is directionally higher and readiness lower over some windows, but player-cluster intervals are wide, wellness reporting differs between event and reference periods, and isolated-onset sensitivities commonly include zero. Day 0 shows strong recording changes but was excluded from primary pre-onset summaries.
+
+**Decision:**
+Accept Stage 5 as a valid retrospective descriptive outcome-context analysis with constrained interpretation. Treat reduced observed exposure, lower session-recording frequency and weak wellness differences before recorded onset as hypotheses for later prospective testing, not as predictive, causal or medical evidence. Do not promote, remove or rank predictors from these retrospective associations. Keep day-0 values descriptive-only and preserve the `DEC-031` prohibition on same-day wellness and reporting fields in the primary predictor contract. Retain player-equal summaries, player-cluster uncertainty, overlapping-window disclosure and isolated-onset sensitivity as required interpretation controls. Authorise Stage 6 specification review, but not Stage 6 implementation, to quantify episode-gap, prediction-horizon, burn-in, history and missingness-aware cohort choices.
+
+**Rationale:**
+The directional exposure patterns are not stable enough to support feature selection or operational claims. Most events are clustered, evidence is concentrated in a small number of players, and the recording process changes around onset. Preserving the patterns as explicit hypotheses allows later prospective evaluation without overstating what retrospective EDA establishes. Freezing cohort and outcome choices only after Stage 6 sensitivity analysis keeps sample-support and representation trade-offs visible.
+
+**Alternatives Considered:**
+Interpret lower load as protective or harmful, rejected because Stage 5 is non-causal and recording/exposure semantics are unresolved. Select features from the strongest matched differences, rejected because this would use outcome association before the prospective protocol is frozen. Exclude overlapping events or high-contribution players immediately, deferred because Stage 6 must quantify the effect on sample size, positive support and representation. Include day-0 wellness or reporting signals, rejected because timing and outcome-entanglement risks remain. Begin modelling after Stage 5, rejected because Stages 6 through 8 remain mandatory gates.
+
+**Consequences:**
+Stage 6 must report the sample-size, event-support, player/team representation and concentration consequences of every candidate cohort and outcome rule. Stage 7 may freeze predictors and validation only after the Stage 6 primary and secondary specifications are approved. Stage 5 findings may motivate pre-specified later comparisons but cannot silently alter the provisional feature-family policy in `DEC-033`.
+
+**Affected Components:** outcome interpretation, cohort sensitivity, feature selection, leakage controls, validation, modelling claims, practitioner communication
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Stage 5 descriptive findings and their constrained interpretation await project-owner approval. The primary horizon, final cohort, predictor contract and chronological split remain deliberately unfrozen until the relevant pre-model analysis gates.
+Stage 6 must determine the primary horizon, episode-gap rule, cohort eligibility and required secondary sensitivities. The predictor contract and chronological split remain deliberately unfrozen until the relevant later gates.
 
 ### Resolved
 

@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 32
-Last Updated UTC: 2026-08-15T00:31:45Z
+State Version: 33
+Last Updated UTC: 2026-08-15T01:25:32Z
 Coordination Session ID: PAA-CTRL-20260815-01
 Git Branch: main
-Git HEAD: e31e5bac24d3b2cc07064ef26ef900f28844564b (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: Pre-Model Analysis - Stage 5 Results Review
-Current Phase Status: Stage 5 specification was approved, implemented and executed. Automated integrity is PASS; descriptive findings await project-owner review. Stage 6 is not yet authorised.
+Git HEAD: cbd2212b1c0201289b9e440487be0cb68450d48d (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: Pre-Model Analysis - Stage 6 Specification
+Current Phase Status: Stage 5 results and constrained interpretation are approved under `DEC-034`. Stage 6 cohort and outcome sensitivity analysis awaits project-owner specification approval; implementation is not yet authorised.
 
 ## Current Objective
 
-Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to review Stage 5 retrospective outcome-context evidence and decide which patterns, if any, merit later prospective testing. No Stage 6 work may begin before Stage 5 results approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
+Complete pre-model analysis through nine explicit stages, with project-owner approval after each specification and each result review. The immediate task is to approve or revise the Stage 6 specification for episode-gap, prediction-horizon, burn-in, feature-history and missingness-aware cohort sensitivities. No Stage 6 implementation may begin before that approval, and no baseline model may be fitted before the Stage 8 readiness report is approved as `READY`.
 
 ## Completed Foundation
 
@@ -88,6 +88,8 @@ Complete pre-model analysis through nine explicit stages, with project-owner app
 - Observed fatigue trends slightly higher and readiness lower near onsets, but wellness reporting itself differs between event and reference periods and same-day wellness remains descriptive-only under `DEC-031`.
 - Executed the canonical script and notebook against GCS products; no cloud data was changed. Committed implementation and retained outputs at `e31e5ba`.
 - Full quality gate passes: lockfile, formatting, Ruff, strict mypy and pytest (`71 passed`, one expected ZIP duplicate-name warning); notebook execution produced zero errors and the committed notebook remains output-free.
+- Project owner approved the Stage 5 results and constrained interpretation on 2026-08-15.
+- Accepted `DEC-034`: Stage 5 patterns remain non-predictive hypotheses; no predictor is promoted, removed or ranked from retrospective association; day-0 and same-day wellness remain descriptive-only; player concentration, overlap and isolated-event sensitivities remain required controls.
 
 ## Current Repository State
 
@@ -162,13 +164,14 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-031` defines missing-value semantics and a conservative lagged-only wellness/reporting policy for the primary predictor contract.
 - `DEC-032` defines Stage 3 feature handling: preserve extremes, separate recording state from magnitude, carry justified `log1p` candidates, and exclude unstable existing z-scores from the primary operational contract.
 - `DEC-033` defines the target-blind full-contract catalogue and compact provisional operational feature-family policy; the exact predictor allow-list remains unfrozen until Stage 7.
+- `DEC-034` accepts Stage 5 only as constrained retrospective context evidence and authorises Stage 6 specification review without authorising implementation.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
 
 ## Open Decisions
 
-- Approve, revise or reject the Stage 5 descriptive findings and their constrained interpretation.
+- Approve or revise the Stage 6 cohort and outcome sensitivity specification.
 - Later stages must approve the primary horizon/cohort, complete predictor contract and chronological validation protocol before modelling.
 
 ## Known Issues / Technical Debt
@@ -184,18 +187,18 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Blockers
 
-No technical blocker. Stage 6 is process-blocked until the project owner approves the Stage 5 results and interpretation.
+No technical blocker. Stage 6 implementation is process-blocked until the project owner approves its specification.
 
 ## Work In Progress
 
-Stage 5 results review is open. Implementation and canonical outputs are committed at `e31e5ba`; no other control session is known to be modifying the working tree.
+Stage 6 specification review is open. No Stage 6 code is in progress, and no other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Present and discuss the Stage 5 descriptive outcome-context results, uncertainty and limitations.
-2. Obtain project-owner approval, revision or rejection of the Stage 5 interpretation.
-3. If approved, append the material Stage 5 policy decision and present the Stage 6 cohort/history sensitivity specification.
-4. Do not begin Stage 6 implementation until its separate specification approval.
+1. Present the Stage 6 cohort and outcome sensitivity specification, including candidate rules, comparison matrix, outputs and decision criteria.
+2. Obtain project-owner approval or revision of that specification.
+3. After approval, implement Stage 6 through shared functions, canonical script, matching output-free notebook, retained outputs and focused tests.
+4. Run Stage 6 against canonical products, discuss trade-offs and obtain a separate results approval before Stage 7.
 
 ## Validation / Quality Gate Status
 
@@ -237,7 +240,9 @@ Stage 5 results review is open. Implementation and canonical outputs are committ
 | Stage 5 implementation | PASS | shared module, script, notebook, outputs and tests committed at `e31e5ba` |
 | Stage 5 automated integrity | PASS | 68/68 eligible onsets matched; zero failures or warnings; three review findings |
 | Stage 5 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| Stage 5 results review | PENDING OWNER APPROVAL | descriptive patterns, concentration and uncertainty await review |
+| Stage 5 results review | PASS | project-owner approval received 2026-08-15; interpretation accepted under `DEC-034` |
+| Stage 6 specification | PENDING OWNER APPROVAL | cohort and outcome sensitivity scope and safeguards to approve |
+| Stage 6 implementation | NOT STARTED | blocked pending specification approval |
 | Leakage/split gate | NOT ACTIVE | no split currently frozen |
 | Modelling | NOT STARTED | no model fitted |
 
@@ -245,10 +250,10 @@ Stage 5 results review is open. Implementation and canonical outputs are committ
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v32, 2026-08-15T00:31:45Z | v32, 2026-08-15T00:31:45Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-033 | DEC-001 to DEC-033 |
+| `PROJECT_STATE.md` | v33, 2026-08-15T01:25:32Z | v33, 2026-08-15T01:25:32Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-034 | DEC-001 to DEC-034 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
 
 Status: **SYNCHRONISED**
 
-Drive mirrors use stable file IDs and in-place updates. The state records `e31e5ba`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Drive mirrors use stable file IDs and in-place updates. The state records `cbd2212`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
