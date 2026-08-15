@@ -1349,7 +1349,7 @@ Including M2 is expected to yield a negative result at this sample size. That is
 A lean V1 taking calibrated M1-F3 straight to product, rejected because it drops the survival conclusion the charter requires and discards the strongest available response to sparse events. An extended V1 including a GPS pilot, rejected because it adds material time and cost while being unable to relieve the outcome-support limit that constrains every model claim; it remains the natural V2 opening.
 
 **Consequences:**
-- Delivery is governed by `docs/V1_DELIVERY_PLAN.md`, with owner approval gates preserved as used since Stage 0.
+- Delivery is governed by section 5A of `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`, with owner approval gates preserved as used since Stage 0. Phases map onto experiment identifiers already registered there: V1-P1 is EXP-009, V1-P2 is EXP-007, V1-P3 is EXP-008, and V1-P4 draws on EXP-018 and EXP-019. No new experiment identifiers are allocated.
 - No V1 artefact may present discrimination performance as the headline result.
 - The final-test partition is spent exactly once, on a pre-registered champion and pre-registered claims. Any second access requires a new superseding decision.
 - GPS work remains prohibited for the duration of V1.
@@ -1428,13 +1428,85 @@ Switching the primary rule to the one-day gap, rejected on the outcome-selection
 
 ---
 
+## DEC-049
+
+**Decision ID:** DEC-049
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+Section 5 D1 of `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` specified that calibrators be fitted on validation predictions only. That rule was written before `DEC-047` made pooled rolling-origin the headline evaluation, and before partition support was quantified at five onsets in the validation window.
+
+Two problems follow. Fitting a calibrator on five onsets produces an extremely unstable mapping, and isotonic regression in particular would essentially memorise those events. Separately, fitting on the validation window while reporting calibrated performance under a rolling-origin headline is internally inconsistent, since the calibrator would have been fitted on data included in the pooled evaluation.
+
+**Decision:**
+Calibrators are fitted fold-wise within the pooled rolling-origin structure. In each fold the calibrator is fitted on that fold's training portion and applied to its held-out portion; metrics are then pooled across folds. Calibrator fitting partitions must always be disjoint from evaluation partitions.
+
+This supersedes `DEC-036` in respect of the calibrator-fitting rule only, and revises section 5 D1 of doc 19 accordingly.
+
+**Rationale:**
+Fitting a calibrator on the same rows used to report its performance manufactures apparent improvement, which is the specific failure this change prevents. Fold-wise fitting keeps every calibrator strictly out of sample relative to the data it is scored on, matches the structure already established as headline, and gives the calibrator materially more events to fit against than a single five-onset window.
+
+This tightens the leakage position rather than relaxing it, and adds an automated check, `CAL-02`, to enforce disjointness in every fold.
+
+**Alternatives Considered:**
+Retaining validation-only fitting, rejected as internally inconsistent with `DEC-047` and statistically unusable at five onsets. Fitting on the training partition and evaluating on validation, rejected because the model itself was fitted on that partition, so its in-sample probabilities are not representative of the held-out probabilities the calibrator must map.
+
+**Consequences:**
+- Doc 19 section 5 D1 is revised and now records fold-wise fitting.
+- `CAL-02` enforces disjoint fitting and evaluation partitions in every fold.
+- Calibrated results are reported pooled with per-fold values shown, per `DEC-047`.
+- The final-test lock is unaffected.
+
+**Affected Components:** calibration methodology, EXP-009 specification, leakage controls, evaluation reporting
+
+**Supersedes:** `DEC-036`, in respect of the calibrator-fitting rule only
+**Superseded By:** none
+
+---
+
+## DEC-050
+
+**Decision ID:** DEC-050
+**Date:** 2026-08-15
+**Status:** ACCEPTED
+
+**Context:**
+The V1 delivery plan and the EXP-009 specification were initially written as two new files, `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`, and mirrored to Drive as non-numbered documents. This broke the established convention without a decision record.
+
+The repository's `docs/` directory had only ever held `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`, `DECISION_LOG.md` and `PROJECT_STATE.md`. Every prior specification, Stages 0 to 8, EXP-002 and EXP-003, lived inside doc 19, which is why the state document describes it as a stage-gated revision. Drive held the numbered planning corpus plus the two control documents.
+
+Two concrete faults resulted. Doc 19 section 5 D1 already specified EXP-009 with the same three calibration arms, so the new file created a second source of truth for one experiment. The new phase plan also allocated experiment identifiers EXP-010 through EXP-013, all four of which were already assigned: leave-one-player-out, GPS pilot, objective-data ablation and team transfer respectively.
+
+**Decision:**
+Specifications and delivery sequencing live in `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`. The EXP-009 specification is folded into section 5 D1 and the V1 delivery programme into a new section 5A. The two files created outside the convention are deleted from both the repository and Drive. V1 phases map onto existing experiment identifiers; no new identifiers are allocated.
+
+**Rationale:**
+One source of truth per subject is a standing property of this project, established for decisions in `DEC-009` and for state in `DEC-016`. A separate specification directory would have produced exactly the divergence those decisions exist to prevent, and the identifier collisions would have caused real confusion within a few sessions.
+
+**Alternatives Considered:**
+Adopting `docs/specifications/` as a deliberate new convention and moving the EXP-009 section out of doc 19, rejected because it would require restructuring a document that has governed nine approved stages and two completed experiments, for no benefit beyond file separation. Keeping both copies temporarily, rejected because duplicated specification text diverges quickly.
+
+**Consequences:**
+- `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/` are removed from the repository; `V1_DELIVERY_PLAN.md` and `EXP_009_CALIBRATION_SPECIFICATION.md` are removed from the Drive folder.
+- Doc 19 is now mirrored to Drive alongside the two control documents whenever it changes.
+- Future specifications are written into doc 19, not as separate files.
+- `DEC-046` is amended to reference section 5A rather than the deleted file.
+
+**Affected Components:** documentation architecture, specification process, experiment identifier registry, state synchronisation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-The `EXP-009` calibration specification requires owner approval before implementation, consistent with the stage-gated model. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete.
+The `EXP-009` calibration specification, now section 5 D1 of doc 19, requires owner approval before implementation, alongside the V1 delivery programme in section 5A. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete.
 
-Resolved in this revision: V1 scope is defined by `DEC-046`; the headline evaluation question is settled by `DEC-047`; the episode-gap question is settled by `DEC-048`.
+Resolved in this revision: V1 scope is defined by `DEC-046`; the headline evaluation question is settled by `DEC-047`; the episode-gap question is settled by `DEC-048`; the calibrator-fitting rule is settled by `DEC-049`; the specification-location convention is settled by `DEC-050`.
 
 ### Resolved
 

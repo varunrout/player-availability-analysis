@@ -1,10 +1,10 @@
 # Player Availability Analysis - Project State
 
-State Version: 47
-Last Updated UTC: 2026-08-15T23:20:00Z
+State Version: 48
+Last Updated UTC: 2026-08-15T23:55:00Z
 Coordination Session ID: PAA-CTRL-20260815-02
 Git Branch: main
-Git HEAD: 377436d (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 838ad00 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: V1 Delivery Programme - Phase V1-P1 Calibration (`EXP-009`)
 Current Phase Status: V1 scope is defined and accepted under `DEC-046`. Pooled rolling-origin becomes the headline evaluation under `DEC-047`; the three-day episode gap is retained with a mandatory one-day sensitivity under `DEC-048`. The V1 delivery plan and the `EXP-009` calibration specification are drafted and await project-owner approval. Final-test performance remains locked and is spent once, in phase V1-P5.
 
@@ -18,9 +18,9 @@ V1 is a complete subjective-data decision-support system whose primary evidence 
 
 The binding constraint is outcome support: 66 represented onsets in the frozen cohort, split 56 in train, five in validation and five in final test, with 74.6% of onsets from five players and only 12 of 50 players carrying any event. Reported onsets fall roughly tenfold from 2020 to 2021 at flat player-days, tracking decaying self-report engagement rather than reduced injury incidence.
 
-Phases: V1-P1 calibration, V1-P2 Cox survival, V1-P3 gradient-boosting complexity test, V1-P4 champion selection and explainability, V1-P5 pre-registration and single-use final test, V1-P6 product, V1-P7 operationalisation, V1-P8 release evidence. Governed by `docs/V1_DELIVERY_PLAN.md`.
+Phases, governed by section 5A of `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` and mapped onto experiment identifiers already registered there: V1-P1 calibration (EXP-009), V1-P2 Cox survival (EXP-007), V1-P3 boosted classification (EXP-008), V1-P4 champion selection, explanation stability and alert-budget utility (EXP-018 and EXP-019), V1-P5 pre-registration and single-use final test (governance gate), V1-P6 product, V1-P7 operationalisation, V1-P8 release evidence. No new experiment identifiers are allocated.
 
-Deferred to V2: objective GPS ingestion, neural survival models, online serving.
+Deferred to V2: objective GPS ingestion (EXP-011, EXP-012), neural survival models (EXP-015), online serving.
 
 ## Completed Foundation
 
@@ -178,7 +178,16 @@ State v46 to v47, under coordination session `PAA-CTRL-20260815-02`.
 - Accepted `DEC-047`: pooled rolling-origin evaluation becomes the headline, superseding `DEC-036` in respect of headline designation only. All frozen partitions, embargoes, contracts, preprocessing scope and the final-test lock remain in force.
 - Accepted `DEC-048`: retained the three-day episode gap as primary and pre-registered the one-day gap as a mandatory sensitivity on every V1 headline result, rejecting a switch that would have been selection on the outcome.
 - Authored `docs/V1_DELIVERY_PLAN.md`: eight phases with specification and results gates, an explicit definition of done, sequencing rules, scope-control cut order and a risk register.
-- Authored `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`: raw against Platt against isotonic on F3, fold-wise calibrator fitting disjoint from evaluation, eight automated integrity checks, the mandatory sparse-predictor availability audit and binding power-limitation reporting rules.
+- Specified the EXP-009 calibration experiment: raw against Platt against isotonic on F3, eight automated integrity checks, the mandatory sparse-predictor availability audit and binding power-limitation reporting rules.
+
+State v47 to v48, under coordination session `PAA-CTRL-20260815-02`.
+
+- Corrected a documentation-architecture error introduced in v47. The V1 plan and EXP-009 specification had been written as two new files and mirrored to Drive as non-numbered documents, breaking the established convention that specifications live inside `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`.
+- Two concrete faults were identified: doc 19 section 5 D1 already specified EXP-009 with the same three calibration arms, creating a second source of truth; and the new phase plan allocated EXP-010 through EXP-013, all four of which were already assigned to leave-one-player-out, the GPS pilot, objective-data ablation and team transfer.
+- Accepted `DEC-050`: folded the EXP-009 specification into doc 19 section 5 D1 and the V1 delivery programme into a new doc 19 section 5A; remapped V1 phases onto existing identifiers so none are newly allocated; deleted both files from the repository and trashed both Drive copies.
+- Accepted `DEC-049`: calibrators are fitted fold-wise within the pooled rolling-origin structure, with fitting partitions always disjoint from evaluation partitions. This supersedes `DEC-036` in respect of the calibrator-fitting rule only and replaces doc 19's earlier validation-only rule, which predated `DEC-047` and would have fitted a calibrator on five onsets while reporting under a rolling-origin headline.
+- Refreshed doc 19 section 8, which still carried the pre-Stage-0 checklist, to reflect the current position.
+- Added doc 19 to the mirrored document set, since it now carries specification content that must stay synchronised.
 
 ## Current Repository State
 
@@ -280,7 +289,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-- Approve `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`. Both are drafted; implementation of V1-P1 is blocked until approval.
+- Approve the V1 delivery programme in doc 19 section 5A and the EXP-009 specification in doc 19 section 5 D1. Both are drafted; implementation of V1-P1 is blocked until approval.
 
 Resolved since the previous revision: V1 scope (`DEC-046`), headline evaluation protocol (`DEC-047`) and the episode-gap question (`DEC-048`). The outcome-support limitation is no longer an open decision; it is an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
 
@@ -317,7 +326,7 @@ No implementation is in progress. The V1 delivery plan and the `EXP-009` specifi
 
 ## Immediate Next Actions
 
-1. Obtain project-owner approval of `docs/V1_DELIVERY_PLAN.md` and `docs/specifications/EXP_009_CALIBRATION_SPECIFICATION.md`.
+1. Obtain project-owner approval of doc 19 section 5A (V1 delivery programme) and section 5 D1 (EXP-009 specification).
 2. Implement V1-P1 as shared analysis code, canonical script, matching output-free notebook, retained tables and figures, and focused tests, per `DEC-029`.
 3. Execute against development data only. Fit calibrators fold-wise on partitions disjoint from evaluation.
 4. Complete the mandatory sparse-predictor availability audit for the 8.4%-coverage robust fatigue z-score, per `DEC-043`.
@@ -405,7 +414,9 @@ No implementation is in progress. The V1 delivery plan and the `EXP-009` specifi
 | EXP-009 specification | PENDING | owner approval required before implementation |
 | Line-ending policy | PASS | `.gitattributes` added and repository renormalised at `df735d5` under `DEC-045` |
 | Independent gate re-verification | PASS | all five gates reproduced from a clean environment in session `PAA-CTRL-20260815-02` |
-| V1 scope definition | ACCEPTED | `DEC-046`; definition of done recorded in `docs/V1_DELIVERY_PLAN.md` |
+| V1 scope definition | ACCEPTED | `DEC-046`; definition of done recorded in doc 19 section 5A |
+| Documentation architecture | CORRECTED | `DEC-050`; specifications live in doc 19; out-of-convention files removed from repository and Drive |
+| Calibrator fitting rule | ACCEPTED | `DEC-049`; fold-wise, disjoint from evaluation, enforced by `CAL-02` |
 | V1 headline evaluation protocol | ACCEPTED | `DEC-047`; pooled rolling-origin primary, fixed window as temporal stress |
 | V1 outcome sensitivity policy | ACCEPTED | `DEC-048`; three-day gap primary, one-day gap mandatory sensitivity |
 | V1 delivery plan | PENDING APPROVAL | eight phases, gates, definition of done, risk register |
@@ -418,12 +429,12 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v47, 2026-08-15T23:20:00Z | v47, 2026-08-15T23:20:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-048 | DEC-001 to DEC-048 |
-| `V1_DELIVERY_PLAN.md` | created this revision | created this revision |
-| `EXP_009_CALIBRATION_SPECIFICATION.md` | created this revision | created this revision |
-| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | stage-gated revision | stage-gated revision |
+| `PROJECT_STATE.md` | v48, 2026-08-15T23:55:00Z | v48, 2026-08-15T23:55:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-050 | DEC-001 to DEC-050 |
+| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | sections 5 D1, 5A and 8 revised | sections 5 D1, 5A and 8 revised |
+
+Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files.
 
 Status: **SYNCHRONISED**
 
-Both copies were compared field by field at the start of session `PAA-CTRL-20260815-02` and agreed on state version, timestamp, coordination session, Git reference and decision range. No reconciliation was required. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `377436d`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were compared field by field at the start of session `PAA-CTRL-20260815-02` and agreed on state version, timestamp, coordination session, Git reference and decision range. No reconciliation was required. The two out-of-convention files created in v47 were deleted from the repository and trashed in Drive during this revision, restoring the folder to the numbered corpus plus control documents. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `838ad00`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.

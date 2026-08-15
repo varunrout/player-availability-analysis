@@ -340,18 +340,48 @@ Decision gate:
 
 #### D1. EXP-009: Calibration comparison
 
-Compare raw logistic output, Platt scaling and isotonic regression. Fit calibrators on validation predictions only. Freeze the selected calibration approach before final test evaluation.
+**Status:** specified, awaiting approval. Phase V1-P1. Authorised by `DEC-044`.
 
-Required metrics:
+Compare raw logistic output, Platt scaling and isotonic regression on the F3 candidate promoted by `DEC-043`. Freeze the selected calibration approach before final-test evaluation.
 
-- Brier score;
+**Why this experiment exists.** M1 raw probabilities are materially overestimated: mean prediction 1.965% against an observed positive-day rate of 0.322%, roughly a sixfold overstatement, with calibration intercept -0.356 and slope 1.433. M1 records worse Brier and log loss than the M0 baseline despite better ranking. Under `DEC-007` a ranking gain accompanied by degraded probability quality cannot be promoted.
+
+**Arms.** Raw F3 as reference; Platt on the F3 log-odds; isotonic. F1 raw is carried as a secondary reference so the calibration question stays separable from the feature-set question settled in `DEC-043`. Isotonic is included despite being the method most likely to overfit at this support; demonstrating that it overfits here is itself a reportable result.
+
+**Fitting discipline.** Calibrators are fitted fold-wise within the pooled rolling-origin structure: in each fold the calibrator is fitted on that fold's training portion and applied to its held-out portion, then metrics are pooled. Calibrator fitting partitions are always disjoint from evaluation partitions, because fitting a calibrator on the rows used to score it manufactures apparent improvement. This supersedes the earlier validation-only fitting rule under `DEC-049`. Development partitions only; final-test data is neither read nor scored. Preprocessing scope, cohort, predictor contract, partitions and embargoes are unchanged.
+
+Required metrics, per arm, pooled rolling-origin:
+
+- Brier score and log loss;
 - calibration intercept and slope;
-- reliability curve;
-- expected calibration error where stable enough for sample size.
+- reliability curve with bin counts shown rather than implied;
+- expected calibration error, reported only where bin support permits;
+- mean predicted risk against observed rate.
+
+Secondary: the same metrics on the fixed chronological validation window as a temporal stress result; per-fold values for every pooled figure; the one-day-gap sensitivity required by `DEC-048`; alert-budget behaviour at the frozen 1%, 2.5% and 5% review rates. Uncertainty uses paired bootstrap intervals under both player-cluster and temporal week-block resampling, matching the EXP-003 protocol so results stay comparable.
+
+**Mandatory sparse-predictor audit**, required by `DEC-043`. The robust fatigue z-score is observed on 8.4% of primary-cohort days. Report calibration metrics separately on days where it is observed against days where it is absent, and state whether calibrated performance depends on the predictor's availability pattern rather than its value. If behaviour differs materially, the predictor is acting as a proxy for reporting activity rather than physiology and becomes a removal candidate at V1-P4.
+
+**Power limitation, binding on reporting.** Development support is 56 onsets in train and five in the validation window. Every conclusion states its supporting event count inline, not in a footnote. No method is declared superior on point estimates alone; a difference is claimed only where the paired interval excludes zero. "No calibration method is distinguishable at this support" is a valid, expected and complete result, and must be reported as such rather than resolved by selecting the best point estimate. Reliability bins holding fewer than five positive days are reported with counts and excluded from summary statistics that assume bin stability.
+
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| CAL-01 | Zero final-test predictions or performance metrics produced |
+| CAL-02 | Calibrator fitting partitions disjoint from evaluation partitions in every fold |
+| CAL-03 | Predictor contract unchanged from the frozen F3 contract |
+| CAL-04 | Ranking preserved under Platt, since a monotonic transform must not alter order |
+| CAL-05 | Every reported metric carries its supporting event count |
+| CAL-06 | Sparse-predictor availability audit present and populated |
+| CAL-07 | One-day-gap sensitivity present for every headline figure |
+| CAL-08 | Zero-positive folds identified and excluded from discrimination aggregation, with counts stated |
 
 Decision gate:
 
-- Prefer the simplest calibration approach that improves validation calibration without unstable step-like behaviour.
+- Prefer the simplest calibration approach that improves calibration without unstable step-like behaviour.
+- Success does not require finding a method that improves calibration. The experiment succeeds if calibration behaviour is characterised honestly and the sparse-predictor audit is completed.
+- Non-goals: selecting a deployment threshold, accessing final-test data, changing the feature set or cohort, retuning the model.
 
 #### D2. EXP-019: Alert-budget simulation
 
@@ -395,6 +425,101 @@ Only after the baseline, calibration, operational-utility and required robustnes
 - EXP-011/012 GPS pilot and objective-data ablation.
 
 Each challenger must use the same frozen data version, split logic, calibration evaluation and alert simulation as the current champion.
+
+## 5A. V1 delivery programme
+
+Governing decision: `DEC-046`. Evaluation protocol: `DEC-047`. Outcome sensitivity: `DEC-048`.
+
+This section sequences the experiments above into a shippable V1. It allocates no new experiment identifiers; every phase maps onto an experiment already registered in this document and in `13_EXPERIMENT_BACKLOG_AND_DECISION_LOG.md`.
+
+### What V1 is
+
+A complete subjective-data decision-support system, released as an operable product with an honest account of what it can and cannot support. **The headline evidence is methodological, not performance.** No V1 artefact presents discrimination as the primary result.
+
+### Why the goal is framed this way
+
+Effective outcome support is the binding constraint on everything downstream.
+
+| Measure | Value |
+|---|---|
+| Represented onsets, frozen cohort | 66 |
+| Onsets in train / validation / final test | 56 / 5 / 5 |
+| Share of onsets from top five players | 74.6% |
+| Players with any event, development | 12 of 50 |
+| Onset decline, 2020 to 2021 | roughly tenfold, at flat player-days |
+
+The 2021 collapse tracks reporting engagement rather than injury incidence, consistent with the Stage 2 finding that wellness reporting rises from 62.9% on ordinary days to 97.3% on onset days. The dataset supports a well-built system and an honest uncertainty account. It does not support a claim that injuries are predicted.
+
+### Phases
+
+Each phase carries an owner approval gate on its specification before implementation, and on its results before the next phase begins, exactly as Stages 0 to 8 did.
+
+| Phase | Work | Experiment ID | Exit criterion |
+|---|---|---|---|
+| V1-P1 | Calibration | EXP-009 | Calibration characterised; sparse-predictor audit complete; "not distinguishable" accepted in advance as valid |
+| V1-P2 | Cox survival | EXP-007 | Explicit evidence-backed conclusion on whether time-to-event framing adds practitioner value; rejection with evidence is a successful outcome |
+| V1-P3 | Boosted classification | EXP-008 | Recorded verdict on whether nonlinearity earns its place at this sample size; a negative result is expected and reportable as-is |
+| V1-P4 | Champion selection, explainability, operational utility | EXP-018 explanation stability, EXP-019 alert-budget simulation; selection itself is a gate, not an experiment | Champion recorded with rationale; explanation stability measured; no final-test access |
+| V1-P5 | Pre-registration and final test | Governance gate, no experiment identifier | Final test executed once against pre-registered claims, results reported whether favourable or not |
+| V1-P6 | Product: batch inference and dashboard | Not an experiment | A reviewer can operate the product and correctly understand both output and limits without reading code |
+| V1-P7 | Operationalisation: containers, CI, monitoring, cost | Not an experiment | Reproducible from a clean clone; CI enforcing gates currently run by hand |
+| V1-P8 | Release evidence | Not an experiment | Every external claim traceable to a measured result |
+
+Robustness experiments already registered here, principally EXP-004 personalisation, EXP-005 horizon, EXP-010 leave-one-player-out and EXP-016 missingness, are executed within the phase whose conclusion depends on them rather than as a separate phase.
+
+Deferred to V2: EXP-011 and EXP-012 GPS work, EXP-015 neural survival, and online serving.
+
+### V1 definition of done
+
+**Methodology**
+- Calibration characterised for the champion, with reliability curve, slope, intercept and expected calibration error.
+- Pooled rolling-origin reported as primary, with estimable-fold counts stated and per-fold results shown.
+- Unseen-player generalisation reported with support-aware aggregation.
+- One-day-gap sensitivity reported for every headline result.
+- Leakage suite passing, including future-append invariance.
+- Survival framing either adopted or explicitly rejected with evidence.
+- Complexity verdict recorded for boosted classification.
+
+**Product**
+- Batch inference writing to `paa_product`.
+- Dashboard covering squad overview, player detail, data quality and model health.
+- Every risk figure displayed with uncertainty and data-completeness context.
+- No prohibited language anywhere in the interface.
+
+**Engineering**
+- Containerised and reproducible from a clean clone.
+- CI running lockfile, lint, types, tests and leakage checks.
+- Cost recorded and within envelope.
+
+**Evidence**
+- Model card leading with limitations.
+- Final test spent exactly once against pre-registered claims.
+- README, architecture diagram, case study, interview narrative.
+
+### Sequencing rules
+
+1. Specification approved before implementation; results approved before the next phase. No exceptions.
+2. The final test is touched only in V1-P5, once. This is irreversible: no tuning, feature change or model change may follow, and any second access requires a new superseding decision.
+3. No GPS or objective processing during V1.
+4. Any material design change requires a decision record before the work, not after.
+5. V1-P1 through V1-P3 may be reordered if evidence justifies it; V1-P4 onwards is strictly ordered.
+
+### Scope control
+
+If time pressure rises, cut in this order: the boosted-classification complexity test, recording the omission; then the API layer, keeping the dashboard; then monitoring depth, keeping data-quality surfaces.
+
+Never cut: leak-safe validation, calibration, the limitations account, the model card, the dashboard, or single-use final-test discipline.
+
+### Risks
+
+| Risk | Mitigation |
+|---|---|
+| Sparse events make every comparison inconclusive | Pooled rolling-origin under `DEC-047`; "not distinguishable" pre-accepted as a valid finding |
+| Event concentration in five players | Support-aware unseen-player aggregation; concentration restated wherever performance is cited |
+| Reporting engagement decays over time | Documented dataset property; reporting-derived predictors remain under audit per `DEC-031` |
+| Sparse robust-fatigue predictor drives apparent F3 gain | Explicit audit in V1-P1; removal candidate at V1-P4 |
+| Temptation to revisit the final test | Single-use rule; second access requires a superseding decision |
+| Overclaiming in portfolio material | Every external claim traced to a measured result before release |
 
 ## 6. Metrics and interpretation
 
@@ -448,12 +573,16 @@ Notebook-rendered outputs are exploratory views and are not stored. All public-f
 
 ## 8. Immediate execution checklist
 
-Before the first model fit:
+Completed: Stages 0 through 8 approved sequentially; Stage 8 returned `READY`; EXP-002 naive baselines accepted under `DEC-040`; EXP-003 M1 logistic and the F1/F2/F3 feature ladder completed, with F2 rejected and F3 promoted as the raw candidate under `DEC-043`.
 
-1. Complete and approve Stages 0 through 6 sequentially.
-2. Complete Stage 7 protocol freezing and leakage validation.
-3. Approve the Stage 8 pre-model readiness report as `READY`.
-4. Run EXP-002 naive baseline under the approved protocol.
-5. Review the baseline report before fitting logistic regression.
+Current position: phase V1-P1, EXP-009 calibration. The specification is section 5 D1 of this document and awaits project-owner approval.
 
-The next implementation action is the Stage 0 analysis inventory and data-audit specification. No analysis script is built until that specification is approved.
+Next actions:
+
+1. Approve the EXP-009 specification and the V1 delivery programme in section 5A.
+2. Implement EXP-009 as shared analysis code, canonical script, matching output-free notebook, retained tables and figures, and focused tests, per `DEC-029`.
+3. Execute against development data only, fitting calibrators fold-wise on partitions disjoint from evaluation.
+4. Complete the mandatory sparse-predictor availability audit.
+5. Review results at the V1-P1 gate, then proceed to V1-P2 Cox survival under EXP-007.
+
+Final-test predictions and performance remain locked until V1-P5. No analysis script is built until the relevant specification is approved.
