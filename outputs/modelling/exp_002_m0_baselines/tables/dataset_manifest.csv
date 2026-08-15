@@ -1,0 +1,2 @@
+experiment_id,data_version,target,horizon_days,burn_in_days,final_test_access
+EXP-002,subjective_v1,injury_next_7d,7,28,false

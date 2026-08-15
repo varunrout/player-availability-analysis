@@ -1,0 +1,7 @@
+finding_id,status,domain,evidence
+M0-01,PASS,partition_integrity,174 prediction dates are validation-only
+M0-02,PASS,training_scope,prevalence and 0.950 load quantile learned from 16365 training rows
+M0-03,PASS,prediction_validity,"all probabilities lie in [0, 1]"
+M0-04,REVIEW,prevalence_shift,train prevalence=0.017110; validation prevalence=0.003222
+M0-05,REVIEW,benchmark_utility,load AP=0.002934; load Brier=0.003544
+M0-06,REVIEW,outcome_support,5 represented validation onsets

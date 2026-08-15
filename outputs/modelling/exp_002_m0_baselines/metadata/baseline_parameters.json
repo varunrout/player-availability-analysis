@@ -1,0 +1,15 @@
+{
+  "load_high_group_probability": 0.043373493975903614,
+  "load_low_group_probability": 0.015706469262954617,
+  "load_threshold_quantile": 0.95,
+  "load_threshold_value": 8.208219383496834,
+  "source_paths": {
+    "episodes": "silver/subjective/soccermon/zenodo-10033832/injury_episodes.parquet",
+    "features": "gold/subjective/soccermon/zenodo-10033832/player_day_features.parquet"
+  },
+  "source_sha256": {
+    "episodes": "e5077c16db69b88e07828d456739603b22a523c7d7e832bab8007e15a6d1f3da",
+    "features": "775cb3c73bb62affebdb9bd5156d4b32bdec6707bf9bbafb70149ba293b16ac6"
+  },
+  "training_prevalence": 0.017109685304002444
+}
