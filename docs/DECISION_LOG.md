@@ -1971,15 +1971,128 @@ V1-P8 release evidence
 
 ---
 
+## DEC-056
+
+**Decision ID:** DEC-056
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`EXP-008` tested whether nonlinearity and interaction structure earn their
+place at this sample size, using `HistGradientBoostingClassifier` over F1's
+nine predictors under the frozen cohort, partitions and evaluation protocol.
+
+During gate review a defect was identified in the paired bootstrap for
+average precision. The headline statistic was computed on the 12,615-row
+discrimination subset, with the zero-positive rolling fold excluded per
+`CAL-08`, while the bootstrap resampled a different population, producing
+medians whose sign contradicted the corresponding point-estimate
+differences. In `EXP-008` the point difference was -0.010602 against a
+week-block median of +0.026475; in `EXP-009` the isotonic-against-raw point
+difference was -0.000349 against a week-block median of +0.019740. Brier
+intervals were unaffected and agreed with their point estimates throughout.
+
+**Decision:**
+Reject boosted classification for V1. F1 remains the champion under
+`DEC-054`. No boosted model is carried into V1-P4, V1-P5 or the product.
+
+Correct the defective bootstrap across all affected modules, add integrity
+check `BOOT-01` requiring that every paired bootstrap median agree in sign
+with its point-estimate difference, and regenerate the retained evidence
+for `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008`.
+
+Supersede the average-precision claim recorded in `DEC-052`. That decision
+stated that isotonic showed a week-block average-precision advantage over
+raw whose interval excluded zero. That interval was produced by the
+defective estimator. The corrected figure is [-0.036918, 0.017755]. The
+calibration selection made in `DEC-052` is unaffected, since it rested on
+Brier and log loss, both of which were sound.
+
+**Rationale:**
+Boosted classification is worse than F1 on every axis except Brier.
+Calibration slope is 2.537922 against 2.019474, further from the target of
+1.0. Pooled ROC-AUC is 0.788733 against 0.835537. Unseen-player ROC-AUC is
+0.554957 against 0.642578. Corrected pooled average precision is
+0.086066 against F1's 0.096668, with paired intervals player-cluster
+[-0.052406, 0.019850] and temporal week-block [-0.105518, 0.029223], both
+including zero.
+
+Brier favours boosted, 0.006143 against 0.006325, with paired intervals
+excluding zero under both player-cluster resampling, [-0.000365,
+-0.000046], and temporal week-block resampling, [-0.000274, -0.000096].
+This is a genuine interval-confirmed edge and is not the underprediction
+artefact identified in `EXP-007`, since boosted's mean prediction of
+0.020385 is closer to the observed rate of 0.006185 than F1's 0.023012.
+It is nonetheless a single-metric advantage set against a worse calibration
+slope and worse discrimination on three of four views, and the gate
+requires calibrated performance to improve, not one component of it.
+
+The training-to-validation average-precision gap is roughly twentyfold,
+0.256 against 0.013. This is the overfitting signature the specification
+pre-registered as the most likely finding at 56 training onsets, and it is
+recorded as observed rather than as a surprise.
+
+The specification states that a negative result is expected and is reported
+as-is, without searching for a configuration that reverses it. That
+condition is met and no further configuration was tried beyond the
+pre-registered grid.
+
+**Alternatives Considered:**
+Adopting boosted on the Brier result, rejected because a single-metric edge
+accompanied by worse calibration and worse discrimination does not satisfy
+a gate worded as calibrated performance improving, and because deploying a
+model with a twentyfold train-validation gap at this support would not be
+defensible in the model card. Widening the hyperparameter grid to seek a
+configuration that improves discrimination, rejected because the grid was
+pre-registered precisely to prevent that search and because `DEC-046`
+allocates remaining schedule to product and operationalisation work.
+Retaining boosted as a secondary reference alongside F1, rejected as it
+would carry a dependency and a maintenance surface into V1-P6 for a model
+that is not used.
+
+**Consequences:**
+- Boosted classification is rejected with recorded evidence. `EXP-008` is
+  closed and V1-P3 is complete.
+- The omission of boosted modelling from the V1 champion is an
+  evidence-backed choice, not a gap, and is reported as such in V1-P8.
+- `BOOT-01` binds all future paired-bootstrap reporting.
+- Retained evidence for `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` is
+  regenerated with the corrected estimator. Interval conclusions that
+  changed are listed in the `EXP-008` report.
+- The average-precision claim in `DEC-052` is superseded. Its calibration
+  selection stands.
+- No conclusion in `DEC-054` or `DEC-055` depends on an average-precision
+  interval, so both stand unchanged. `DEC-054` rested on point estimates
+  and explicitly recorded that no arm was statistically distinguishable;
+  `DEC-055` rested on the leakage diagnostic, Brier intervals and log loss.
+- V1-P4 is authorised to begin: champion selection, `EXP-018` explanation
+  stability and `EXP-019` alert-budget simulation, against F1.
+- The `lifelines` dependency is now unused following the `DEC-055`
+  rejection and constrains numpy to 1.26 and scipy to 1.17. It is a removal
+  candidate before V1-P7 containerisation.
+- The final-test lock is unaffected.
+
+**Affected Components:** V1-P3 outcome, uncertainty estimation across all
+experiments, EXP-009 and EXP-052 average-precision claims, retained
+evidence for four experiments, V1-P4 authorisation, V1-P7 dependency
+envelope
+
+**Supersedes:** `DEC-052`, in respect of the average-precision claim only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Phase V1-P3 (`EXP-008` boosted classification) is specified against the F1 champion selected by `DEC-054` and is in progress. `EXP-008` succeeds whether or not nonlinearity earns its place; a negative result is expected and is the deliverable. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
+Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised against the F1 champion selected by `DEC-054`. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Resolved in this revision: the `EXP-007` survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). Noted, no action required until V1-P7: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and scipy to 1.17, and is a removal candidate now that survival framing is rejected.
+Noted, not yet acted on: the `EXP-009` regenerated evidence now shows `BOOT-01` failing for the raw-versus-isotonic average-precision comparison under player-cluster resampling. The point difference is -0.000349, effectively zero; player-cluster and temporal week-block resampling disagree on its sign even on the corrected, population-matched estimator. This is consistent with "no calibration method distinguishable at this support", the pre-registered acceptable outcome under `DEC-044`, rather than a residual defect, but it has not been recorded in a decision and `EXP-009`'s automated status is presently `FAIL` on that basis alone.
 
-Resolved previously: the `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
+Resolved in this revision: the `EXP-008` complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion); the `DEC-052` average-precision claim (superseded by the corrected estimator; the calibration selection itself stands).
+
+Resolved previously: the `EXP-007` survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). Noted, no action required until V1-P7: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and scipy to 1.17, and is a removal candidate now that survival framing is rejected. The `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
 
 ### Resolved
 

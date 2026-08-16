@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 52
-Last Updated UTC: 2026-08-16T18:09:20Z
+State Version: 53
+Last Updated UTC: 2026-08-16T21:19:58Z
 Coordination Session ID: PAA-IMPL-20260816-01
 Git Branch: main
-Git HEAD: 0044fe7 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: V1 Delivery Programme - Phase V1-P3 Gate: Boosted Classification (`EXP-008`)
-Current Phase Status: Project owner reviewed the `EXP-007` result directly and identified the unseen-player advantage as internally inconsistent with Cox's weaker pooled and fixed-window performance. A pre-registered diagnostic reset the leave-one-player-out gap-time clock to post-burn-in origin for every held-out player: the advantage collapsed from AP 0.1045/ROC-AUC 0.8179 to AP 0.0193/ROC-AUC 0.5769, both below F1, confirming the clock was leaking held-out outcome history. `DEC-055` rejected survival framing for V1 on this evidence; `EXP-007` evidence was hardened with the reset-clock result as the valid leave-one-player-out figure, `COX-09` added, and the gap-time constraint recorded in doc 19 for `EXP-014` in V2. `EXP-008` boosted classification is specified in doc 19 section 5 as F2 and implemented and executed against the F1 champion: boosted trails F1 on pooled average precision and ROC-AUC but leads on pooled Brier with the paired interval excluding zero under both resampling schemes; average precision excludes zero under week-block resampling only. Training average precision (0.256) vastly exceeds validation average precision (0.013), an overfitting signature. Whether nonlinearity earns its place is a pending project-owner decision. Final-test performance remains locked and is spent once, in phase V1-P5.
+Git HEAD: 230a571 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: V1 Delivery Programme - Phase V1-P4 Authorised: Champion Selection, Explanation Stability and Alert-Budget Utility
+Current Phase Status: Gate review of the `EXP-008` result found a defect in the paired bootstrap for average precision: it resampled the full pooled population while the point estimate uses only the discrimination-eligible subset, producing medians whose sign could contradict the point estimate. Corrected across all four affected modules (calibration, ablation, survival, boosting), with `BOOT-01` added and retained evidence for `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` regenerated against live GCS; point estimates were unaffected throughout. The corrected `EXP-008` average-precision intervals include zero under both resampling schemes, so the stop condition set in advance did not trigger. `DEC-056` rejected boosted classification for V1 on Brier being a single-metric edge against worse calibration slope and worse discrimination on three of four views, plus a roughly twentyfold training-to-validation average-precision gap. F1 remains champion. `DEC-052`'s average-precision claim is superseded by the corrected estimator; its calibration selection, resting on Brier and log loss, stands. Neither `DEC-054` nor `DEC-055` depended on an average-precision interval and both stand unchanged. Phase V1-P4 is authorised.
 
 ## Current Objective
 
-Review the `EXP-008` result at the V1-P3 gate: decide whether nonlinearity earns its place, is explicitly rejected with evidence, or held open pending further evidence. V1-P4 (champion selection, explanation stability, alert-budget utility) remains blocked until that review completes.
+Proceed with phase V1-P4: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against the F1 champion. Separately, note and resolve the regenerated `EXP-009` evidence now showing `BOOT-01` failing on a razor-thin, effectively-zero raw-versus-isotonic average-precision difference that flips sign between resampling schemes; this has not yet been recorded in a decision.
 
 ## V1 Delivery Context
 
@@ -223,6 +223,15 @@ State v51 to v52, under coordination session `PAA-IMPL-20260816-01`.
 - `EXP-008` pooled rolling-origin result: boosted Brier 0.006143 against F1 0.006325, paired interval excludes zero under both resampling schemes, player-cluster [-0.000365, -0.000046] and temporal week-block [-0.000274, -0.000096], favouring boosted. Boosted average precision 0.0861 against F1's 0.0967 and ROC-AUC 0.7887 against 0.8355; the paired AP interval excludes zero under temporal week-block resampling only, [0.002505, 0.055392], not under player-cluster resampling, [-0.031632, 0.094831]. The pre-registered gate requires both schemes to exclude zero; AP does not meet this bar, Brier does.
 - `EXP-008` training-to-validation gap: training average precision 0.256236 against validation 0.013013, a roughly twentyfold drop and the clearer overfitting signature than the Brier-based flag alone, since Brier's absolute scale is not comparable across differently-prevalent train and validation periods. Unseen-player result: boosted AP 0.026889 against F1's 0.023316 (boosted ahead) but ROC-AUC 0.554999 against F1's 0.642578 (boosted behind), both on the same 12/50 estimable players; no inverted evaluation-view ordering of the kind found in `EXP-007`, consistent with `BST-09` since boosted classification has no time-coordinate concept for that leakage class to recur in.
 
+State v52 to v53, under coordination session `PAA-IMPL-20260816-01`.
+
+- During `EXP-008` gate review, identified a defect in the paired bootstrap for average precision: `paired_prediction_bootstrap_differences` resampled a single shared population for both Brier and average precision, but the average-precision point estimate is computed only on the discrimination-eligible subset with zero-positive folds excluded (per `CAL-08`). The mismatch let a bootstrap median contradict its own point-estimate difference, most visibly `EXP-008`'s boosted-vs-F1 average precision (point difference -0.010602 against a week-block median of +0.026475) and `EXP-009`'s isotonic-vs-raw claim cited in `DEC-052` (point difference -0.000349 against a week-block median of +0.019740). Brier intervals were unaffected throughout, since Brier's point estimate already uses the full pooled population.
+- Corrected at `230a571`: added a `metrics` parameter to `prediction_bootstrap_intervals` and `paired_prediction_bootstrap_differences` so each metric bootstraps on the population matching its own point estimate, and added `paired_bootstrap_agrees_with_point_estimate` as a shared `BOOT-01` check with a small dead-zone epsilon so ordinary noise on a razor-thin, effectively-zero difference is not flagged as a mismatch. Applied across all four affected modules (calibration, ablation, survival, boosting) and added `BOOT-01` to each findings table. Regenerated retained evidence for `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` against live GCS; point estimates were unchanged throughout, since the defect was confined to the bootstrap.
+- Checked the pre-registered stop condition before proceeding: corrected `EXP-008` average-precision intervals are player-cluster [-0.052406, 0.019850] and temporal week-block [-0.105518, 0.029223], both including zero. Neither excludes zero in boosted's favour under either scheme, so the stop condition did not trigger.
+- Accepted `DEC-056`: rejected boosted classification for V1. Corrected pooled average precision is 0.086066 against F1's 0.096668, not distinguishable under either resampling scheme. Brier favours boosted with both intervals excluding zero, [-0.000365, -0.000046] and [-0.000274, -0.000096], and is judged a genuine edge rather than an `EXP-007`-style underprediction artefact, but it stands against a worse calibration slope (2.537922 against 2.019474) and worse discrimination on three of four views (pooled ROC-AUC 0.788733 against 0.835537; unseen-player ROC-AUC 0.554957 against 0.642578); the gate requires calibrated performance to improve, not one component of it. The training-to-validation average-precision gap (0.256 against 0.013) is the pre-registered expected overfitting signature. `EXP-008` is closed; F1 remains champion; phase V1-P4 is authorised.
+- `DEC-056` superseded `DEC-052`'s average-precision claim: the corrected isotonic-vs-raw week-block interval is [-0.036918, 0.017755], including zero. `DEC-052`'s calibration selection, which rested on Brier and log loss, both sound, is unaffected. Neither `DEC-054` nor `DEC-055` depended on an average-precision interval and both stand unchanged.
+- Noted, not yet resolved by a decision: regenerated `EXP-009` evidence now shows `BOOT-01` failing on the raw-vs-isotonic average-precision comparison under player-cluster resampling. The point difference is -0.000349, effectively zero, and the two resampling schemes disagree on its sign even on the corrected, population-matched estimator. This reads as "no calibration method distinguishable at this support", the pre-registered acceptable outcome under `DEC-044`, rather than a residual defect, but `EXP-009`'s automated status is presently `FAIL` on `BOOT-01` alone and this has not been recorded in a decision.
+
 ## Current Repository State
 
 ```text
@@ -285,7 +294,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` selected raw probabilities per `DEC-052`; no post-hoc calibrator is adopted. **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic; the pooled Brier advantage was a prevalence-driven underprediction artefact with three times worse log loss; and the pre-registered gate was not met on its own terms. `EXP-008` tested whether `HistGradientBoostingClassifier` complexity improves on F1: pooled Brier favours boosted with the paired interval excluding zero under both resampling schemes; pooled AP and ROC-AUC favour F1, with AP excluding zero under temporal week-block resampling only; training AP (0.256) vastly exceeds validation AP (0.013), an overfitting signature. Whether nonlinearity earns its place is a pending project-owner decision. V1-P4 champion selection and final-test performance remain blocked.
+EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` selected raw probabilities per `DEC-052`; no post-hoc calibrator is adopted, and its average-precision claim is superseded by `DEC-056`'s bootstrap correction (calibration selection itself unaffected). **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic. **`EXP-008` boosted classification is rejected for V1 under `DEC-056`**: Brier favours boosted with both paired intervals excluding zero, but AP and ROC-AUC favour F1 on three of four views and the corrected AP intervals now include zero under both schemes; the training-to-validation AP gap (0.256 against 0.013) is the pre-registered overfitting signature. **Phase V1-P4 is authorised**: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against F1. Final-test performance remains blocked until V1-P5.
 
 ## Current Product State
 
@@ -323,9 +332,9 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-Whether nonlinearity earns its place, following the `EXP-008` result. The pooled rolling-origin decision gate requires paired intervals excluding zero under both resampling schemes before adoption; Brier meets this, AP meets it under temporal week-block resampling only, and ROC-AUC is not paired-bootstrapped. The training-to-validation AP gap (0.256 to 0.013) suggests overfitting rather than genuine signal, but this observation has not itself been formally tested. This is a project-owner decision, not yet made, and blocks phase V1-P4.
+Not yet recorded in a decision: the regenerated `EXP-009` evidence shows `BOOT-01` failing on the raw-vs-isotonic average-precision comparison under player-cluster resampling. The point difference is -0.000349, effectively zero, and the two resampling schemes disagree on its sign even on the corrected, population-matched estimator. This reads as "no calibration method distinguishable at this support" (`DEC-044`'s pre-registered acceptable outcome) rather than a residual defect, but `EXP-009`'s automated status is presently `FAIL` on `BOOT-01` alone.
 
-Resolved since the previous revision: the survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
+Resolved since the previous revision: the complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion) and the `DEC-052` average-precision claim (superseded by the corrected estimator; calibration selection unaffected). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
 
 ## Known Issues / Technical Debt
 
@@ -351,24 +360,25 @@ Resolved since the previous revision: the survival-framing question (`DEC-055`, 
 - Resolved by `DEC-055`: survival framing rejected for V1. The gap-time constraint recorded — a gap-time origin derived from a player's own onset history is legitimate under temporal evaluation but breaches the premise of leave-one-player-out evaluation — binds all future survival work, including `EXP-014` in V2, and is recorded in doc 19 so it is not repeated there.
 - Noted, no action required until V1-P7 containerisation: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 (down from 2.5) and scipy to 1.17 (down from 1.18). It is a removal candidate now that survival framing is rejected for V1, since `EXP-014` in V2 would need to re-add it regardless.
 - `EXP-008`'s training average precision (0.256) is roughly twenty times its validation average precision (0.013) for the selected boosted configuration, a clearer overfitting signature than the Brier-based flag alone, since Brier's absolute scale is not comparable across differently-prevalent train and validation periods.
+- Resolved by `DEC-056`: the paired-bootstrap population mismatch for average precision. `paired_prediction_bootstrap_differences` resampled the full pooled population while the point estimate uses only the discrimination-eligible subset; corrected across all four affected modules with `BOOT-01` added, retained evidence regenerated. `DEC-052`'s isotonic-vs-raw claim, the case that surfaced the defect, is superseded; the corrected week-block interval is [-0.036918, 0.017755], including zero.
+- Not yet resolved: `EXP-009`'s corrected evidence shows `BOOT-01` failing on a razor-thin (-0.000349), effectively-zero raw-vs-isotonic average-precision difference whose sign flips between resampling schemes. Consistent with "not distinguishable at this support" rather than a residual defect, but not yet formally recorded.
 
 ## Blockers
 
-Phase V1-P4 (champion selection, explanation stability, alert-budget utility) is blocked pending project-owner review of the `EXP-008` result: whether nonlinearity earns its place, explicitly rejected with evidence, or held open pending further evidence. This is the sole blocker; there is no technical obstruction. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised at phase V1-P5.
+None. Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised under `DEC-056` and may proceed. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised at phase V1-P5.
 
 Standing analytical constraint, not a blocker: effective outcome support is 104 pooled positive player-days under rolling-origin, with only 12 of 50 players estimable for unseen-player evaluation. This limits the inferential capacity of every comparison made at this stage, including the boosting comparison just completed.
 
 ## Work In Progress
 
-No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` are all implemented, executed and committed. The V1-P3 gate, including whether nonlinearity earns its place, awaits project-owner review. No other control session is known to be modifying the working tree.
+No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` are all implemented, executed, corrected for the bootstrap defect and committed. The V1-P3 gate is closed under `DEC-056`; V1-P4 is authorised and not yet started. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review the `EXP-008` result at the V1-P3 gate: decide whether the pooled Brier advantage, confirmed under both resampling schemes, against F1's AP/ROC-AUC lead, AP excluding zero under only one scheme, and the training-to-validation overfitting signature, is sufficient to adopt boosted classification, reject it with evidence, or hold the question open.
-2. If nonlinearity is adopted, record the decision and its rationale before phase V1-P4 begins; if rejected, record explicit rejection with evidence as the successful, charter-required outcome.
-3. On completion of the V1-P3 gate, proceed to phase V1-P4: champion selection, explanation stability (`EXP-018`) and alert-budget simulation (`EXP-019`), sequenced per section 5A under `DEC-053`.
-4. Before V1-P7 containerisation, record and act on the `lifelines`/numpy/scipy dependency constraint; it is a removal candidate now that survival framing is rejected for V1.
-5. Keep final-test predictions and performance locked until V1-P5.
+1. Begin phase V1-P4: champion selection (already effectively F1 under `DEC-054`/`DEC-055`/`DEC-056`), `EXP-018` explanation stability and `EXP-019` alert-budget simulation, sequenced per section 5A under `DEC-053`.
+2. Record a decision on the `EXP-009` `BOOT-01` finding (razor-thin, effectively-zero raw-vs-isotonic average-precision difference that flips sign between resampling schemes): whether "not distinguishable at this support" is accepted as the recorded conclusion, or further evidence is sought.
+3. Before V1-P7 containerisation, record and act on the `lifelines`/numpy/scipy dependency constraint; it is a removal candidate now that survival framing is rejected for V1.
+4. Keep final-test predictions and performance locked until V1-P5.
 
 ## Validation / Quality Gate Status
 
@@ -482,8 +492,11 @@ No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` 
 | EXP-008 development run | PASS | `HistGradientBoostingClassifier` vs F1; `BST-01` to `BST-09` all PASS |
 | EXP-008 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-008 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| EXP-008 results review | PENDING | project-owner decision on whether nonlinearity earns its place |
-| Modelling | V1-P3 GATE PENDING | F1 is champion (`DEC-054`); `EXP-007` closed (`DEC-055`); `EXP-008` complete; complexity-verdict decision pending; final test locked until V1-P5 |
+| EXP-008 results review | RESOLVED | `DEC-056`; boosted classification rejected for V1, F1 remains champion |
+| Paired-bootstrap population defect | RESOLVED | `DEC-056`; corrected at `230a571` across CAL/ABL/COX/BST; `BOOT-01` added; evidence regenerated for four experiments |
+| DEC-052 average-precision claim | SUPERSEDED | `DEC-056`; corrected week-block interval [-0.036918, 0.017755] includes zero; calibration selection unaffected |
+| EXP-009 BOOT-01 (raw vs isotonic AP) | REVIEW | razor-thin, effectively-zero point difference flips sign between resampling schemes; not yet recorded in a decision |
+| Modelling | V1-P4 AUTHORISED | F1 is champion (`DEC-054`/`DEC-055`/`DEC-056`); `EXP-007` and `EXP-008` closed; final test locked until V1-P5 |
 
 Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 95 files, strict mypy clean across 73 source files, `105 passed` with one expected ZIP warning, and `poetry check --lock` passing.
 
@@ -491,12 +504,12 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v52, 2026-08-16T18:09:20Z | v52, 2026-08-16T18:09:20Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-055 | DEC-001 to DEC-055 |
-| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | sections 5, 5 E3, 5A, 5 F1 and 5 F2 revised | sections 5, 5 E3, 5A, 5 F1 and 5 F2 revised |
+| `PROJECT_STATE.md` | v53, 2026-08-16T21:19:58Z | v53, 2026-08-16T21:19:58Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-056 | DEC-001 to DEC-056 |
+| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | unchanged this revision; sections 5, 5 E3, 5A, 5 F1 and 5 F2 as previously revised | unchanged this revision; sections 5, 5 E3, 5A, 5 F1 and 5 F2 as previously revised |
 
 Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-055`, and its Open Decisions section is updated; doc 19 section 5 gains a gap-time constraint note and `COX-09` in the `EXP-007` (F1) specification, and the `EXP-008` specification as F2 under "Model ladder advancement"; `PROJECT_STATE.md` advances to v52, covering the `DEC-055` survival-framing rejection and the `EXP-008` result. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `0044fe7`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-056`, and its Open Decisions section is updated; doc 19 is unchanged this revision, since the bootstrap correction is a code and evidence fix rather than a specification change; `PROJECT_STATE.md` advances to v53, covering the bootstrap correction, the `EXP-008` rejection and the `DEC-052` supersession. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `230a571`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
