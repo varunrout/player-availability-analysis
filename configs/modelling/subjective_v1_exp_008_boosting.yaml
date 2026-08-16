@@ -1,0 +1,12 @@
+base_config: subjective_v1_m1_f1.yaml
+predictor_feature_set: F1
+hyperparameter_grid:
+  max_leaf_nodes: [3, 7]
+  learning_rate: [0.01, 0.05]
+  min_samples_leaf: [200, 500]
+  l2_regularization: [1.0, 10.0]
+max_iter_ceiling: 500
+early_stopping_checkpoint_step: 50
+one_day_gap_sensitivity: true
+posthoc_calibration_selection: false
+final_test_access: false

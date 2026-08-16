@@ -1,0 +1,10 @@
+finding_id,status,domain,evidence
+BST-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+BST-02,PASS,pre_registered_grid,16 pre-registered grid combinations evaluated
+BST-03,PASS,predictor_contract,frozen F1 contract used: 9 predictors
+BST-04,PASS,early_stopping_selection,"iteration count selected via staged prediction on the fixed chronological validation partition, same criterion as F1's C selection"
+BST-05,PASS,missing_data_treatment,primary arm matches F1's median-imputation preprocessing; native-handling arm reported separately as missingness_sensitivity_native_handling
+BST-06,PASS,event_count_reporting,every metrics table carries pooled and discrimination event counts
+BST-07,PASS,one_day_gap_sensitivity,one-day-gap sensitivity present alongside the three-day headline
+BST-08,PASS,training_validation_gap_and_zero_positive_folds,training-to-validation gap reported; 1 zero-positive folds excluded from discrimination aggregation and counted
+BST-09,PASS,held_out_outcome_history_isolation,"no evaluation coordinate, index or derived feature is computed from held-out outcome history in any evaluation view; boosted classification has no time-coordinate concept for the EXP-007 leakage class to recur in"

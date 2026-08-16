@@ -1,0 +1,3 @@
+arm,supported_bin_count,expected_calibration_error
+boosted,4,0.012301541466850877
+f1_logistic,5,0.019485624880151285
