@@ -471,6 +471,46 @@ For the general experiment backlog: only after the baseline, calibration, operat
 
 Each challenger must use the same frozen data version, split logic, calibration evaluation and alert simulation as the current champion.
 
+#### F1. EXP-007: Cox proportional-hazards survival
+
+**Status:** specified, authorised by `DEC-054`. Phase V1-P2.
+
+Test whether a time-to-event framing adds practitioner value over the fixed-horizon F1 champion selected under `DEC-054`.
+
+**Why this experiment exists.** The charter requires an explicit conclusion on whether survival framing adds value; `EXP-006`/`EXP-007` are the modelling response most appropriate to sparse support, since time-to-event framing uses censoring and the full event set rather than a fixed seven-day window. `DEC-054` reopened `DEC-043` and selected F1, with no reporting-derived predictor, as the champion; this experiment tests the framing question against that champion, not against F3.
+
+**Data structure.** Counting-process start-stop format over the frozen player-day panel: one interval per eligible player-day, time-varying covariates at the prediction cutoff. Recurrent onsets are modelled under Andersen-Gill with variance clustered on player. The at-risk definition follows the frozen cohort exactly; active-episode days remain ineligible; the 28-day burn-in is unchanged. Right-censoring occurs at partition boundaries; no interval crosses a partition. The time scale is gap time since the previous onset, with post-burn-in study entry as origin for players with no prior onset. Ties are handled by the Efron approximation.
+
+**Predictors.** Exactly F1's nine predictors per `DEC-054`, unchanged: `daily_load_log1p`, `daily_load_sum_7d_log1p`, `daily_load_sum_28d_log1p`, `fatigue_lag1`, `fatigue_mean_prior_7d`, `fatigue_mean_prior_28d`, `readiness_lag1`, `readiness_mean_prior_7d`, `readiness_mean_prior_28d`. A ridge penalty is selected only on chronological validation folds, mirroring the C-selection discipline in `EXP-003`.
+
+**Missing data.** F1 contains no sparse availability-driven predictor, so the asymmetry that motivated `EXP-016` does not arise here. Lagged wellness terms are present on roughly 46.5% of player-days; their treatment must match exactly what F1 already uses in `EXP-003`. Any deviation is reported explicitly.
+
+**Comparability, the critical step.** A Cox fit yields a hazard, not a seven-day probability. Convert with the Breslow baseline cumulative hazard, `P(event within 7 days) = 1 - exp(-(H0(t+7) - H0(t)) * exp(X'b))`, with the baseline estimated on training portions only, fold-wise, never on evaluation rows. Evaluate the resulting probability with exactly the metrics used in `EXP-003`, `EXP-009` and `EXP-016`. Raw probabilities per `DEC-052`; no calibrator.
+
+Required outputs: coefficients with hazard ratios and intervals; pooled rolling-origin Brier, log loss, calibration intercept and slope, reliability with bin counts, average precision, ROC-AUC; per-fold values and estimable-fold counts; fixed window as temporal stress; one-day-gap sensitivity on every headline figure; alert budgets at 1%, 2.5% and 5%; support-aware unseen-player aggregation; paired bootstrap against F1 under both player-cluster and temporal week-block resampling; scaled Schoenfeld residuals, global and per covariate.
+
+**Two binding reporting limitations.** Cluster-robust variance rests on roughly 12 event-bearing player clusters; sandwich estimators are anti-conservative well above that count, so a player-cluster bootstrap is reported alongside and the bootstrap is treated as primary where they disagree. Proportional-hazards tests have very low power at 66 onsets; a non-significant Schoenfeld result is not evidence the assumption holds and must not be reported as though it were.
+
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| COX-01 | Zero final-test access |
+| COX-02 | Risk-set construction matches the frozen cohort day for day |
+| COX-03 | No interval crosses a partition or embargo |
+| COX-04 | Predictor contract identical to F1 |
+| COX-05 | Baseline hazard fitted only on partitions disjoint from evaluation |
+| COX-06 | Converted probabilities in [0, 1] and monotone in the linear predictor |
+| COX-07 | Every reported metric carries its supporting event count |
+| COX-08 | One-day-gap sensitivity present; zero-positive folds identified, excluded and counted |
+
+Decision gate:
+
+- Adopt the survival framing only if probability quality or operational capture improves over F1 with paired intervals excluding zero under both resampling schemes.
+- Explicit rejection with evidence is a successful outcome and closes the phase.
+- "Not distinguishable at this support" is valid and expected.
+- Non-goals: final-test access, feature or cohort change, threshold selection, champion replacement outside V1-P4.
+
 ## 5A. V1 delivery programme
 
 Governing decision: `DEC-046`. Evaluation protocol: `DEC-047`. Outcome sensitivity: `DEC-048`.

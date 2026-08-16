@@ -1733,15 +1733,127 @@ ordering relative to section 5A only
 
 ---
 
+## DEC-054
+
+**Decision ID:** DEC-054
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-043` promoted F3 as the raw M1 development candidate on fixed
+chronological window evidence, where F3 led F1 on average precision, 0.019432
+against 0.016640. `DEC-047` subsequently made pooled rolling-origin the
+headline evaluation protocol, superseding `DEC-036` in respect of headline
+designation. The champion comparison was not re-run under the new protocol at
+that time.
+
+`EXP-016`, authorised by `DEC-052`, tested whether F3's advantage was carried
+by the availability pattern of `fatigue_lag1_robust_z_prior` rather than its
+value. It ran four arms under the frozen engine: A as F3, B with the value and
+its `fatigue_robust_available` indicator both removed, C with the value
+removed and the indicator retained, and D as F1. Arms A and D reproduced the
+unseen-player figures cited in `DEC-043` exactly, confirming the
+implementation.
+
+**Decision:**
+Reopen `DEC-043` in respect of candidate selection. F1 becomes the V1 champion
+candidate, comprising nine predictors: `daily_load_log1p`,
+`daily_load_sum_7d_log1p`, `daily_load_sum_28d_log1p`, `fatigue_lag1`,
+`fatigue_mean_prior_7d`, `fatigue_mean_prior_28d`, `readiness_lag1`,
+`readiness_mean_prior_7d`, `readiness_mean_prior_28d`.
+
+F3 is not carried forward. Arm C is not carried forward. Raw probabilities are
+retained per `DEC-052`; no calibrator is applied.
+
+This selection is not made on statistical superiority. Every paired bootstrap
+interval between arms includes zero under both resampling schemes, so no arm is
+distinguishable from another at this support. It is made because the basis for
+the prior selection is superseded, because F1 leads the axis most relevant to
+the product, and because F1 carries no reporting-derived predictor.
+
+**Rationale:**
+Three findings support this.
+
+First, arm C dominates arm A. On the fixed window C records Brier 0.003607,
+average precision 0.0203 and ROC-AUC 0.8550 against A's 0.003613, 0.0194 and
+0.8511. Pooled, C records 0.006287, 0.0877 and 0.8584 against A's 0.006287,
+0.0791 and 0.8524. On unseen players C records 0.022500 average precision and
+0.631222 ROC-AUC against A's 0.022308 and 0.630928. C matches or beats A
+everywhere while removing a predictor. Dominance does not require statistical
+significance to be actionable; retaining a strictly more complex model that is
+nowhere better is not defensible.
+
+Second, the continuous robust fatigue z-score contributes nothing measurable.
+C, which retains only the availability indicator, performs as well as A, which
+retains both. This is the direct answer to the question `EXP-016` was
+authorised to settle, and it is consistent with the `EXP-009` audit finding
+that discrimination was materially worse where the predictor was observed
+(ROC-AUC 0.732) than where it was absent (0.908), and with the Stage 2 finding
+that wellness reporting rises from 62.9% to 97.3% around onset days.
+Availability, not physiology, was carrying the contribution.
+
+Third, F1 leads on the headline and product-relevant axes. Under pooled
+rolling-origin, `DEC-047`'s headline, F1 records average precision 0.0967
+against F3's 0.0791. On support-aware unseen-player aggregation F1 records
+0.023316 average precision and 0.642578 ROC-AUC against F3's 0.022308 and
+0.630928, restating the reversal already bound as a limitation by `DEC-043`.
+Unseen-player generalisation is the axis a squad-facing product depends on,
+since the dashboard will encounter players absent from development data.
+
+F1's nine predictors contain no availability indicator, no prior-relative
+z-score and no wellness-count feature. The reporting-entanglement risk
+documented from Stage 2 onward is therefore absent from the champion's
+predictor contract rather than managed within it. F1 is also directly
+interpretable to a practitioner as load, fatigue and readiness over three time
+windows, which materially serves the V1-P6 requirement that a reviewer
+understand the output without reading code.
+
+Against this, F1 records slightly worse pooled ROC-AUC, 0.8355 against 0.8524,
+and slightly worse pooled Brier, 0.006325 against 0.006287. Both differences
+fall inside intervals that include zero.
+
+**Alternatives Considered:**
+Retaining F3 unchanged, rejected because arm C dominates it and because the
+fixed-window evidence that justified its promotion is no longer the headline
+protocol. Adopting arm C, rejected despite its dominance over A: it retains
+`fatigue_robust_available`, a reporting-engagement proxy that is difficult to
+explain in a practitioner interface and responsive to a player's app usage
+rather than their physiology, and it does not match F1 on unseen-player
+generalisation. Deferring the selection to V1-P4 as originally scoped, rejected
+because V1-P2 and V1-P3 build challengers against the champion and would
+otherwise be constructed on a candidate whose selection basis had lapsed.
+
+**Consequences:**
+- F1 is the champion candidate for V1-P2 onward. `EXP-007` and `EXP-008` are
+  specified and evaluated against F1, not F3.
+- The `DEC-043` limitation that F3 generalises worse than F1 to unseen players
+  is resolved by this selection and no longer binds downstream citations.
+- The remaining `DEC-043` limitations concerning outcome support, event
+  concentration and rolling-origin instability continue to bind, since they are
+  properties of the dataset rather than of the feature set.
+- The sparse-predictor entanglement is recorded as a completed investigation
+  with an evidence-backed outcome rather than an open limitation, since the
+  predictor is no longer in the champion contract.
+- No arm difference may be reported as statistically distinguishable. Every
+  comparison in `EXP-016` had paired intervals including zero under both
+  resampling schemes, and this must accompany any citation of this decision.
+- The final-test lock is unaffected.
+
+**Affected Components:** champion selection, predictor contract, EXP-007 and
+EXP-008 specifications, V1-P4 scope, model card content
+
+**Supersedes:** `DEC-043`, in respect of candidate selection only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-The V1 delivery programme (section 5A of doc 19) and the `EXP-009` calibration specification (section 5 D1) were approved by `DEC-051`; phase V1-P1 implementation is authorised against development data only. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
+Phase V1-P2 (`EXP-007` Cox survival) is specified against the F1 champion selected by `DEC-054` and is in progress. `EXP-007` succeeds whether or not survival framing is adopted; explicit rejection with evidence is a valid outcome. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Open for a future revision, not blocking V1-P1: doc 19 sections 5 and 5A conflict on whether `EXP-007` and `EXP-008` precede or follow operational-utility analysis. This requires a superseding decision before phase V1-P2 begins.
-
-Resolved in this revision: owner approval of the V1 delivery programme and the `EXP-009` calibration specification is recorded by `DEC-051`.
+Resolved in this revision: the `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
 
 ### Resolved
 

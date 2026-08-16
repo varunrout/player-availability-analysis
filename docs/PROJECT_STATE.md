@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 50
-Last Updated UTC: 2026-08-16T16:13:17Z
+State Version: 51
+Last Updated UTC: 2026-08-16T16:53:36Z
 Coordination Session ID: PAA-IMPL-20260816-01
 Git Branch: main
-Git HEAD: e624ffe (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: V1 Delivery Programme - Phase V1-P1 Gate: Sparse-Predictor Ablation (`EXP-016`)
-Current Phase Status: `EXP-009` calibration selected raw probabilities for the M1 candidate; no post-hoc calibrator is adopted (`DEC-052`). The mandatory sparse-predictor audit found the robust fatigue z-score's discrimination diverges sharply by availability, so `EXP-016` was authorised and executed before phase V1-P2: F3 (arm A) and F1 (arm D) reproduce the `DEC-043` unseen-player reference figures exactly; arm C (indicator retained, value removed) is not distinguishable from A and closes part of the F1 gap; arm B (predictor removed entirely) is worse than A on unseen-player generalisation. Whether `DEC-043` is reopened is a project-owner decision, not yet made. `DEC-053` resolves the doc 19 section 5 / section 5A ordering conflict in section 5A's favour. Final-test performance remains locked and is spent once, in phase V1-P5.
+Git HEAD: a73c46d (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: V1 Delivery Programme - Phase V1-P2 Gate: Cox Survival (`EXP-007`)
+Current Phase Status: Project owner reviewed the `EXP-016` result, reopened `DEC-043` in respect of candidate selection and selected F1 as the V1 champion under `DEC-054`; `DEC-053` resolved the doc 19 section 5 / section 5A ordering conflict in section 5A's favour. `EXP-007` Cox proportional-hazards survival is specified in doc 19 section 5 as F1, authorised by `DEC-054`, and implemented and executed against the F1 champion: Cox trails F1 on pooled average precision and ROC-AUC, has a Brier advantage confirmed under temporal week-block resampling but not player-cluster resampling, and leads F1 substantially on unseen-player generalisation (AP 0.1045 against 0.0233; ROC-AUC 0.8179 against 0.6426). Whether survival framing is adopted is a pending project-owner decision; the pre-registered gate requires both resampling schemes to exclude zero, which Brier does not meet. Final-test performance remains locked and is spent once, in phase V1-P5.
 
 ## Current Objective
 
-Review the `EXP-016` result and decide whether `DEC-043` is reopened and the M1 champion re-selected. V1-P2 (`EXP-007` Cox survival) remains blocked until that review completes.
+Review the `EXP-007` result at the V1-P2 gate: decide whether survival framing is adopted, explicitly rejected with evidence, or held open pending further evidence. V1-P3 (`EXP-008` boosted classification) remains blocked until that review completes.
 
 ## V1 Delivery Context
 
@@ -205,6 +205,14 @@ State v49 to v50, under coordination session `PAA-IMPL-20260816-01`.
 - Implemented and executed `EXP-016` at `e624ffe`: development-only four-arm ablation under the frozen F3 engine and raw probabilities. Arm A is F3 as promoted; arm B removes the robust fatigue value and its indicator entirely; arm C removes the value but retains the indicator; arm D is F1 as an external reference. Support-aware unseen-player generalisation was computed for every arm; arms A and D reproduce the `DEC-043` reference figures exactly (F3 AP 0.022308/ROC-AUC 0.630928; F1 AP 0.023316/ROC-AUC 0.642578), confirming correctness.
 - `EXP-016` found: arm C (indicator retained, value removed) is not distinguishable from arm A on pooled metrics (paired intervals include zero) and narrows part of the unseen-player gap to F1 (AP gap 0.001008 to 0.000816; ROC-AUC gap 0.011651 to 0.011356). Arm B (predictor removed entirely) is worse than arm A on unseen-player generalisation (AP 0.020427, ROC-AUC 0.617042). Neither B nor C decisively closes the F1 gap or beats A on calibrated probability quality at this support. Whether `DEC-043` is reopened is recorded as a project-owner decision still pending, not resolved by this state revision.
 
+State v50 to v51, under coordination session `PAA-IMPL-20260816-01`.
+
+- Project owner reviewed the `EXP-016` tables directly and accepted `DEC-054`: reopened `DEC-043` in respect of candidate selection and selected F1 as the V1 champion. Arm C dominates arm A on Brier, average precision and ROC-AUC across the fixed window, pooled and unseen-player views while removing a predictor; the continuous robust fatigue z-score contributes nothing measurable beyond its availability indicator; and under `DEC-047`'s pooled rolling-origin headline F1 leads F3 on average precision (0.0967 against 0.0791) and on both unseen-player metrics, restating the reversal `DEC-043` had bound as a limitation. No arm difference is statistically distinguishable; the selection rests on dominance and the lapsed basis for F3's original promotion, not on significance.
+- Expanded doc 19 section 5 "Model ladder advancement" with the `EXP-007` specification as F1: Andersen-Gill counting-process Cox model over the F1 champion's nine predictors, gap-time clock, Efron ties, Breslow baseline hazard converted to a seven-day probability, `COX-01` to `COX-08` integrity checks, decision gate requiring both resampling schemes to exclude zero before adoption.
+- Implemented and executed `EXP-007` at `a73c46d`, adding a bounded `lifelines` dependency. The installed lifelines version implements neither cluster-robust sandwich variance nor Schoenfeld residuals for time-varying counting-process fits; this is disclosed rather than worked around, coefficient standard errors are model-based rather than cluster-robust, and a covariate-by-log-time interaction likelihood-ratio test substitutes for the Schoenfeld check. The paired bootstrap against F1 is treated as primary inferential evidence per the specification's own instruction for when methods disagree.
+- `EXP-007` pooled rolling-origin result: Cox Brier 0.005929 against F1 0.006325 (paired interval excludes zero under temporal week-block resampling, [-0.000738, -0.000100], but not under player-cluster resampling, [-0.000728, 0.000028]); Cox average precision 0.0755 against F1 0.0967 and ROC-AUC 0.7113 against 0.8355, neither distinguishable (both paired intervals include zero). The pre-registered decision gate requires both schemes to exclude zero before adoption; Brier does not meet this bar.
+- `EXP-007` unseen-player result, the axis `DEC-054` was decided on: Cox substantially leads F1, AP 0.104533 against 0.023316 and ROC-AUC 0.817861 against 0.642578, both computed on the same 12/50 estimable held-out players used throughout. This is not formally paired-bootstrapped per the specification, is reported at face value with the model-based-variance caveat, and is a material input to the V1-P2 gate review despite not meeting the pooled decision-gate bar on its own.
+
 ## Current Repository State
 
 ```text
@@ -267,7 +275,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. F2 is not supported as an improvement over F1. F3 is the promoted raw candidate under `DEC-043`, carrying five binding limitations. `EXP-009` selected raw probabilities for the M1 candidate under `DEC-052`; no post-hoc calibrator is adopted. `EXP-016` tested whether F3's advantage is carried by the robust fatigue predictor's availability rather than its value: arm A (F3) and arm D (F1) reproduce the `DEC-043` unseen-player reference figures exactly; arm C (indicator retained) is not distinguishable from A on pooled metrics and narrows part of the unseen-player gap to F1; arm B (predictor removed entirely) is worse than A. Whether `DEC-043` is reopened is a pending project-owner decision. M2+ and final-test performance remain blocked.
+EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` selected raw probabilities per `DEC-052`; no post-hoc calibrator is adopted. `EXP-007` tested whether an Andersen-Gill Cox survival framing improves on F1: pooled Brier favours Cox but only under temporal week-block resampling, not player-cluster; pooled AP and ROC-AUC favour F1, neither distinguishable; unseen-player generalisation substantially favours Cox (AP 0.1045 against 0.0233, ROC-AUC 0.8179 against 0.6426). The pre-registered gate requires both resampling schemes to exclude zero before adoption, which Brier does not meet. Whether survival framing is adopted is a pending project-owner decision. M2+ (`EXP-008`) and final-test performance remain blocked.
 
 ## Current Product State
 
@@ -305,9 +313,9 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-Whether `DEC-043` is reopened and the M1 champion re-selected, following the `EXP-016` result. Arm C narrows part of the unseen-player gap to F1 without decisively closing it or beating F3 on calibrated probability quality at this support; arm B is worse than F3. This is a project-owner decision, not yet made, and blocks phase V1-P2.
+Whether survival framing is adopted, following the `EXP-007` result. The pooled rolling-origin decision gate requires paired intervals excluding zero under both resampling schemes before adoption; Brier meets this under temporal week-block resampling only, and AP/ROC-AUC meet it under neither. Cox substantially leads F1 on unseen-player generalisation, the axis `DEC-054` was decided on, but this is not formally paired-bootstrapped and is not itself the pooled decision-gate criterion. This is a project-owner decision, not yet made, and blocks phase V1-P3.
 
-Resolved since the previous revision: the calibration method question (`DEC-052`, raw selected, no post-hoc calibrator adopted); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
+Resolved since the previous revision: the champion-selection question (`DEC-054`, F1 selected, superseding `DEC-043` in respect of candidate selection only). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
 
 ## Known Issues / Technical Debt
 
@@ -326,27 +334,27 @@ Resolved since the previous revision: the calibration method question (`DEC-052`
 - M1-F1 raw probabilities are materially overestimated on validation and have worse Brier/log loss than M0 despite better ranking; calibration strategy requires a separate owner-approved specification if M1-F1 is promoted.
 - Alert capture is based on only five represented validation onsets and approximately 107 false alerts per captured onset at the two non-zero-capture budgets; operational conclusions remain highly uncertain.
 - F3 improves held-period point estimates but not unseen-player aggregate ranking; its incremental player-cluster intervals include zero and one rolling fold degrades materially.
-- The F3 fatigue robust z-score has only 8.4% coverage, so its coefficient and apparent contribution are entangled with availability and missingness structure. The `EXP-016` ablation found removing the predictor entirely (arm B) worsens unseen-player generalisation versus F3, while keeping only its recording-state indicator (arm C) is not distinguishable from F3 and narrows part of the unseen-player gap to F1. Whether this reopens `DEC-043` is a pending project-owner decision.
-- F3 was promoted despite recording weaker unseen-player generalisation than F1 (AP 0.022308 versus 0.023316; ROC-AUC 0.630928 versus 0.642578). This is an accepted, documented trade-off under `DEC-043`, not an oversight, and must be restated wherever F3 performance is cited.
+- Resolved by `DEC-054`: the F3 fatigue robust z-score's 8.4%-coverage entanglement with availability and missingness structure, investigated by `EXP-016`, was the deciding factor in F3's replacement by F1 as champion. F3 and the audited predictor are no longer in the champion contract; retained here for the historical record.
+- Resolved by `DEC-054`: F3's weaker unseen-player generalisation than F1 (AP 0.022308 versus 0.023316; ROC-AUC 0.630928 versus 0.642578), previously an accepted trade-off under `DEC-043`, is superseded now that F1 is champion.
 - Line-ending policy is now fixed by `.gitattributes` under `DEC-045`. Contributors on Windows should confirm their editor honours it, since the previous churn recurred silently on every write.
+- The installed `lifelines` `CoxTimeVaryingFitter` (0.29.0) implements neither cluster-robust sandwich variance nor Schoenfeld residuals for time-varying counting-process fits. `EXP-007` coefficient standard errors are model-based, not cluster-robust; the player-cluster and temporal week-block paired bootstrap against F1 is the primary inferential evidence, and a covariate-by-log-time interaction likelihood-ratio test substitutes for the Schoenfeld proportional-hazards check.
 
 ## Blockers
 
-Phase V1-P2 (`EXP-007` Cox survival) is blocked pending project-owner review of the `EXP-016` result: whether `DEC-043` is reopened and the M1 champion re-selected. This is the sole blocker; there is no technical obstruction. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised at phase V1-P5.
+Phase V1-P3 (`EXP-008` boosted classification) is blocked pending project-owner review of the `EXP-007` result: whether survival framing is adopted, explicitly rejected with evidence, or held open pending further evidence. This is the sole blocker; there is no technical obstruction. Final-test performance remains blocked until the frozen checklist is completed and one-time access is explicitly authorised at phase V1-P5.
 
-Standing analytical constraint, not a blocker: effective outcome support is five onsets per evaluation partition, 104 pooled positive player-days under rolling-origin. This limits the inferential capacity of every comparison made at this stage, including the ablation comparison just completed.
+Standing analytical constraint, not a blocker: effective outcome support is 104 pooled positive player-days under rolling-origin, with only 12 of 50 players estimable for unseen-player evaluation. This limits the inferential capacity of every comparison made at this stage, including the survival comparison just completed.
 
 ## Work In Progress
 
-No implementation is in progress. `EXP-009` and `EXP-016` are both implemented, executed and committed. The V1-P1 gate, including the `EXP-016` champion question, awaits project-owner review. No other control session is known to be modifying the working tree.
+No implementation is in progress. `EXP-009`, `EXP-016` and `EXP-007` are all implemented, executed and committed. The V1-P2 gate, including whether survival framing is adopted, awaits project-owner review. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Review the `EXP-016` result at the V1-P1 gate: decide whether arm C's unseen-player narrowing is sufficient to reopen `DEC-043`, or whether F3 stands with the availability entanglement documented as a binding limitation.
-2. If `DEC-043` is reopened, re-select the M1 champion through a new decision record before any further phase proceeds.
-3. If F3 stands, record the availability entanglement as a sixth binding limitation alongside the five already bound by `DEC-043`, citable wherever F3 performance is reported.
-4. On completion of the V1-P1 gate, proceed to phase V1-P2 (`EXP-007` Cox survival), sequenced per section 5A under `DEC-053`.
-5. Keep final-test predictions and performance locked until V1-P5.
+1. Review the `EXP-007` result at the V1-P2 gate: decide whether the pooled Brier advantage under temporal week-block resampling alone, against F1's AP/ROC-AUC lead and Cox's substantial unseen-player lead, is sufficient to adopt survival framing, reject it with evidence, or hold the question open.
+2. If survival framing is adopted, record the decision and its rationale before phase V1-P3 begins; if rejected, record explicit rejection with evidence as the successful, charter-required outcome.
+3. On completion of the V1-P2 gate, proceed to phase V1-P3 (`EXP-008` boosted classification), sequenced per section 5A under `DEC-053`, evaluated against the F1 champion.
+4. Keep final-test predictions and performance locked until V1-P5.
 
 ## Validation / Quality Gate Status
 
@@ -445,22 +453,28 @@ No implementation is in progress. `EXP-009` and `EXP-016` are both implemented, 
 | EXP-016 development run | PASS | four arms; arms A and D reproduce `DEC-043` unseen-player reference figures exactly; `ABL-01` to `ABL-07` all PASS |
 | EXP-016 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-016 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| EXP-016 results review | PENDING | project-owner decision on whether `DEC-043` is reopened |
+| EXP-016 results review | RESOLVED | `DEC-054`; F1 selected as V1 champion, superseding `DEC-043` in respect of candidate selection |
 | V1-P1 / section 5A ordering conflict | RESOLVED | `DEC-053`; section 5A governs, `EXP-007`/`EXP-008` proceed at V1-P2/V1-P3 |
-| Modelling | V1-P1 GATE PENDING | `EXP-009` and `EXP-016` complete; champion decision pending; final test locked until V1-P5 |
+| EXP-007 specification | APPROVED | doc 19 section 5 as F1, authorised under `DEC-054` |
+| EXP-007 implementation | PASS | committed at `a73c46d`; shared module, canonical job, notebook, retained evidence, tests; adds bounded `lifelines` dependency |
+| EXP-007 development run | PASS | Andersen-Gill Cox vs F1; `COX-01` to `COX-08` all PASS; coefficient variance model-based, not cluster-robust (disclosed) |
+| EXP-007 final-test isolation | PASS | zero final-test predictions and zero performance access |
+| EXP-007 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
+| EXP-007 results review | PENDING | project-owner decision on whether survival framing is adopted |
+| Modelling | V1-P2 GATE PENDING | F1 is champion (`DEC-054`); `EXP-007` complete; survival-framing decision pending; final test locked until V1-P5 |
 
-Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 89 files, strict mypy clean across 69 source files, `99 passed` with one expected ZIP warning, and `poetry check --lock` passing.
+Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 92 files, strict mypy clean across 71 source files, `102 passed` with one expected ZIP warning, and `poetry check --lock` passing.
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v50, 2026-08-16T16:13:17Z | v50, 2026-08-16T16:13:17Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-053 | DEC-001 to DEC-053 |
-| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | sections 5, 5 E3 and 5A revised | sections 5, 5 E3 and 5A revised |
+| `PROJECT_STATE.md` | v51, 2026-08-16T16:53:36Z | v51, 2026-08-16T16:53:36Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-054 | DEC-001 to DEC-054 |
+| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | sections 5, 5 E3, 5A and 5 F1 revised | sections 5, 5 E3, 5A and 5 F1 revised |
 
 Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-052` and `DEC-053`, and its Open Decisions section is updated; doc 19 section 5 E3 gains the full `EXP-016` specification and the section 5 intro is revised per `DEC-053`; `PROJECT_STATE.md` advances to v50, covering both the `EXP-009`/`EXP-016` authorisation and outcome. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `e624ffe`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-054`, and its Open Decisions section is updated; doc 19 section 5 gains the `EXP-007` specification as F1 under "Model ladder advancement"; `PROJECT_STATE.md` advances to v51, covering the `DEC-054` champion selection and the `EXP-007` result. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `a73c46d`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
