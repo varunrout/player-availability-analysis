@@ -514,6 +514,59 @@ Decision gate:
 - "Not distinguishable at this support" is valid and expected.
 - Non-goals: final-test access, feature or cohort change, threshold selection, champion replacement outside V1-P4.
 
+#### F2. EXP-008: Boosted classification complexity test
+
+**Status:** specified. Phase V1-P3.
+
+Record a verdict on whether nonlinearity and interaction structure earn their place at this sample size. A negative result is expected and is the deliverable.
+
+**Model.** `HistGradientBoostingClassifier` from the existing bounded scikit-learn dependency. No new gradient-boosting library. Adding LightGBM or XGBoost would expand the dependency surface and container image for a test expected to return negative, and either can be revisited in V2 if the negative result is overturned.
+
+**Predictors.** Exactly F1's nine predictors per `DEC-054`, unchanged. Frozen cohort, partitions, embargoes and preprocessing scope. Raw probabilities per `DEC-052`; no calibrator.
+
+**Pre-registered hyperparameter grid**, fixed in advance; no value outside it may be tried:
+
+| Hyperparameter | Values |
+|---|---|
+| `max_leaf_nodes` | 3, 7 |
+| `learning_rate` | 0.01, 0.05 |
+| `min_samples_leaf` | 200, 500 |
+| `l2_regularization` | 1.0, 10.0 |
+| `max_iter` | 500, with early stopping |
+
+Early stopping and selection use chronological validation folds only, on the same criterion and folds as the champion. Any deviation requires a decision record before the run.
+
+**Missing data.** F1 contains no sparse availability-driven predictor, so the asymmetry that motivated `EXP-016` does not arise. Lagged wellness terms are present on roughly 46.5% of player-days. Native NaN handling must be disabled where it would give the boosted model a different treatment from F1's. A secondary arm using native handling is permitted, reported separately and labelled a missingness sensitivity, not a complexity result.
+
+**Evaluation**, identical to `EXP-003`, `EXP-009`, `EXP-016` and `EXP-007` so all are comparable: pooled rolling-origin headline with per-fold values and estimable-fold counts; Brier, log loss, calibration intercept and slope, average precision, ROC-AUC; fixed window as temporal stress; one-day-gap sensitivity on every headline figure; alert budgets at 1%, 2.5% and 5%; support-aware unseen-player aggregation; paired bootstrap against F1 under both player-cluster and temporal week-block resampling.
+
+Additionally report the training-to-validation performance gap for the selected configuration. At 56 training onsets an overfitting signature is the most likely finding and must be surfaced, not left implicit.
+
+Explanation stability and feature attribution are out of scope; they belong to `EXP-018` at V1-P4.
+
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| BST-01 | Zero final-test access |
+| BST-02 | Only pre-registered grid values evaluated and the full grid recorded |
+| BST-03 | Predictor contract identical to F1 |
+| BST-04 | Early stopping and selection on chronological validation folds only |
+| BST-05 | Missing-data treatment matches F1 in the primary arm; any native-handling arm labelled a sensitivity |
+| BST-06 | Every reported metric carries its supporting event count |
+| BST-07 | One-day-gap sensitivity present |
+| BST-08 | Training-to-validation gap reported and zero-positive folds identified, excluded and counted |
+| BST-09 | No evaluation coordinate, index or derived feature is computed from held-out outcome history in any evaluation view |
+
+`BST-09` is added given what `EXP-007` demonstrated: a gap-time coordinate derived from held-out outcome history inflated leave-one-player-out generalisation until reset (`DEC-055`). No equivalent coordinate exists in a boosted classifier, but the check stands as a standing discipline against the same class of leakage recurring in any future evaluation-time construction.
+
+Decision gate:
+
+- Nonlinearity earns its place only if calibrated performance improves over F1 with paired intervals excluding zero under both resampling schemes.
+- A negative result is reported as-is, without softening and without searching for a configuration that reverses it.
+- If negative, the omission of boosted modelling from the V1 champion is recorded as an evidence-backed choice rather than a gap.
+- Non-goals: final-test access, feature or cohort change, retuning beyond the frozen grid, threshold selection, attribution analysis, champion replacement outside V1-P4.
+
 ## 5A. V1 delivery programme
 
 Governing decision: `DEC-046`. Evaluation protocol: `DEC-047`. Outcome sensitivity: `DEC-048`.

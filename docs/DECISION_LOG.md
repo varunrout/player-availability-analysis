@@ -1847,13 +1847,139 @@ EXP-008 specifications, V1-P4 scope, model card content
 
 ---
 
+## DEC-055
+
+**Decision ID:** DEC-055
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`EXP-007` compared an Andersen-Gill Cox proportional-hazards fit against the
+F1 champion selected under `DEC-054`, converted to seven-day probabilities
+through the Breslow baseline cumulative hazard and evaluated under the
+protocol used in `EXP-003`, `EXP-009` and `EXP-016`.
+
+The initial result was mixed. Cox recorded a lower pooled Brier score,
+0.005929 against 0.006325, but a materially worse log loss, 0.130100 against
+0.042000, and lower pooled average precision and ROC-AUC, 0.0755 and 0.7113
+against 0.0967 and 0.8355. On the fixed validation window Cox recorded
+ROC-AUC 0.6112 against F1's 0.8078. Against this, Cox appeared to lead
+support-aware unseen-player generalisation by a wide margin, average
+precision 0.104533 and ROC-AUC 0.817861 against F1's 0.023316 and 0.642578.
+
+That pattern was internally inconsistent. Leave-one-player-out is the most
+demanding evaluation in the protocol, yet Cox scored higher there than on
+either the pooled rolling-origin or fixed-window views, while F1 showed the
+expected ordering. A pre-registered diagnostic was run to test whether the
+apparent advantage was an artefact of the time scale.
+
+**Decision:**
+Reject the survival framing for V1. `EXP-007` is closed with an
+evidence-backed negative conclusion. F1 remains the champion under
+`DEC-054`. No survival model is carried into V1-P3, V1-P4 or the product.
+
+Record the following as a methodological constraint on all future survival
+work, including `EXP-014` deferred to V2: a gap-time origin derived from a
+player's own onset history is legitimate under temporal evaluation, because
+time since last injury is genuinely known at prediction time, but breaches
+the premise of leave-one-player-out evaluation, where nothing about the
+held-out player may be assumed known.
+
+**Rationale:**
+Three strands support rejection, and no axis survives on which the survival
+framing beats F1.
+
+First, the diagnostic. The leave-one-player-out Cox arm was re-run with the
+gap-time clock reset for every held-out player, treating each as entering at
+post-burn-in study origin with no prior onset. Everything else was held
+fixed: the same fitted models, folds, cohort and predictors. Unseen-player
+average precision fell from 0.104533 to 0.019293 and ROC-AUC from 0.817861
+to 0.576890, both below F1's 0.023316 and 0.642578. Cox's ordering across
+the three evaluation views returned to the expected pattern, with
+leave-one-player-out lowest at 0.576890 against fixed window 0.6112 and
+pooled 0.7113. The collapse was specified in advance as the criterion
+confirming leakage.
+
+The mechanism is that the baseline hazard is highest at short gap times, so
+indexing a held-out player by their own time since previous onset supplies
+outcome information about that player. F1 has no equivalent access, making
+the original comparison structurally unequal rather than merely optimistic.
+The effect would be concentrated in the twelve estimable players, who are by
+definition event-bearing and among whom five carry 74.6% of onsets.
+
+Second, the pooled Brier advantage is an underprediction artefact rather
+than better probability quality. Cox mean prediction is 0.002600 against an
+observed rate of 0.006185, under by roughly 2.4 times, while F1 over-predicts
+at 0.023000. At this prevalence, systematically predicting near zero lowers
+squared error mechanically. Log loss, which penalises confident error,
+favours F1 by a factor of three. Under `DEC-007`, calibration and probability
+quality are first-class metrics and the Brier figure cannot be read in
+isolation.
+
+Third, the pre-registered gate was not met on its own terms. It required
+paired intervals excluding zero under both resampling schemes. The paired
+Brier difference excludes zero under temporal week-block resampling,
+[-0.000738, -0.000100], but not under player-cluster resampling,
+[-0.000728, 0.000028]. Average precision and ROC-AUC intervals include zero
+under both schemes.
+
+The specification's own gate records that explicit rejection with evidence
+is a successful outcome. That condition is met.
+
+**Alternatives Considered:**
+Adopting the survival framing on the unseen-player result, rejected because
+that result is the artefact. Holding the question open pending further
+evidence, rejected because the diagnostic is decisive and leaving an
+unresolved framing question would block V1-P3 and V1-P4 sequencing without
+prospect of new information at this support. Re-specifying `EXP-007` with a
+calendar or age-based time scale and re-running, rejected for V1: the pooled
+and fixed-window views already favour F1 and the underprediction problem is a
+property of the Breslow conversion at this prevalence rather than of the time
+scale, so a re-specification would be unlikely to change the conclusion while
+consuming schedule that `DEC-046` allocates to product and operationalisation
+work. It is recorded as available to V2 alongside `EXP-014`.
+
+**Consequences:**
+- The survival framing is rejected for V1 with recorded evidence. `EXP-007`
+  is closed.
+- F1 remains the champion. V1-P3 proceeds with `EXP-008` boosted
+  classification specified against F1.
+- The retained `EXP-007` evidence is regenerated so that the reset-clock
+  figures are the reported leave-one-player-out result and the own-clock
+  figures are retained and labelled as the leakage diagnostic contrast.
+- Integrity check `COX-09` is added, requiring that leave-one-player-out
+  evaluation not use held-out player outcome history in the time coordinate
+  and that both clock variants be reported.
+- The gap-time constraint binds all future survival work, including
+  `EXP-014` in V2.
+- This is the second pre-registered audit in the V1 programme to overturn an
+  apparently favourable result, after the `EXP-016` finding that the
+  contribution of `fatigue_lag1_robust_z_prior` was carried by its
+  availability pattern. Both are release evidence under V1-P8 and are
+  reported as findings rather than as corrections.
+- The `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and
+  scipy to 1.17. This must be recorded before V1-P7 containerisation and is
+  a removal candidate now that the survival framing is rejected.
+- The final-test lock is unaffected.
+
+**Affected Components:** V1-P2 outcome, model ladder scope, leakage controls,
+EXP-007 retained evidence, EXP-014 constraints, V1-P7 dependency envelope,
+V1-P8 release evidence
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Phase V1-P2 (`EXP-007` Cox survival) is specified against the F1 champion selected by `DEC-054` and is in progress. `EXP-007` succeeds whether or not survival framing is adopted; explicit rejection with evidence is a valid outcome. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
+Phase V1-P3 (`EXP-008` boosted classification) is specified against the F1 champion selected by `DEC-054` and is in progress. `EXP-008` succeeds whether or not nonlinearity earns its place; a negative result is expected and is the deliverable. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Resolved in this revision: the `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
+Resolved in this revision: the `EXP-007` survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). Noted, no action required until V1-P7: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and scipy to 1.17, and is a removal candidate now that survival framing is rejected.
+
+Resolved previously: the `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
 
 ### Resolved
 
