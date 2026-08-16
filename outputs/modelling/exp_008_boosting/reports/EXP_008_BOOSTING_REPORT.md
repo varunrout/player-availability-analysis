@@ -37,9 +37,9 @@ Training Brier 0.016124, validation Brier 0.003411, gap -0.012713. Overfitting s
 | Method | Metric | Median | 95% interval |
 |---|---|---:|---:|
 | player_cluster_bootstrap | brier_score | -0.000171 | [-0.000365, -0.000046] |
-| player_cluster_bootstrap | average_precision | 0.008567 | [-0.031632, 0.094831] |
 | temporal_week_block_bootstrap | brier_score | -0.000188 | [-0.000274, -0.000096] |
-| temporal_week_block_bootstrap | average_precision | 0.026475 | [0.002505, 0.055392] |
+| player_cluster_bootstrap | average_precision | -0.006290 | [-0.052406, 0.019850] |
+| temporal_week_block_bootstrap | average_precision | -0.006523 | [-0.105518, 0.029223] |
 
 ## One-Day-Gap Sensitivity
 
@@ -72,6 +72,7 @@ Fixed validation window only, reusing the primary arm's selected hyperparameters
 | BST-07 | PASS | one_day_gap_sensitivity | one-day-gap sensitivity present alongside the three-day headline |
 | BST-08 | PASS | training_validation_gap_and_zero_positive_folds | training-to-validation gap reported; 1 zero-positive folds excluded from discrimination aggregation and counted |
 | BST-09 | PASS | held_out_outcome_history_isolation | no evaluation coordinate, index or derived feature is computed from held-out outcome history in any evaluation view; boosted classification has no time-coordinate concept for the EXP-007 leakage class to recur in |
+| BOOT-01 | PASS | paired_bootstrap_population_consistency | every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate |
 
 ## Interpretation Boundary
 

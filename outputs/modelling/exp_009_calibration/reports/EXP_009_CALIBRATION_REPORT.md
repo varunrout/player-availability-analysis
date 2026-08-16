@@ -2,7 +2,7 @@
 
 ## Automated Status
 
-Development run: **PASS**. Project-owner calibration review required.
+Development run: **FAIL**. Project-owner calibration review required.
 
 Raw, Platt and isotonic calibration are compared on the frozen F3 candidate using development data only. Calibrators are fitted fold-wise on inner cross-validated out-of-fold training probabilities and applied to disjoint held-out probabilities, so each calibrated arm is a monotone map of the raw arm. No post-hoc calibrator is selected and no final-test prediction or performance is created.
 
@@ -35,13 +35,13 @@ Candidate-minus-reference on identical resampled player-days. Negative Brier dif
 | Comparison | Method | Metric | Median | 95% interval |
 |---|---|---|---:|---:|
 | raw to platt | player_cluster_bootstrap | brier_score | 0.000862 | [0.000037, 0.002358] |
-| raw to platt | player_cluster_bootstrap | average_precision | -0.001980 | [-0.026176, 0.004950] |
 | raw to platt | temporal_week_block_bootstrap | brier_score | 0.000980 | [0.000553, 0.001306] |
-| raw to platt | temporal_week_block_bootstrap | average_precision | -0.003025 | [-0.011899, 0.000553] |
+| raw to platt | player_cluster_bootstrap | average_precision | -0.003503 | [-0.034174, 0.016505] |
+| raw to platt | temporal_week_block_bootstrap | average_precision | -0.003047 | [-0.017679, 0.004635] |
 | raw to isotonic | player_cluster_bootstrap | brier_score | 0.001027 | [0.000061, 0.002854] |
-| raw to isotonic | player_cluster_bootstrap | average_precision | 0.009585 | [-0.038437, 0.060924] |
 | raw to isotonic | temporal_week_block_bootstrap | brier_score | 0.001110 | [0.000606, 0.001778] |
-| raw to isotonic | temporal_week_block_bootstrap | average_precision | 0.019740 | [0.005116, 0.046580] |
+| raw to isotonic | player_cluster_bootstrap | average_precision | 0.000994 | [-0.048312, 0.010887] |
+| raw to isotonic | temporal_week_block_bootstrap | average_precision | -0.001945 | [-0.036918, 0.017755] |
 
 ## Sparse-Predictor Availability Audit
 
@@ -81,6 +81,7 @@ Mandatory pre-registered sensitivity (`DEC-048`) alongside the three-day headlin
 | CAL-06 | PASS | sparse_predictor_audit | fatigue_lag1_robust_z_prior availability audit populated across 2 subsets |
 | CAL-07 | PASS | one_day_gap_sensitivity | one-day-gap sensitivity present alongside the three-day headline |
 | CAL-08 | PASS | zero_positive_folds | 1 zero-positive folds excluded from discrimination aggregation; estimable folds counted |
+| BOOT-01 | FAIL | paired_bootstrap_population_consistency | every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate |
 
 ## Interpretation Boundary
 

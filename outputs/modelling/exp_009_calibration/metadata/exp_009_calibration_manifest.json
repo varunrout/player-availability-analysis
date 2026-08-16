@@ -27,13 +27,13 @@
     "final_test_performance_accessed": false,
     "final_test_predictions_created": false,
     "final_test_rows_evaluated": 0,
-    "generated_at_utc": "2026-08-16T14:40:17.751137+00:00",
+    "generated_at_utc": "2026-08-16T21:04:12.471567+00:00",
     "model_id": "M1-F3-CAL",
     "pooled_player_days": 16815,
     "pooled_positive_days": 104,
     "posthoc_calibration_selected": false,
     "selected_regularisation_c": 0.001,
-    "status": "PASS",
+    "status": "FAIL",
     "zero_positive_fold_count": 1
   }
 }

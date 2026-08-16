@@ -42,17 +42,17 @@ Whether removing the predictor value (B) or keeping only the indicator (C) close
 | Candidate | Method | Metric | Median | 95% interval |
 |---|---|---|---:|---:|
 | B | player_cluster_bootstrap | brier_score | 0.000045 | [-0.000043, 0.000132] |
-| B | player_cluster_bootstrap | average_precision | -0.003076 | [-0.042704, 0.039332] |
 | B | temporal_week_block_bootstrap | brier_score | 0.000045 | [-0.000010, 0.000098] |
-| B | temporal_week_block_bootstrap | average_precision | -0.006373 | [-0.022630, 0.007113] |
+| B | player_cluster_bootstrap | average_precision | 0.003798 | [-0.054229, 0.059702] |
+| B | temporal_week_block_bootstrap | average_precision | 0.011866 | [-0.024989, 0.086623] |
 | C | player_cluster_bootstrap | brier_score | 0.000002 | [-0.000034, 0.000028] |
-| C | player_cluster_bootstrap | average_precision | 0.000843 | [-0.013595, 0.021315] |
 | C | temporal_week_block_bootstrap | brier_score | 0.000001 | [-0.000017, 0.000020] |
-| C | temporal_week_block_bootstrap | average_precision | 0.002489 | [-0.001879, 0.014144] |
+| C | player_cluster_bootstrap | average_precision | 0.001130 | [-0.020746, 0.025549] |
+| C | temporal_week_block_bootstrap | average_precision | 0.006559 | [-0.007435, 0.042082] |
 | D | player_cluster_bootstrap | brier_score | 0.000034 | [-0.000061, 0.000142] |
-| D | player_cluster_bootstrap | average_precision | -0.000327 | [-0.026910, 0.052168] |
 | D | temporal_week_block_bootstrap | brier_score | 0.000036 | [-0.000026, 0.000099] |
-| D | temporal_week_block_bootstrap | average_precision | 0.000220 | [-0.014769, 0.028053] |
+| D | player_cluster_bootstrap | average_precision | 0.003017 | [-0.039835, 0.068560] |
+| D | temporal_week_block_bootstrap | average_precision | 0.017312 | [-0.018528, 0.084456] |
 
 ## One-Day-Gap Sensitivity
 
@@ -78,6 +78,7 @@ Whether removing the predictor value (B) or keeping only the indicator (C) close
 | ABL-05 | PASS | one_day_gap_sensitivity | one-day-gap sensitivity present alongside the three-day headline |
 | ABL-06 | PASS | zero_positive_folds | 1 zero-positive folds excluded from discrimination aggregation; estimable folds counted |
 | ABL-07 | PASS | unseen_player_generalisation | support-aware unseen-player aggregation present for all four arms |
+| BOOT-01 | PASS | paired_bootstrap_population_consistency | every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate |
 
 ## Interpretation Boundary
 

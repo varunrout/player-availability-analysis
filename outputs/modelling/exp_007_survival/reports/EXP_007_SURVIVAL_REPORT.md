@@ -36,9 +36,9 @@ Under `own_clock`, Cox recorded AP 0.104533 and ROC-AUC 0.817861 on leave-one-pl
 | Method | Metric | Median | 95% interval |
 |---|---|---:|---:|
 | player_cluster_bootstrap | brier_score | -0.000402 | [-0.000728, 0.000028] |
-| player_cluster_bootstrap | average_precision | 0.008282 | [-0.087592, 0.099320] |
 | temporal_week_block_bootstrap | brier_score | -0.000393 | [-0.000738, -0.000100] |
-| temporal_week_block_bootstrap | average_precision | 0.014320 | [-0.043905, 0.097603] |
+| player_cluster_bootstrap | average_precision | -0.017690 | [-0.103807, 0.093800] |
+| temporal_week_block_bootstrap | average_precision | -0.018455 | [-0.134243, 0.074783] |
 
 ## One-Day-Gap Sensitivity
 
@@ -104,6 +104,7 @@ Global likelihood-ratio test: statistic 0.0159, df 15, p-value 1.0000. non-signi
 | COX-07 | PASS | event_count_reporting | every metrics table carries pooled and discrimination event counts |
 | COX-08 | PASS | sensitivity_and_zero_positive_folds | one-day-gap sensitivity present; 1 zero-positive folds excluded from discrimination aggregation and counted |
 | COX-09 | PASS | leave_one_player_out_time_coordinate | leave-one-player-out evaluation reports both clock variants; reset_clock (no assumed prior onset) is labelled the primary result and own_clock (held-out player's own onset history) is labelled a leakage diagnostic contrast, not a competing headline figure |
+| BOOT-01 | PASS | paired_bootstrap_population_consistency | every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate |
 
 ## Interpretation Boundary
 

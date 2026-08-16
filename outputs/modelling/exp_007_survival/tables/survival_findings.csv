@@ -8,3 +8,4 @@ COX-06,PASS,probability_validity,"all converted probabilities lie in [0, 1]; 1-e
 COX-07,PASS,event_count_reporting,every metrics table carries pooled and discrimination event counts
 COX-08,PASS,sensitivity_and_zero_positive_folds,one-day-gap sensitivity present; 1 zero-positive folds excluded from discrimination aggregation and counted
 COX-09,PASS,leave_one_player_out_time_coordinate,"leave-one-player-out evaluation reports both clock variants; reset_clock (no assumed prior onset) is labelled the primary result and own_clock (held-out player's own onset history) is labelled a leakage diagnostic contrast, not a competing headline figure"
+BOOT-01,PASS,paired_bootstrap_population_consistency,every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate

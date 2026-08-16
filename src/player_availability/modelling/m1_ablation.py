@@ -38,7 +38,10 @@ from player_availability.modelling.metrics import (
     classification_metrics,
 )
 from player_availability.modelling.preprocessing import FEATURE_SETS, build_feature_pipeline
-from player_availability.modelling.uncertainty import paired_prediction_bootstrap_differences
+from player_availability.modelling.uncertainty import (
+    paired_bootstrap_agrees_with_point_estimate,
+    paired_prediction_bootstrap_differences,
+)
 from player_availability.outcomes import build_injury_episodes, build_player_day_labels
 
 ARM_ORDER: tuple[str, ...] = ("A", "B", "C", "D")
@@ -165,6 +168,8 @@ def run_exp_016_ablation(
         config=config,
         unseen_aggregate=unseen_aggregate,
         sensitivity=sensitivity,
+        arm_metrics=arm_metrics,
+        paired=paired,
     )
     failures = findings.filter(pl.col("status") == "FAIL").height
     estimable_folds = per_fold.filter(
@@ -410,31 +415,53 @@ def _alert_budget(
 
 
 def _paired_arm_differences(pooled: pl.DataFrame, config: Exp016AblationConfig) -> pl.DataFrame:
+    """Paired bootstrap, per metric on the population matching that metric's point estimate.
+
+    Brier is bootstrapped on the full pooled population, matching its point estimate.
+    Average precision is bootstrapped only on discrimination-eligible rows (fold has at
+    least one positive), matching its point estimate exactly; bootstrapping it on the
+    full population, which includes zero-positive folds the point estimate excludes,
+    produced medians whose sign contradicted the point-estimate difference (`BOOT-01`).
+    """
     target = config.base_config.target
+    discrimination = pooled.join(
+        pooled.group_by("fold_id").agg(pl.col("target").sum().alias("_fold_positive")),
+        on="fold_id",
+        how="left",
+    ).filter(pl.col("_fold_positive") > 0)
+
+    def _frame(source: pl.DataFrame, arm: str) -> pl.DataFrame:
+        return source.select(
+            "player_id",
+            "prediction_date",
+            pl.col("target").alias(target),
+            pl.col(f"probability_{arm}").alias("predicted_probability"),
+        )
+
     frames: list[pl.DataFrame] = []
     for candidate in ("B", "C", "D"):
-        reference_frame = pooled.select(
-            "player_id",
-            "prediction_date",
-            pl.col("target").alias(target),
-            pl.col("probability_A").alias("predicted_probability"),
+        brier_only = paired_prediction_bootstrap_differences(
+            reference_predictions=_frame(pooled, "A"),
+            candidate_predictions=_frame(pooled, candidate),
+            target=target,
+            iterations=config.base_config.bootstrap_iterations,
+            random_seed=config.base_config.random_seed,
+            reference_model_id="M1-ABL-A",
+            candidate_model_id=f"M1-ABL-{candidate}",
+            metrics=("brier_score",),
         )
-        candidate_frame = pooled.select(
-            "player_id",
-            "prediction_date",
-            pl.col("target").alias(target),
-            pl.col(f"probability_{candidate}").alias("predicted_probability"),
+        ap_only = paired_prediction_bootstrap_differences(
+            reference_predictions=_frame(discrimination, "A"),
+            candidate_predictions=_frame(discrimination, candidate),
+            target=target,
+            iterations=config.base_config.bootstrap_iterations,
+            random_seed=config.base_config.random_seed,
+            reference_model_id="M1-ABL-A",
+            candidate_model_id=f"M1-ABL-{candidate}",
+            metrics=("average_precision",),
         )
         frames.append(
-            paired_prediction_bootstrap_differences(
-                reference_predictions=reference_frame,
-                candidate_predictions=candidate_frame,
-                target=target,
-                iterations=config.base_config.bootstrap_iterations,
-                random_seed=config.base_config.random_seed,
-                reference_model_id="M1-ABL-A",
-                candidate_model_id=f"M1-ABL-{candidate}",
-            ).with_columns(
+            pl.concat([brier_only, ap_only], how="vertical").with_columns(
                 pl.lit("A").alias("reference_arm"),
                 pl.lit(candidate).alias("candidate_arm"),
             )
@@ -632,6 +659,8 @@ def _ablation_findings(
     config: Exp016AblationConfig,
     unseen_aggregate: pl.DataFrame,
     sensitivity: pl.DataFrame,
+    arm_metrics: pl.DataFrame,
+    paired: pl.DataFrame,
 ) -> pl.DataFrame:
     diff_b = set(arm_features["A"]) - set(arm_features["B"])
     diff_c = set(arm_features["A"]) - set(arm_features["C"])
@@ -650,6 +679,11 @@ def _ablation_findings(
     )
     unseen_ok = unseen_aggregate.height == 4 and set(unseen_aggregate["arm"].to_list()) == set(
         ARM_ORDER
+    )
+    boot_sign_ok = _bootstrap_sign_agreement_ok(
+        arm_metrics=arm_metrics,
+        paired=paired,
+        pairs=(("A", "B"), ("A", "C"), ("A", "D")),
     )
     return pl.DataFrame(
         [
@@ -703,8 +737,42 @@ def _ablation_findings(
                 "domain": "unseen_player_generalisation",
                 "evidence": "support-aware unseen-player aggregation present for all four arms",
             },
+            {
+                "finding_id": "BOOT-01",
+                "status": "PASS" if boot_sign_ok else "FAIL",
+                "domain": "paired_bootstrap_population_consistency",
+                "evidence": (
+                    "every paired-bootstrap median agrees in sign with its point-estimate "
+                    "difference; Brier and average precision are each bootstrapped on the "
+                    "population matching that metric's own point estimate"
+                ),
+            },
         ]
     )
+
+
+def _bootstrap_sign_agreement_ok(
+    *, arm_metrics: pl.DataFrame, paired: pl.DataFrame, pairs: tuple[tuple[str, str], ...]
+) -> bool:
+    for reference, candidate in pairs:
+        reference_row = arm_metrics.filter(pl.col("arm") == reference).row(0, named=True)
+        candidate_row = arm_metrics.filter(pl.col("arm") == candidate).row(0, named=True)
+        pair_paired = paired.filter(
+            (pl.col("reference_arm") == reference) & (pl.col("candidate_arm") == candidate)
+        )
+        point_differences = {
+            "brier_score": candidate_row["brier_score"] - reference_row["brier_score"],
+        }
+        if (
+            reference_row["average_precision"] is not None
+            and candidate_row["average_precision"] is not None
+        ):
+            point_differences["average_precision"] = (
+                candidate_row["average_precision"] - reference_row["average_precision"]
+            )
+        if not paired_bootstrap_agrees_with_point_estimate(pair_paired, point_differences):
+            return False
+    return True
 
 
 def _dataset_manifest(config: Exp016AblationConfig) -> pl.DataFrame:

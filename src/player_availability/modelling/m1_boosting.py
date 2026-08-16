@@ -45,7 +45,10 @@ from player_availability.modelling.metrics import (
     reliability_table,
 )
 from player_availability.modelling.preprocessing import F1_FEATURES, build_feature_pipeline
-from player_availability.modelling.uncertainty import paired_prediction_bootstrap_differences
+from player_availability.modelling.uncertainty import (
+    paired_bootstrap_agrees_with_point_estimate,
+    paired_prediction_bootstrap_differences,
+)
 from player_availability.outcomes import build_injury_episodes, build_player_day_labels
 
 ARMS: tuple[str, ...] = ("boosted", "f1_logistic")
@@ -190,6 +193,8 @@ def run_exp_008_boosting(
         unseen_aggregate=unseen_aggregate,
         train_val_gap=train_val_gap,
         config=config,
+        arm_metrics=arm_metrics,
+        paired=paired,
     )
     failures = findings.filter(pl.col("status") == "FAIL").height
     estimable_folds = per_fold.filter(
@@ -625,22 +630,49 @@ def _alert_budget(
 
 
 def _paired_boosted_vs_f1(pooled: pl.DataFrame, config: Exp008BoostingConfig) -> pl.DataFrame:
+    """Paired bootstrap, per metric on the population matching that metric's point estimate.
+
+    Brier is bootstrapped on the full pooled population, matching its point estimate.
+    Average precision is bootstrapped only on discrimination-eligible rows (fold has at
+    least one positive), matching its point estimate exactly; bootstrapping it on the
+    full population, which includes zero-positive folds the point estimate excludes,
+    produced medians whose sign contradicted the point-estimate difference (`BOOT-01`).
+    """
     target = config.base_config.target
-    reference_frame = pooled.filter(pl.col("arm") == "f1_logistic").select(
-        "player_id", "prediction_date", pl.col("target").alias(target), "predicted_probability"
+    positive_folds = (
+        pooled.group_by("fold_id")
+        .agg(pl.col("target").sum().alias("_fold_positive"))
+        .filter(pl.col("_fold_positive") > 0)
+        .select("fold_id")
     )
-    candidate_frame = pooled.filter(pl.col("arm") == "boosted").select(
-        "player_id", "prediction_date", pl.col("target").alias(target), "predicted_probability"
-    )
-    return paired_prediction_bootstrap_differences(
-        reference_predictions=reference_frame,
-        candidate_predictions=candidate_frame,
+    discrimination = pooled.join(positive_folds, on="fold_id", how="inner")
+
+    def _frame(source: pl.DataFrame, arm: str) -> pl.DataFrame:
+        return source.filter(pl.col("arm") == arm).select(
+            "player_id", "prediction_date", pl.col("target").alias(target), "predicted_probability"
+        )
+
+    brier_only = paired_prediction_bootstrap_differences(
+        reference_predictions=_frame(pooled, "f1_logistic"),
+        candidate_predictions=_frame(pooled, "boosted"),
         target=target,
         iterations=config.base_config.bootstrap_iterations,
         random_seed=config.base_config.random_seed,
         reference_model_id="EXP-008-f1_logistic",
         candidate_model_id="EXP-008-boosted",
+        metrics=("brier_score",),
     )
+    ap_only = paired_prediction_bootstrap_differences(
+        reference_predictions=_frame(discrimination, "f1_logistic"),
+        candidate_predictions=_frame(discrimination, "boosted"),
+        target=target,
+        iterations=config.base_config.bootstrap_iterations,
+        random_seed=config.base_config.random_seed,
+        reference_model_id="EXP-008-f1_logistic",
+        candidate_model_id="EXP-008-boosted",
+        metrics=("average_precision",),
+    )
+    return pl.concat([brier_only, ap_only], how="vertical")
 
 
 def _unseen_player_results(
@@ -824,6 +856,8 @@ def _boosting_findings(
     unseen_aggregate: pl.DataFrame,
     train_val_gap: pl.DataFrame,
     config: Exp008BoostingConfig,
+    arm_metrics: pl.DataFrame,
+    paired: pl.DataFrame,
 ) -> pl.DataFrame:
     zero_positive_folds = per_fold.filter(
         (pl.col("arm") == "boosted") & (pl.col("heldout_positive_days") == 0)
@@ -834,6 +868,17 @@ def _boosting_findings(
     unseen_ok = set(unseen_aggregate["arm"].to_list()) == set(ARMS)
     gap_reported = train_val_gap.height == 1
     grid_ok = len(config.grid_combinations) == 16
+    reference_row = arm_metrics.filter(pl.col("arm") == "f1_logistic").row(0, named=True)
+    candidate_row = arm_metrics.filter(pl.col("arm") == "boosted").row(0, named=True)
+    point_differences = {"brier_score": candidate_row["brier_score"] - reference_row["brier_score"]}
+    if (
+        reference_row["average_precision"] is not None
+        and candidate_row["average_precision"] is not None
+    ):
+        point_differences["average_precision"] = (
+            candidate_row["average_precision"] - reference_row["average_precision"]
+        )
+    boot_sign_ok = paired_bootstrap_agrees_with_point_estimate(paired, point_differences)
     return pl.DataFrame(
         [
             {
@@ -903,6 +948,16 @@ def _boosting_findings(
                     "no evaluation coordinate, index or derived feature is computed from "
                     "held-out outcome history in any evaluation view; boosted classification "
                     "has no time-coordinate concept for the EXP-007 leakage class to recur in"
+                ),
+            },
+            {
+                "finding_id": "BOOT-01",
+                "status": "PASS" if boot_sign_ok else "FAIL",
+                "domain": "paired_bootstrap_population_consistency",
+                "evidence": (
+                    "every paired-bootstrap median agrees in sign with its point-estimate "
+                    "difference; Brier and average precision are each bootstrapped on the "
+                    "population matching that metric's own point estimate"
                 ),
             },
         ]

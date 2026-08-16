@@ -6,3 +6,4 @@ ABL-04,PASS,event_count_reporting,"every metrics table carries pooled, discrimin
 ABL-05,PASS,one_day_gap_sensitivity,one-day-gap sensitivity present alongside the three-day headline
 ABL-06,PASS,zero_positive_folds,1 zero-positive folds excluded from discrimination aggregation; estimable folds counted
 ABL-07,PASS,unseen_player_generalisation,support-aware unseen-player aggregation present for all four arms
+BOOT-01,PASS,paired_bootstrap_population_consistency,every paired-bootstrap median agrees in sign with its point-estimate difference; Brier and average precision are each bootstrapped on the population matching that metric's own point estimate
