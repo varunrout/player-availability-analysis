@@ -177,7 +177,7 @@ State v46 to v47, under coordination session `PAA-CTRL-20260815-02`.
 - Accepted `DEC-046`: defined V1 as a complete subjective-data decision-support system whose headline evidence is methodological rigour and product completeness, not discrimination performance. Scope covers calibration, Cox survival, a gradient-boosting complexity test, explainability, batch inference, a Cloud Run dashboard, model card, CI, containerisation, one single-use final-test evaluation and portfolio artefacts. GPS, neural survival and online serving are deferred to V2.
 - Accepted `DEC-047`: pooled rolling-origin evaluation becomes the headline, superseding `DEC-036` in respect of headline designation only. All frozen partitions, embargoes, contracts, preprocessing scope and the final-test lock remain in force.
 - Accepted `DEC-048`: retained the three-day episode gap as primary and pre-registered the one-day gap as a mandatory sensitivity on every V1 headline result, rejecting a switch that would have been selection on the outcome.
-- Authored `docs/V1_DELIVERY_PLAN.md`: eight phases with specification and results gates, an explicit definition of done, sequencing rules, scope-control cut order and a risk register.
+- Specified the V1 delivery programme: eight phases with specification and results gates, an explicit definition of done, sequencing rules, scope-control cut order and a risk register.
 - Specified the EXP-009 calibration experiment: raw against Platt against isotonic on F3, eight automated integrity checks, the mandatory sparse-predictor availability audit and binding power-limitation reporting rules.
 
 State v47 to v48, under coordination session `PAA-CTRL-20260815-02`.
