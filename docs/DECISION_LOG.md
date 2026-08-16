@@ -1577,6 +1577,162 @@ sequencing, final-test governance, project state
 
 ---
 
+## DEC-052
+
+**Decision ID:** DEC-052
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`EXP-009` compared raw, Platt and isotonic calibration on the F3 candidate under
+`DEC-044`, fitted fold-wise per `DEC-049`. Pooled rolling-origin support was 104
+positive player-days across three estimable folds, with one zero-positive fold
+excluded per `DEC-047`/`CAL-08`. The mandatory sparse-predictor audit under
+`DEC-043` compared calibration by availability of the robust fatigue z-score.
+
+**Decision:**
+Select **raw** probabilities for the M1 candidate. No post-hoc calibrator is
+adopted. The finding "no calibration method is distinguishable, and both tested
+methods degrade probability quality at this support" is recorded as complete and
+final for this phase.
+
+Separately, authorise `EXP-016` as specified in doc 19 section 5 E3, to run
+before phase V1-P2 begins. `EXP-016` tests whether F3's held-period advantage is
+carried by the availability pattern of the robust fatigue z-score rather than its
+value.
+
+**This decision does not reopen `DEC-043`.** Whether F3 remains champion depends
+on the `EXP-016` result and requires its own decision record.
+
+**Rationale:**
+Raw leads every pooled metric: Brier 0.006287 against 0.007246 (Platt) and
+0.007402 (isotonic); log loss 0.041467 against 0.043001 and 0.052597. Paired
+Brier intervals exclude zero against both calibrated arms under both
+player-cluster and temporal week-block resampling, in the direction unfavourable
+to calibration: raw-to-Platt cluster [0.000037, 0.002358], week-block
+[0.000553, 0.001306]; raw-to-isotonic cluster [0.000061, 0.002854], week-block
+[0.000606, 0.001778]. Platt materially improves the calibration slope, 2.222 to
+1.200 against a target of 1.0, but this does not offset the measured Brier and
+log loss cost. Average-precision differences straddle zero under player-cluster
+resampling for both calibrated arms, and under week-block resampling for Platt.
+One exception is recorded: isotonic shows a week-block average-precision
+advantage over raw whose interval excludes zero, [0.005116, 0.046580]. It is not
+corroborated under player-cluster resampling, [-0.038437, 0.060924], and the
+standard applied throughout `EXP-009` requires a difference to hold under both
+schemes before it is claimed. It is therefore recorded as an uncorroborated
+single-scheme signal rather than a ranking advantage, and it does not offset
+isotonic's measured Brier and log-loss cost, both of which exclude zero under
+both schemes. Under `DEC-007`, calibration is a first-class metric and a slope
+improvement bought at a measured, interval-confirmed probability-accuracy cost is
+not a basis for adopting a calibrator.
+
+The sparse-predictor audit found that the robust fatigue z-score's observed
+subgroup (2,475 player-days, 61 positives, 2.46% prevalence) and absent subgroup
+(14,340 player-days, 43 positives, 0.30% prevalence) diverge sharply on
+discrimination: ROC-AUC 0.732 where observed against 0.908 where absent. A
+predictor carrying physiological signal would be expected to discriminate at
+least as well where it is present. This pattern, combined with the Stage 2
+finding that wellness reporting itself rises from 62.9% to 97.3% around onset
+days, is consistent with availability acting as a proxy for reporting activity
+rather than the predictor's value carrying signal. `DEC-043` already placed this
+predictor under explicit audit and flagged it as a V1-P4 removal candidate; this
+audit result is judged serious enough to resolve before any further phase is
+built on F3, rather than carried forward as a deferred item.
+
+**Alternatives Considered:**
+Adopting Platt for its slope correction despite the Brier cost, rejected because
+`DEC-007` treats calibration as a first-class metric and the paired intervals
+confirm a real, not merely point-estimate, degradation. Deferring the
+sparse-predictor question to V1-P4 as originally scoped by `DEC-043`, rejected
+because every V1 phase from V1-P2 onward is built on F3, and an availability
+artefact discovered now would invalidate work built on top of it before the
+programme reaches V1-P4.
+
+**Consequences:**
+- The M1 candidate reports raw probabilities. No calibrator is fitted, selected
+  or applied downstream unless a future decision revisits this.
+- `EXP-016` is authorised under the specification in doc 19 section 5 E3 and must
+  complete, with its result reviewed, before phase V1-P2 begins.
+- If `EXP-016` shows an arm without the predictor value, or with the indicator
+  only, matching or beating F3 on calibrated probability quality and improving
+  unseen-player generalisation, `DEC-043` is reopened and the champion is
+  re-selected through a new decision before V1-P2.
+- If F3 remains best on both axes, it stands and the availability entanglement is
+  documented as a binding limitation on every downstream citation, alongside the
+  five limitations already bound by `DEC-043`.
+- The final-test lock is unaffected.
+
+**Affected Components:** calibration selection, M1 candidate probability output,
+sparse-predictor governance, champion selection path, final-test governance
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
+## DEC-053
+
+**Decision ID:** DEC-053
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+Doc 19 section 5 "Model ladder advancement" states that `EXP-007` and `EXP-008`
+begin only after the baseline, calibration, operational-utility and required
+robustness analyses are complete. Section 5A, added under `DEC-050` to sequence
+V1 under `DEC-046`, places `EXP-007` at phase V1-P2 and `EXP-008` at V1-P3,
+ahead of the V1-P4 operational-utility work (champion selection, explanation
+stability, alert-budget simulation). The two sections conflict on ordering. This
+was identified during `EXP-009` implementation and deliberately deferred rather
+than resolved mid-phase, since it did not affect V1-P1.
+
+**Decision:**
+Section 5A governs V1 sequencing. The section 5 "Model ladder advancement" intro
+is superseded to the extent it conflicts with section 5A's phase ordering:
+`EXP-007` (V1-P2) and `EXP-008` (V1-P3) proceed ahead of the V1-P4
+operational-utility work, not after it.
+
+**Rationale:**
+`DEC-046` defined V1 scope and its phase mapping was fixed with owner approval
+under `DEC-051`. Section 5A is the more specific and more recently authorised
+sequencing authority for V1; section 5's ordering predates the V1 definition and
+was written for the general experiment backlog, not for the V1 programme
+specifically. Resolving in favour of section 5A avoids relitigating the V1
+phase order that was just approved, and avoids blocking `EXP-007` on
+operational-utility work that section 5A explicitly places later.
+
+**Alternatives Considered:**
+Resolving in favour of section 5's ordering and renumbering V1 phases so
+operational-utility work precedes survival and boosted-classification modelling,
+rejected because it would reopen and delay the just-approved V1-P1 through V1-P4
+sequence for a documentation inconsistency rather than a substantive concern,
+and no reason has been identified why calibration, explanation stability or
+alert-budget work must precede a survival-framing conclusion the charter
+requires. Leaving both sections standing as an acknowledged inconsistency,
+rejected because it invites exactly the ambiguity a stage-gated project cannot
+carry into V1-P2.
+
+**Consequences:**
+- Doc 19 section 5 "Model ladder advancement" intro is revised to note that its
+  general ordering is superseded for the V1 programme by section 5A, which
+  remains the sequencing authority for `EXP-007`, `EXP-008` and the phases
+  around them.
+- No V1 phase is renumbered or delayed by this decision.
+- Robustness experiments already registered in section 5 (`EXP-004`, `EXP-005`,
+  `EXP-010`, `EXP-016`) continue to execute within the phase whose conclusion
+  depends on them, per section 5A, rather than as a separate blocking stage.
+- This decision does not itself authorise V1-P2; that remains gated on the
+  `EXP-016` result under `DEC-052`.
+
+**Affected Components:** doc 19 sequencing, V1 phase ordering, experiment
+backlog documentation
+
+**Supersedes:** doc 19 section 5 "Model ladder advancement" intro, in respect of
+ordering relative to section 5A only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

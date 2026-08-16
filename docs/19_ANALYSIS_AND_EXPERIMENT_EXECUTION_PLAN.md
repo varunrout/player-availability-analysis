@@ -406,9 +406,54 @@ Compare F2 and F3 under identical split/model settings. Answer whether player-re
 
 Compare 3, 7 and 14 days using the frozen feature and validation approach. Choose a primary operational horizon based on calibration, lead time, event count and alert burden.
 
-#### E3. EXP-016: Missingness ablation
+#### E3. EXP-016: Sparse-predictor availability ablation
 
-Compare model performance with and without wellness-completeness variables. If predictive, document the process-confounding limitation prominently.
+**Status:** specified, authorised by `DEC-052`. Must complete before phase V1-P2.
+
+Determine whether the contribution of `fatigue_lag1_robust_z_prior` to F3 is carried by its availability pattern rather than its value.
+
+**Why this experiment exists.** The `EXP-009` mandatory sparse-predictor audit found that F3's discrimination differs sharply by whether the robust fatigue z-score is observed: ROC-AUC 0.732 on the 2,475 player-days where it is present (2.46% prevalence) against 0.908 on the 14,340 player-days where it is absent (0.30% prevalence). A predictor carrying physiological signal would be expected to discriminate at least as well where observed. This pattern, together with the Stage 2 finding that wellness reporting rises from 62.9% to 97.3% around onset days, raises a direct question over whether F3's held-period advantage under `DEC-043` is a reporting artefact rather than a physiological signal, and every phase from V1-P2 onward is built on F3.
+
+**Arms.** All under the frozen F3 engine: unchanged cohort, partitions, embargoes, preprocessing scope and regularisation grid.
+
+- **A.** F3 exactly as promoted under `DEC-043`. Reference.
+- **B.** F3 with `fatigue_lag1_robust_z_prior` removed entirely, both the value and its paired recording-state indicator (`fatigue_robust_available`).
+- **C.** F3 with the value removed but the recording-state indicator retained.
+- **D.** F1 carried forward as external reference.
+
+Arm C is the discriminating arm and must not be dropped. If C is indistinguishable from A, the value contributes nothing and availability is doing the work. If C is indistinguishable from B, the indicator contributes nothing either. These are different conclusions with different consequences for predictor design.
+
+**Evaluation**, identical to `EXP-009` so results are comparable:
+
+- Pooled rolling-origin headline using raw probabilities per `DEC-052`, with estimable-fold counts and per-fold values.
+- Brier score, log loss, calibration intercept and slope, average precision, ROC-AUC.
+- Fixed chronological window as a temporal stress result.
+- One-day-gap sensitivity on every headline figure, per `DEC-048`.
+- Alert-budget behaviour at the frozen 1%, 2.5% and 5% review rates.
+- Paired bootstrap intervals for B, C and D against arm A under both player-cluster and temporal week-block resampling.
+
+**Mandatory and non-negotiable.** Support-aware unseen-player generalisation is reported for every arm, including A. `DEC-043`'s binding limitation is that F3 generalises worse than F1 to unseen players (AP 0.022308 against 0.023316; ROC-AUC 0.630928 against 0.642578). If B or C closes that gap, that is the decisive result of this experiment and must be reported as such, not folded into the general metrics table.
+
+**Power limitation, binding on reporting.** Development support is unchanged from `EXP-009`: 104 pooled positive player-days across three estimable rolling-origin folds under the primary three-day gap. Every conclusion states its supporting event count inline. "Not distinguishable at this support" is a valid and expected result for any pairwise arm comparison.
+
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| ABL-01 | Zero final-test predictions or performance metrics produced |
+| ABL-02 | Arm contracts differ only in `fatigue_lag1_robust_z_prior` and its recording-state indicator; all other predictors identical across A, B, C |
+| ABL-03 | Preprocessing and regularisation grid unchanged across all four arms |
+| ABL-04 | Every reported metric carries its supporting event count |
+| ABL-05 | One-day-gap sensitivity present for every headline figure |
+| ABL-06 | Zero-positive folds identified, excluded from discrimination aggregation and counted |
+| ABL-07 | Support-aware unseen-player aggregation present for all four arms |
+
+Decision gate:
+
+- If B or C matches or beats A on calibrated probability quality and improves unseen-player generalisation, `DEC-043` is reopened and the champion is re-selected through a new decision before V1-P2 begins.
+- If A remains best on both axes, F3 stands and the availability entanglement is documented as a binding limitation on every downstream citation, alongside the five limitations already bound by `DEC-043`.
+- "Not distinguishable at this support" remains a valid and expected result.
+- Non-goals: final-test access, new features, retuning beyond the frozen grid, threshold selection, champion replacement without a decision record.
 
 #### E4. EXP-010: Leave-one-player-out
 
@@ -416,7 +461,7 @@ Report average, spread and worst-case results. If performance collapses, the das
 
 ### Model ladder advancement
 
-Only after the baseline, calibration, operational-utility and required robustness analyses are complete:
+For the general experiment backlog: only after the baseline, calibration, operational-utility and required robustness analyses are complete. **For the V1 programme, this ordering is superseded by section 5A under `DEC-053`**: `EXP-007` (V1-P2) and `EXP-008` (V1-P3) proceed ahead of the V1-P4 operational-utility work, not after it. Section 5A is the sequencing authority for V1.
 
 - EXP-006 discrete-time hazard model;
 - EXP-007 Cox proportional-hazards baseline;
