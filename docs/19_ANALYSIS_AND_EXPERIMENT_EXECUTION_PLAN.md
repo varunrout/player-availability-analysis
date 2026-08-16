@@ -481,6 +481,8 @@ Test whether a time-to-event framing adds practitioner value over the fixed-hori
 
 **Data structure.** Counting-process start-stop format over the frozen player-day panel: one interval per eligible player-day, time-varying covariates at the prediction cutoff. Recurrent onsets are modelled under Andersen-Gill with variance clustered on player. The at-risk definition follows the frozen cohort exactly; active-episode days remain ineligible; the 28-day burn-in is unchanged. Right-censoring occurs at partition boundaries; no interval crosses a partition. The time scale is gap time since the previous onset, with post-burn-in study entry as origin for players with no prior onset. Ties are handled by the Efron approximation.
 
+**Gap-time constraint, binding on all future survival work including `EXP-014` in V2.** Under leave-one-player-out evaluation, a gap-time origin derived from the held-out player's own onsets breaches the premise of the evaluation and inflates it: the baseline hazard is highest at short gap times, so indexing a held-out player by their own onset history supplies outcome information a genuinely unseen player would never expose. Gap time remains legitimate under temporal evaluation, since time since a player's last injury is genuinely known at prediction time. Leave-one-player-out survival evaluation must reset the clock for every held-out player to post-burn-in study origin, treating them as having no prior onset. This was discovered as an executed finding in `EXP-007` and is recorded here so it is not repeated in `EXP-014`.
+
 **Predictors.** Exactly F1's nine predictors per `DEC-054`, unchanged: `daily_load_log1p`, `daily_load_sum_7d_log1p`, `daily_load_sum_28d_log1p`, `fatigue_lag1`, `fatigue_mean_prior_7d`, `fatigue_mean_prior_28d`, `readiness_lag1`, `readiness_mean_prior_7d`, `readiness_mean_prior_28d`. A ridge penalty is selected only on chronological validation folds, mirroring the C-selection discipline in `EXP-003`.
 
 **Missing data.** F1 contains no sparse availability-driven predictor, so the asymmetry that motivated `EXP-016` does not arise here. Lagged wellness terms are present on roughly 46.5% of player-days; their treatment must match exactly what F1 already uses in `EXP-003`. Any deviation is reported explicitly.
@@ -503,6 +505,7 @@ Automated integrity checks:
 | COX-06 | Converted probabilities in [0, 1] and monotone in the linear predictor |
 | COX-07 | Every reported metric carries its supporting event count |
 | COX-08 | One-day-gap sensitivity present; zero-positive folds identified, excluded and counted |
+| COX-09 | Leave-one-player-out evaluation does not use held-out player outcome history in the time coordinate; both clock variants are reported |
 
 Decision gate:
 

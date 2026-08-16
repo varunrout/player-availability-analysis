@@ -53,11 +53,34 @@ def test_survival_runs_frozen_cox_vs_f1_contract() -> None:
         .is_between(0.0, 1.0)
         .all()
     )
-    # Mandatory support-aware unseen-player generalisation for both arms.
-    assert set(result.tables["unseen_player_aggregate_metrics"]["arm"].to_list()) == {
-        "cox",
-        "f1_logistic",
+    # Mandatory support-aware unseen-player generalisation, both clock variants for Cox
+    # (COX-09): reset_clock is the valid leave-one-player-out result, own_clock is
+    # retained only as a leakage diagnostic contrast, never a competing headline figure.
+    unseen = result.tables["unseen_player_aggregate_metrics"]
+    variants = set(zip(unseen["arm"].to_list(), unseen["clock"].to_list(), strict=True))
+    assert variants == {
+        ("cox", "reset_clock"),
+        ("cox", "own_clock"),
+        ("f1_logistic", "not_applicable"),
     }
+    assert (
+        unseen.filter((pl.col("arm") == "cox") & (pl.col("clock") == "reset_clock")).row(
+            0, named=True
+        )["role"]
+        == "primary_leave_one_player_out_result"
+    )
+    assert (
+        unseen.filter((pl.col("arm") == "cox") & (pl.col("clock") == "own_clock")).row(
+            0, named=True
+        )["role"]
+        == "leakage_diagnostic_contrast"
+    )
+    assert (
+        result.tables["survival_findings"]
+        .filter(pl.col("finding_id") == "COX-09")
+        .row(0, named=True)["status"]
+        == "PASS"
+    )
     # One-day-gap sensitivity accompanies the three-day headline (COX-08, DEC-048).
     assert set(result.tables["one_day_gap_sensitivity"]["episode_gap_days"].to_list()) == {1, 3}
     # Coefficients cover the frozen F1 predictor contract, plus any missing-indicator
@@ -68,7 +91,7 @@ def test_survival_runs_frozen_cox_vs_f1_contract() -> None:
     )
 
     figures = build_exp_007_figures(result)
-    assert len(figures) == 7
+    assert len(figures) == 8
     for figure in figures.values():
         plt.close(figure)
 

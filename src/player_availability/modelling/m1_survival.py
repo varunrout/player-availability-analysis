@@ -202,6 +202,13 @@ def run_exp_007_survival(
     zero_positive_folds = per_fold.filter(
         (pl.col("arm") == "cox") & (pl.col("heldout_positive_days") == 0)
     ).height
+    cox_reset = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "reset_clock")
+    ).row(0, named=True)
+    cox_own = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "own_clock")
+    ).row(0, named=True)
+    f1_unseen = unseen_aggregate.filter(pl.col("arm") == "f1_logistic").row(0, named=True)
     summary = {
         "experiment_id": "EXP-007",
         "champion_feature_set": "F1",
@@ -215,6 +222,14 @@ def run_exp_007_survival(
         "dropped_fold_count": len(dropped),
         "coefficient_variance_type": "model_based_naive_not_cluster_robust",
         "schoenfeld_residuals_available": False,
+        "unseen_player_cox_reset_clock_average_precision": cox_reset["average_precision"],
+        "unseen_player_cox_reset_clock_roc_auc": cox_reset["roc_auc"],
+        "unseen_player_cox_own_clock_average_precision_diagnostic_only": cox_own[
+            "average_precision"
+        ],
+        "unseen_player_cox_own_clock_roc_auc_diagnostic_only": cox_own["roc_auc"],
+        "unseen_player_f1_average_precision": f1_unseen["average_precision"],
+        "unseen_player_f1_roc_auc": f1_unseen["roc_auc"],
         "posthoc_calibration_selected": False,
         "final_test_rows_evaluated": 0,
         "final_test_predictions_created": False,
@@ -623,14 +638,53 @@ def _paired_cox_vs_f1(pooled: pl.DataFrame, config: Exp007SurvivalConfig) -> pl.
     )
 
 
+def _entry_dates(cohort: pl.DataFrame) -> pl.DataFrame:
+    """Per-player post-burn-in study entry date, the reset-clock origin."""
+    return cohort.group_by("player_id").agg(pl.col("prediction_date").min().alias("entry_date"))
+
+
+def _reset_clock(frame: pl.DataFrame, entry: pl.DataFrame) -> pl.DataFrame:
+    """Override a held-out player's gap-time clock to assume no prior onset.
+
+    Used only for leave-one-player-out evaluation. A gap-time origin derived from a
+    player's own onset history is legitimate under temporal evaluation, where that
+    history is genuinely known at prediction time, but breaches the premise of
+    leave-one-player-out evaluation, where nothing about the held-out player may be
+    assumed known. Resetting to post-burn-in study entry removes that leak.
+    """
+    entry_date = entry.filter(pl.col("player_id") == frame["player_id"][0])["entry_date"][0]
+    return frame.with_columns(
+        (pl.col("prediction_date") - pl.lit(entry_date)).dt.total_days().alias("gap_start")
+    ).with_columns((pl.col("gap_start") + 1).alias("gap_stop"))
+
+
 def _unseen_player_results(
     cohort: pl.DataFrame, config: Exp007SurvivalConfig, penalizer: float
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """Leave-one-player-out generalisation for both arms.
+
+    For the Cox arm, two clock variants are evaluated per held-out player, using the
+    exact same fitted model in both cases: `reset_clock`, which treats the held-out
+    player as having no prior onset (post-burn-in study entry as origin), is the
+    valid leave-one-player-out result, since nothing about a genuinely unseen player
+    may be assumed known. `own_clock`, which uses the held-out player's own gap-time
+    clock derived from their own onset history, is retained only as a leakage
+    diagnostic contrast: it supplies outcome information the evaluation's premise
+    forbids, because the baseline hazard is highest at short gap times. The F1
+    logistic arm has no time-coordinate concept, so it is evaluated once and labelled
+    `not_applicable`.
+    """
     development = cohort.filter(pl.col("prediction_date") <= DEVELOPMENT_CUTOFF)
+    entry = _entry_dates(cohort)
     target = config.base_config.target
     player_rows: list[dict[str, Any]] = []
     aggregate_rows: list[dict[str, Any]] = []
-    for arm in ARMS:
+    variants = (
+        ("cox", "reset_clock", "primary_leave_one_player_out_result"),
+        ("cox", "own_clock", "leakage_diagnostic_contrast"),
+        ("f1_logistic", "not_applicable", "primary_leave_one_player_out_result"),
+    )
+    for arm, clock, role in variants:
         aggregate_targets: list[int] = []
         aggregate_probabilities: list[float] = []
         estimable = 0
@@ -651,8 +705,14 @@ def _unseen_player_results(
             else:
                 if arm == "cox":
                     model, transform = _fit_cox(train, penalizer, F1_FEATURES)  # type: ignore[arg-type]
+                    evaluation_frame = (
+                        heldout if clock == "own_clock" else _reset_clock(heldout, entry)
+                    )
                     probabilities = _cox_probabilities(
-                        model, transform, heldout, config.base_config.primary_horizon_days
+                        model,
+                        transform,
+                        evaluation_frame,
+                        config.base_config.primary_horizon_days,
                     )
                 else:
                     probabilities = _fit_predict_logistic(train, heldout, target)
@@ -666,6 +726,8 @@ def _unseen_player_results(
             player_rows.append(
                 {
                     "arm": arm,
+                    "clock": clock,
+                    "role": role,
                     "player_id": player_id,
                     "heldout_player_days": heldout.height,
                     "heldout_positive_days": sum(targets),
@@ -682,6 +744,8 @@ def _unseen_player_results(
         aggregate_rows.append(
             {
                 "arm": arm,
+                "clock": clock,
+                "role": role,
                 "average_precision": aggregate["average_precision"],
                 "roc_auc": aggregate["roc_auc"],
                 "brier_score": aggregate["brier_score"],
@@ -877,7 +941,27 @@ def _survival_findings(
     sensitivity_ok = {PRIMARY_GAP_DAYS, SENSITIVITY_GAP_DAYS} <= set(
         sensitivity["episode_gap_days"].to_list()
     )
-    unseen_ok = set(unseen_aggregate["arm"].to_list()) == set(ARMS)
+    unseen_variants_present = set(
+        zip(unseen_aggregate["arm"].to_list(), unseen_aggregate["clock"].to_list(), strict=True)
+    )
+    unseen_ok = unseen_variants_present == {
+        ("cox", "reset_clock"),
+        ("cox", "own_clock"),
+        ("f1_logistic", "not_applicable"),
+    }
+    reset_clock_is_primary = (
+        unseen_aggregate.filter((pl.col("arm") == "cox") & (pl.col("clock") == "reset_clock"))[
+            "role"
+        ][0]
+        == "primary_leave_one_player_out_result"
+    )
+    own_clock_is_diagnostic = (
+        unseen_aggregate.filter((pl.col("arm") == "cox") & (pl.col("clock") == "own_clock"))[
+            "role"
+        ][0]
+        == "leakage_diagnostic_contrast"
+    )
+    clock_labelling_ok = reset_clock_is_primary and own_clock_is_diagnostic
     return pl.DataFrame(
         [
             {
@@ -938,6 +1022,17 @@ def _survival_findings(
                 "evidence": (
                     f"one-day-gap sensitivity present; {zero_positive_folds} zero-positive "
                     "folds excluded from discrimination aggregation and counted"
+                ),
+            },
+            {
+                "finding_id": "COX-09",
+                "status": "PASS" if clock_labelling_ok else "FAIL",
+                "domain": "leave_one_player_out_time_coordinate",
+                "evidence": (
+                    "leave-one-player-out evaluation reports both clock variants; "
+                    "reset_clock (no assumed prior onset) is labelled the primary result and "
+                    "own_clock (held-out player's own onset history) is labelled a leakage "
+                    "diagnostic contrast, not a competing headline figure"
                 ),
             },
         ]
@@ -1063,17 +1158,51 @@ def build_exp_007_figures(result: Exp007SurvivalResult) -> dict[str, Figure]:
     axis.legend()
     figures["alert_capture_by_arm"] = fig
 
+    valid = unseen_aggregate.filter(pl.col("role") == "primary_leave_one_player_out_result").sort(
+        "arm"
+    )
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
-    ap_values = [
-        value if value is not None else 0.0 for value in unseen_aggregate["average_precision"]
+    labels = ["Cox (reset clock, valid)" if arm == "cox" else "F1" for arm in valid["arm"]]
+    bar_colours = [
+        colours["cox"] if arm == "cox" else colours["f1_logistic"] for arm in valid["arm"]
     ]
-    roc_values = [value if value is not None else 0.0 for value in unseen_aggregate["roc_auc"]]
-    axes[0].bar(unseen_aggregate["arm"], ap_values, color=list(colours.values()))
+    ap_values = [value if value is not None else 0.0 for value in valid["average_precision"]]
+    roc_values = [value if value is not None else 0.0 for value in valid["roc_auc"]]
+    axes[0].bar(labels, ap_values, color=bar_colours)
     axes[0].set(title="Unseen-player ranking", ylabel="Average precision")
-    axes[1].bar(unseen_aggregate["arm"], roc_values, color=list(colours.values()))
+    axes[1].bar(labels, roc_values, color=bar_colours)
     axes[1].set(title="Unseen-player discrimination", ylabel="ROC-AUC")
-    fig.suptitle("Support-aware unseen-player generalisation")
+    fig.suptitle("Support-aware unseen-player generalisation (valid leave-one-player-out result)")
     figures["unseen_player_generalisation_by_arm"] = fig
+
+    cox_reset = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "reset_clock")
+    ).row(0, named=True)
+    cox_own = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "own_clock")
+    ).row(0, named=True)
+    f1_row = unseen_aggregate.filter(pl.col("arm") == "f1_logistic").row(0, named=True)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
+    clock_labels = [
+        "Cox\nreset clock\n(valid)",
+        "Cox\nown clock\n(leakage diagnostic)",
+        "F1\n(reference)",
+    ]
+    clock_colours = ["#4C78A8", "#E45756", "#F58518"]
+    ap_series = [
+        cox_reset["average_precision"],
+        cox_own["average_precision"],
+        f1_row["average_precision"],
+    ]
+    roc_series = [cox_reset["roc_auc"], cox_own["roc_auc"], f1_row["roc_auc"]]
+    axes[0].bar(clock_labels, [v if v is not None else 0.0 for v in ap_series], color=clock_colours)
+    axes[0].set(title="Average precision", ylabel="Average precision")
+    axes[1].bar(
+        clock_labels, [v if v is not None else 0.0 for v in roc_series], color=clock_colours
+    )
+    axes[1].set(title="ROC-AUC", ylabel="ROC-AUC")
+    fig.suptitle("Leakage diagnostic: own-clock advantage collapses under reset clock")
+    figures["unseen_player_clock_diagnostic"] = fig
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
     for axis, metric, title in (
@@ -1181,21 +1310,68 @@ def _render_report(result: Exp007SurvivalResult) -> str:
             f"{row['discrimination_positive_days']} | {_format(row['average_precision'])} | "
             f"{_format(row['roc_auc'])} |"
         )
+    cox_reset = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "reset_clock")
+    ).row(0, named=True)
+    cox_own = unseen_aggregate.filter(
+        (pl.col("arm") == "cox") & (pl.col("clock") == "own_clock")
+    ).row(0, named=True)
+    f1_unseen = unseen_aggregate.filter(pl.col("arm") == "f1_logistic").row(0, named=True)
     lines.extend(
         [
             "",
             "## Unseen-Player Generalisation (mandatory)",
             "",
-            "| Arm | AP | ROC-AUC | Estimable players | Zero-positive players |",
-            "|---|---:|---:|---:|---:|",
+            (
+                "Leave-one-player-out is evaluated in two clock variants for the Cox arm, using "
+                "the identical fitted model in both cases. **`reset_clock` is the valid "
+                "leave-one-player-out result**: it treats the held-out player as having no prior "
+                "onset, entering at post-burn-in study origin, matching the premise that nothing "
+                "about a genuinely unseen player may be assumed known. **`own_clock` is retained "
+                "only as a leakage diagnostic contrast**, not a competing headline figure: it uses "
+                "the held-out player's own gap-time clock, derived from that player's own onset "
+                "history. F1 has no time-coordinate concept and is evaluated once."
+            ),
+            "",
+            "| Arm | Clock | Role | AP | ROC-AUC | Estimable players | Zero-positive players |",
+            "|---|---|---|---:|---:|---:|---:|",
         ]
     )
     for row in unseen_aggregate.iter_rows(named=True):
         lines.append(
-            f"| {row['arm']} | {_format(row['average_precision'])} | "
-            f"{_format(row['roc_auc'])} | {row['estimable_player_count']}/"
-            f"{row['heldout_player_count']} | {row['zero_positive_player_count']} |"
+            f"| {row['arm']} | {row['clock']} | {row['role']} | "
+            f"{_format(row['average_precision'])} | {_format(row['roc_auc'])} | "
+            f"{row['estimable_player_count']}/{row['heldout_player_count']} | "
+            f"{row['zero_positive_player_count']} |"
         )
+    lines.extend(
+        [
+            "",
+            "### Mechanism (leakage diagnostic)",
+            "",
+            (
+                f"Under `own_clock`, Cox recorded AP {_format(cox_own['average_precision'])} and "
+                f"ROC-AUC {_format(cox_own['roc_auc'])} on leave-one-player-out, the hardest "
+                "evaluation in the protocol, exceeding both its pooled rolling-origin and "
+                "fixed-window results by a wide margin — an inverted ordering that does not occur "
+                "for F1. The baseline cumulative hazard is highest at short gap times, so indexing "
+                "a held-out player by their own time since previous onset supplies outcome "
+                "information about that player that a genuinely unseen player would never expose; "
+                f"F1 has no equivalent access. Resetting the clock collapses the result to AP "
+                f"{_format(cox_reset['average_precision'])} and ROC-AUC "
+                f"{_format(cox_reset['roc_auc'])}, both below F1's "
+                f"{_format(f1_unseen['average_precision'])} and {_format(f1_unseen['roc_auc'])}, "
+                "and restores the expected ordering in which leave-one-player-out is Cox's "
+                "weakest view, matching F1's pattern. This confirms the leakage hypothesis under "
+                "the criterion specified in advance of the diagnostic. A gap-time origin derived "
+                "from a player's own onset history is legitimate under temporal evaluation, where "
+                "that history is genuinely known at prediction time, but breaches the premise of "
+                "leave-one-player-out evaluation, where nothing about the held-out player may be "
+                "assumed known. This constraint binds all future survival work, including "
+                "`EXP-014` deferred to V2."
+            ),
+        ]
+    )
     lines.extend(
         [
             "",

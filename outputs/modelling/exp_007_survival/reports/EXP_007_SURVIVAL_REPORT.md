@@ -19,10 +19,17 @@ The installed lifelines `CoxTimeVaryingFitter` does not implement cluster-robust
 
 ## Unseen-Player Generalisation (mandatory)
 
-| Arm | AP | ROC-AUC | Estimable players | Zero-positive players |
-|---|---:|---:|---:|---:|
-| cox | 0.104533 | 0.817861 | 12/50 | 38 |
-| f1_logistic | 0.023316 | 0.642578 | 12/50 | 38 |
+Leave-one-player-out is evaluated in two clock variants for the Cox arm, using the identical fitted model in both cases. **`reset_clock` is the valid leave-one-player-out result**: it treats the held-out player as having no prior onset, entering at post-burn-in study origin, matching the premise that nothing about a genuinely unseen player may be assumed known. **`own_clock` is retained only as a leakage diagnostic contrast**, not a competing headline figure: it uses the held-out player's own gap-time clock, derived from that player's own onset history. F1 has no time-coordinate concept and is evaluated once.
+
+| Arm | Clock | Role | AP | ROC-AUC | Estimable players | Zero-positive players |
+|---|---|---|---:|---:|---:|---:|
+| cox | reset_clock | primary_leave_one_player_out_result | 0.019293 | 0.576890 | 12/50 | 38 |
+| cox | own_clock | leakage_diagnostic_contrast | 0.104533 | 0.817861 | 12/50 | 38 |
+| f1_logistic | not_applicable | primary_leave_one_player_out_result | 0.023316 | 0.642578 | 12/50 | 38 |
+
+### Mechanism (leakage diagnostic)
+
+Under `own_clock`, Cox recorded AP 0.104533 and ROC-AUC 0.817861 on leave-one-player-out, the hardest evaluation in the protocol, exceeding both its pooled rolling-origin and fixed-window results by a wide margin — an inverted ordering that does not occur for F1. The baseline cumulative hazard is highest at short gap times, so indexing a held-out player by their own time since previous onset supplies outcome information about that player that a genuinely unseen player would never expose; F1 has no equivalent access. Resetting the clock collapses the result to AP 0.019293 and ROC-AUC 0.576890, both below F1's 0.023316 and 0.642578, and restores the expected ordering in which leave-one-player-out is Cox's weakest view, matching F1's pattern. This confirms the leakage hypothesis under the criterion specified in advance of the diagnostic. A gap-time origin derived from a player's own onset history is legitimate under temporal evaluation, where that history is genuinely known at prediction time, but breaches the premise of leave-one-player-out evaluation, where nothing about the held-out player may be assumed known. This constraint binds all future survival work, including `EXP-014` deferred to V2.
 
 ## Paired Bootstrap: Cox versus F1
 
@@ -96,6 +103,7 @@ Global likelihood-ratio test: statistic 0.0159, df 15, p-value 1.0000. non-signi
 | COX-06 | PASS | probability_validity | all converted probabilities lie in [0, 1]; 1-exp(-delta*hazard) is monotone increasing in the partial hazard by construction |
 | COX-07 | PASS | event_count_reporting | every metrics table carries pooled and discrimination event counts |
 | COX-08 | PASS | sensitivity_and_zero_positive_folds | one-day-gap sensitivity present; 1 zero-positive folds excluded from discrimination aggregation and counted |
+| COX-09 | PASS | leave_one_player_out_time_coordinate | leave-one-player-out evaluation reports both clock variants; reset_clock (no assumed prior onset) is labelled the primary result and own_clock (held-out player's own onset history) is labelled a leakage diagnostic contrast, not a competing headline figure |
 
 ## Interpretation Boundary
 
