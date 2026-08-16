@@ -1,0 +1,3 @@
+arm,average_precision,roc_auc,brier_score,heldout_player_count,estimable_player_count,zero_positive_player_count,training_not_estimable_player_count
+cox,0.10453321537457046,0.8178606616716748,0.011176613539924884,50,12,38,0
+f1_logistic,0.023315685878576374,0.6425784191104748,0.01197745834139969,50,12,38,0

@@ -1,0 +1,2 @@
+method,note,test_statistic,degrees_of_freedom,p_value,low_power_caveat
+covariate_by_log_time_interaction_lr_test,substitute for scaled Schoenfeld residuals; see module docstring,0.015887441137749647,15,1.0,non-significant result is not evidence the assumption holds; support is 66 onsets

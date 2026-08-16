@@ -1,0 +1,3 @@
+arm,supported_bin_count,expected_calibration_error
+cox,5,0.007229476882064857
+f1_logistic,5,0.019485624880151285

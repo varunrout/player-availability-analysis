@@ -1,0 +1,5 @@
+reference_model_id,candidate_model_id,method,metric,difference_direction,requested_iterations,valid_iterations,undefined_iterations,lower_95,median,upper_95
+EXP-007-f1_logistic,EXP-007-cox,player_cluster_bootstrap,brier_score,candidate_minus_reference,500,500,0,-0.0007282210026055177,-0.0004020824331774733,0.00002811933292999349
+EXP-007-f1_logistic,EXP-007-cox,player_cluster_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.08759224482171782,0.008281847804235826,0.09931979640431693
+EXP-007-f1_logistic,EXP-007-cox,temporal_week_block_bootstrap,brier_score,candidate_minus_reference,500,500,0,-0.0007381788303932998,-0.00039336279405137583,-0.00010045790616694796
+EXP-007-f1_logistic,EXP-007-cox,temporal_week_block_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.04390528854248904,0.014319601818792622,0.09760326466479655

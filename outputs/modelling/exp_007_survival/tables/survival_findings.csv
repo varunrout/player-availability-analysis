@@ -1,0 +1,9 @@
+finding_id,status,domain,evidence
+COX-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+COX-02,PASS,risk_set_construction,counting-process rows constructed one-to-one from the frozen cohort's 34600 player-days
+COX-03,PASS,interval_partition_isolation,each interval represents exactly one calendar day mapped to a single prediction_date; no interval can span two partitions by construction
+COX-04,PASS,predictor_contract,frozen F1 contract used: 9 predictors
+COX-05,PASS,baseline_hazard_disjointness,baseline cumulative hazard fitted only on each fold's training rows
+COX-06,PASS,probability_validity,"all converted probabilities lie in [0, 1]; 1-exp(-delta*hazard) is monotone increasing in the partial hazard by construction"
+COX-07,PASS,event_count_reporting,every metrics table carries pooled and discrimination event counts
+COX-08,PASS,sensitivity_and_zero_positive_folds,one-day-gap sensitivity present; 1 zero-positive folds excluded from discrimination aggregation and counted

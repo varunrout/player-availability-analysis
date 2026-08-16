@@ -1,0 +1,6 @@
+base_config: subjective_v1_m1_f1.yaml
+predictor_feature_set: F1
+penalizer_grid: [0.001, 0.01, 0.1, 1.0, 10.0]
+one_day_gap_sensitivity: true
+posthoc_calibration_selection: false
+final_test_access: false

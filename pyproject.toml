@@ -17,6 +17,7 @@ dependencies = [
     "pyarrow (>=25.0,<26.0)",
     "scikit-learn (>=1.9,<2.0)",
     "joblib (>=1.5,<2.0)",
+    "lifelines (>=0.28,<0.30)",
 ]
 
 [build-system]
