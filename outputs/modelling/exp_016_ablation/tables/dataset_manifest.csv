@@ -1,0 +1,2 @@
+experiment_id,data_version,target,horizon_days,primary_episode_gap_days,sensitivity_episode_gap_days,selected_regularisation_c,posthoc_calibration_selection,final_test_access
+EXP-016,subjective_v1,injury_next_7d,7,3,1,0.001,false,false

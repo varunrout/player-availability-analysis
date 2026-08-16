@@ -1,0 +1,8 @@
+finding_id,status,domain,evidence
+ABL-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+ABL-02,PASS,arm_contract,"arm B removes ['fatigue_lag1_robust_z_prior', 'fatigue_robust_available']; arm C removes ['fatigue_lag1_robust_z_prior']; all other F3 predictors unchanged across A, B, C"
+ABL-03,PASS,preprocessing_and_regularisation,frozen regularisation C=0.001 unchanged
+ABL-04,PASS,event_count_reporting,"every metrics table carries pooled, discrimination and heldout event counts"
+ABL-05,PASS,one_day_gap_sensitivity,one-day-gap sensitivity present alongside the three-day headline
+ABL-06,PASS,zero_positive_folds,1 zero-positive folds excluded from discrimination aggregation; estimable folds counted
+ABL-07,PASS,unseen_player_generalisation,support-aware unseen-player aggregation present for all four arms
