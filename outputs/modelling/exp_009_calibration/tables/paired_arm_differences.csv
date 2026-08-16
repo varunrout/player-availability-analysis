@@ -1,0 +1,9 @@
+reference_model_id,candidate_model_id,method,metric,difference_direction,requested_iterations,valid_iterations,undefined_iterations,lower_95,median,upper_95,reference_arm,candidate_arm
+M1-F3-CAL-raw,M1-F3-CAL-platt,player_cluster_bootstrap,brier_score,candidate_minus_reference,500,500,0,0.000036982874220584324,0.0008623838417927175,0.0023578244483350315,raw,platt
+M1-F3-CAL-raw,M1-F3-CAL-platt,player_cluster_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.026176197058966566,-0.0019804839659418594,0.0049500829700947265,raw,platt
+M1-F3-CAL-raw,M1-F3-CAL-platt,temporal_week_block_bootstrap,brier_score,candidate_minus_reference,500,500,0,0.0005531671895944336,0.000980247583332942,0.0013061049857940356,raw,platt
+M1-F3-CAL-raw,M1-F3-CAL-platt,temporal_week_block_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.011898575968901391,-0.003025194852145509,0.0005530359755987269,raw,platt
+M1-F3-CAL-raw,M1-F3-CAL-isotonic,player_cluster_bootstrap,brier_score,candidate_minus_reference,500,500,0,0.000061154544583621,0.0010269665496078434,0.0028535393996787653,raw,isotonic
+M1-F3-CAL-raw,M1-F3-CAL-isotonic,player_cluster_bootstrap,average_precision,candidate_minus_reference,500,500,0,-0.038436550552517504,0.009585119086902755,0.060923593257585645,raw,isotonic
+M1-F3-CAL-raw,M1-F3-CAL-isotonic,temporal_week_block_bootstrap,brier_score,candidate_minus_reference,500,500,0,0.0006055508194121363,0.0011097279029977985,0.001777821601844337,raw,isotonic
+M1-F3-CAL-raw,M1-F3-CAL-isotonic,temporal_week_block_bootstrap,average_precision,candidate_minus_reference,500,500,0,0.005115706729685045,0.019740043423738092,0.046579812406909046,raw,isotonic

@@ -1,0 +1,9 @@
+finding_id,status,domain,evidence
+CAL-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+CAL-02,PASS,fitting_disjointness,"calibrators fitted on inner cross-validated out-of-fold training probabilities, disjoint from every evaluation fold"
+CAL-03,PASS,predictor_contract,frozen F3 contract used: 23 predictors
+CAL-04,PASS,monotone_ranking,within every estimable fold Platt ROC-AUC equals raw ROC-AUC; the per-fold monotone map preserves order
+CAL-05,PASS,event_count_reporting,every metrics table carries pooled and discrimination positive-day counts
+CAL-06,PASS,sparse_predictor_audit,fatigue_lag1_robust_z_prior availability audit populated across 2 subsets
+CAL-07,PASS,one_day_gap_sensitivity,one-day-gap sensitivity present alongside the three-day headline
+CAL-08,PASS,zero_positive_folds,1 zero-positive folds excluded from discrimination aggregation; estimable folds counted
