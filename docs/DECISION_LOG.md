@@ -2082,15 +2082,111 @@ envelope
 
 ---
 
+## DEC-057
+
+**Decision ID:** DEC-057
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`BOOT-01`, introduced under `DEC-056`, required every paired-bootstrap
+median to agree in sign with its point-estimate difference. Regenerated
+`EXP-009` evidence returned `BOOT-01` FAIL on the raw-against-isotonic
+average-precision comparison, where the point difference is -0.000349 and
+the player-cluster median is +0.000994. The corresponding interval is
+[-0.048312, 0.010887] and includes zero. The raw-against-Platt comparison,
+whose point difference is -0.003499, agrees in sign under both schemes.
+`EXP-016`, `EXP-007` and `EXP-008` all record `BOOT-01` PASS at the same
+scale using identical code.
+
+Separately, `DEC-054` replaced F3 with F1 as the V1 champion after
+`EXP-009` had been run. All `EXP-009` arms carry model identifier
+`M1-F3-CAL`, so no calibrated F1 variant has been measured.
+
+**Decision:**
+Reformulate `BOOT-01` so that sign agreement is required only where the
+paired interval excludes zero. Where the interval includes zero, no
+direction is claimed and the comparison is recorded as not distinguishable.
+
+Record the `EXP-009` F3 conclusion as unchanged: no calibration method is
+distinguishable from raw at this support, and both tested methods degrade
+Brier and log loss with intervals excluding zero. The corrected
+average-precision intervals now include zero for every arm pair under both
+resampling schemes, which strengthens rather than alters that conclusion.
+
+Extend `EXP-009` with F1 raw, Platt and isotonic arms under the existing
+experiment identifier, retaining the F3 arms as historical reference. No
+new identifier is allocated.
+
+**Rationale:**
+Sign agreement is a property of claimed directions. A difference whose
+interval spans zero has no claimed direction, and the sign of a quantity
+indistinguishable from zero is arbitrary, so requiring agreement there
+tests nothing and produces false failures. The failing comparison has a
+point difference an order of magnitude smaller than the passing one, which
+is the signature of a threshold problem rather than an estimator problem.
+An empirical dead-zone tolerance was considered during implementation and
+correctly rejected in favour of escalation; the interval condition achieves
+the same protection from a stated principle rather than a tuned constant.
+
+The F1 calibration extension is required for evidence traceability, not
+because the outcome is in doubt. The binding constraint identified in
+`DEC-052` is 104 pooled positive player-days fitted fold-wise, which is a
+property of the cohort and is identical for F1. F1's miscalibration profile
+closely resembles F3's, slope 2.019474 against 2.222064, with both
+overpredicting by roughly 3.7 times. The expected outcome is therefore that
+no calibrator is adopted. That expectation is not evidence, and `DEC-046`
+requires every V1 claim to rest on a measured result.
+
+Running this now is the cheapest available point. V1-P4 has not begun, no
+product code exists and the final test is locked, so nothing downstream
+requires rework whatever the outcome.
+
+**Alternatives Considered:**
+Widening the `BOOT-01` tolerance until `EXP-009` passes, rejected as tuning
+a constant to a result. Removing `BOOT-01`, rejected because it caught a
+real population-mismatch defect. Carrying the F3 calibration result forward
+to F1 by argument, rejected because the model card would then cite an
+experiment run on a model that is not the champion. Allocating a new
+experiment identifier for the F1 calibration arms, rejected under `DEC-050`
+and on the `EXP-003` precedent of multiple feature sets under one
+identifier.
+
+**Consequences:**
+- `BOOT-01` binds in its reformulated wording across all modules and the
+  affected findings tables are regenerated.
+- The `EXP-009` F3 conclusion and the `DEC-052` calibration selection both
+  stand.
+- `EXP-009` gains F1 raw, Platt and isotonic arms. The champion's
+  calibration claim becomes traceable to a measured result.
+- Champion selection cannot be reopened by this work. Platt is strictly
+  monotone and `CAL-04` verifies per-fold rank preservation, so a post-hoc
+  calibrator cannot reorder candidates. `DEC-054` rested on raw point
+  estimates, unseen-player generalisation and predictor-contract
+  cleanliness, none of which a monotone transform affects.
+- `EXP-008`'s rejection is unaffected in either direction. If calibration
+  improves F1, the boosted Brier edge narrows and the rejection
+  strengthens; if it degrades F1, no calibrator is adopted and the
+  comparison stands as run.
+- V1-P4 remains authorised and begins after the F1 calibration outcome is
+  recorded.
+- The final-test lock is unaffected.
+
+**Affected Components:** BOOT-01 definition, EXP-009 scope and evidence,
+champion calibration traceability, V1-P4 entry conditions
+
+**Supersedes:** `DEC-056`, in respect of the `BOOT-01` wording only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised against the F1 champion selected by `DEC-054`. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
+Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised against the F1 champion selected by `DEC-054`, and begins only once the `EXP-009` F1 calibration outcome under `DEC-057` is recorded. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Noted, not yet acted on: the `EXP-009` regenerated evidence now shows `BOOT-01` failing for the raw-versus-isotonic average-precision comparison under player-cluster resampling. The point difference is -0.000349, effectively zero; player-cluster and temporal week-block resampling disagree on its sign even on the corrected, population-matched estimator. This is consistent with "no calibration method distinguishable at this support", the pre-registered acceptable outcome under `DEC-044`, rather than a residual defect, but it has not been recorded in a decision and `EXP-009`'s automated status is presently `FAIL` on that basis alone.
-
-Resolved in this revision: the `EXP-008` complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion); the `DEC-052` average-precision claim (superseded by the corrected estimator; the calibration selection itself stands).
+Resolved in this revision: the `BOOT-01` false-failure question on the raw-versus-isotonic average-precision comparison (`DEC-057`, reformulated to require sign agreement only where the paired interval excludes zero; the prior FAIL was a specification defect, not an estimator defect); the `EXP-008` complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion); the `DEC-052` average-precision claim (superseded by the corrected estimator; the calibration selection itself stands).
 
 Resolved previously: the `EXP-007` survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). Noted, no action required until V1-P7: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and scipy to 1.17, and is a removal candidate now that survival framing is rejected. The `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
 

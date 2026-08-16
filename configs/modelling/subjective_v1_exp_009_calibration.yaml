@@ -1,5 +1,4 @@
 base_config: subjective_v1_m1_f1.yaml
-feature_set: F3
 selected_regularisation_c: 0.001
 calibration_methods: [raw, platt, isotonic]
 inner_cv_folds: 3

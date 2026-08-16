@@ -21,7 +21,6 @@ from tests.unit.test_stage_07_prospective_protocol import _inputs
 def _calibration_config() -> Exp009CalibrationConfig:
     return Exp009CalibrationConfig(
         base_config=replace(_config(), bootstrap_iterations=5),
-        feature_set="F3",
         selected_regularisation_c=0.001,
         calibration_methods=("raw", "platt", "isotonic"),
         inner_cv_folds=2,
@@ -91,10 +90,24 @@ def test_calibration_runs_frozen_three_arm_contract() -> None:
     )
 
     assert result.summary["status"] == "PASS"
-    assert result.summary["calibration_arms"] == ["raw", "platt", "isotonic"]
+    assert result.summary["calibration_arms"] == [
+        "F1_raw",
+        "F1_platt",
+        "F1_isotonic",
+        "F3_raw",
+        "F3_platt",
+        "F3_isotonic",
+    ]
     assert result.summary["final_test_rows_evaluated"] == 0
     assert result.summary["final_test_predictions_created"] is False
-    assert result.tables["arm_pooled_metrics"]["arm"].to_list() == ["raw", "platt", "isotonic"]
+    assert result.tables["arm_pooled_metrics"]["arm"].to_list() == [
+        "F1_raw",
+        "F1_platt",
+        "F1_isotonic",
+        "F3_raw",
+        "F3_platt",
+        "F3_isotonic",
+    ]
     assert result.tables["calibration_findings"].filter(pl.col("status") == "FAIL").is_empty()
     # Platt is a monotone map of the raw probabilities, so ranking is preserved (CAL-04).
     assert (
@@ -145,7 +158,6 @@ def test_calibration_is_invariant_to_locked_test_changes() -> None:
 
 def test_calibration_config_and_notebook_contract() -> None:
     config = load_exp_009_config(Path("configs/modelling/subjective_v1_exp_009_calibration.yaml"))
-    assert config.feature_set == "F3"
     assert config.selected_regularisation_c == 0.001
     assert config.calibration_methods == ("raw", "platt", "isotonic")
     assert config.final_test_access is False

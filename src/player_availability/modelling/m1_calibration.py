@@ -1,13 +1,16 @@
-"""EXP-009 calibration comparison for the promoted M1-F3 candidate.
+"""EXP-009 calibration comparison for the F1 champion, with F3 retained as reference.
 
 Compares raw logistic output against Platt scaling and isotonic regression on the
-frozen F3 predictor contract, using development data only. Calibrators are fitted
-fold-wise within the pooled rolling-origin structure (`DEC-047`, `DEC-049`): in each
-fold the calibrator is learned from inner cross-validated out-of-fold probabilities on
-that fold's training window and applied to the held-out probabilities, so the fitting
-rows are always disjoint from the evaluation rows (`CAL-02`). Because every calibrator
-is a monotonic one-dimensional map of the same raw probabilities, Platt scaling cannot
-reorder predictions (`CAL-04`). No final-test row is read or scored.
+frozen F1 predictor contract (`DEC-054`, `DEC-057`), using development data only. The
+F3 arms from the original run are retained as historical reference, since F3 was the
+candidate at the time `EXP-009` was first specified under `DEC-044` and F3 remains
+cited in prior decisions. Calibrators are fitted fold-wise within the pooled
+rolling-origin structure (`DEC-047`, `DEC-049`): in each fold the calibrator is
+learned from inner cross-validated out-of-fold probabilities on that fold's training
+window and applied to the held-out probabilities, so the fitting rows are always
+disjoint from the evaluation rows (`CAL-02`). Because every calibrator is a monotonic
+one-dimensional map of the same raw probabilities, Platt scaling cannot reorder
+predictions (`CAL-04`). No final-test row is read or scored.
 """
 
 from __future__ import annotations
@@ -52,11 +55,27 @@ from player_availability.modelling.uncertainty import (
 )
 from player_availability.outcomes import build_injury_episodes, build_player_day_labels
 
-ARMS: tuple[str, ...] = ("raw", "platt", "isotonic")
+CALIBRATION_METHODS: tuple[str, ...] = ("raw", "platt", "isotonic")
+PREDICTOR_SETS: tuple[str, ...] = ("F1", "F3")
+"""F1 is the champion (`DEC-054`) and the primary evaluation. F3 is retained as
+historical reference only; it is the superseded candidate under `DEC-054`."""
+ARMS: tuple[str, ...] = tuple(
+    f"{predictor_set}_{method}"
+    for predictor_set in PREDICTOR_SETS
+    for method in CALIBRATION_METHODS
+)
 HORIZONS_DAYS: tuple[int, ...] = (3, 7, 14)
 PRIMARY_GAP_DAYS = 3
 SENSITIVITY_GAP_DAYS = 1
 KEYS = ("player_id", "team_id", "prediction_date")
+
+
+def _arm_predictor_set(arm: str) -> str:
+    return arm.split("_", 1)[0]
+
+
+def _arm_method(arm: str) -> str:
+    return arm.split("_", 1)[1]
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,7 +83,6 @@ class Exp009CalibrationConfig:
     """Frozen EXP-009 calibration configuration."""
 
     base_config: M1F1Config
-    feature_set: str
     selected_regularisation_c: float
     calibration_methods: tuple[str, ...]
     inner_cv_folds: int
@@ -95,7 +113,6 @@ def load_exp_009_config(path: Path) -> Exp009CalibrationConfig:
     base_config = load_m1_f1_config(path.parent / str(raw["base_config"]))
     config = Exp009CalibrationConfig(
         base_config=base_config,
-        feature_set=str(raw["feature_set"]),
         selected_regularisation_c=float(raw["selected_regularisation_c"]),
         calibration_methods=tuple(str(value) for value in raw["calibration_methods"]),
         inner_cv_folds=int(raw["inner_cv_folds"]),
@@ -107,17 +124,17 @@ def load_exp_009_config(path: Path) -> Exp009CalibrationConfig:
         posthoc_calibration_selection=bool(raw["posthoc_calibration_selection"]),
         final_test_access=bool(raw["final_test_access"]),
     )
-    if config.feature_set != "F3":
-        raise ValueError("EXP-009 calibrates the promoted F3 candidate only")
-    if config.calibration_methods != ARMS:
+    if config.calibration_methods != CALIBRATION_METHODS:
         raise ValueError("EXP-009 arms are frozen as raw, Platt and isotonic")
     if config.selected_regularisation_c != 0.001:
-        raise ValueError("EXP-009 uses the frozen F3 regularisation C=0.001; no retuning")
+        raise ValueError(
+            "EXP-009 uses the frozen regularisation C=0.001 for F1 and F3; no retuning"
+        )
     if config.inner_cv_folds < 2:
         raise ValueError("Inner calibration cross-validation needs at least two folds")
     if config.posthoc_calibration_selection or config.final_test_access:
         raise ValueError("EXP-009 characterises calibration; it selects nothing and locks the test")
-    if config.robust_fatigue_predictor not in FEATURE_SETS[config.feature_set]:
+    if config.robust_fatigue_predictor not in FEATURE_SETS["F3"]:
         raise ValueError("Robust fatigue predictor must belong to the F3 contract")
     return config
 
@@ -164,23 +181,21 @@ def run_exp_009_calibration(
     player_registry: pl.DataFrame,
     config: Exp009CalibrationConfig,
 ) -> Exp009CalibrationResult:
-    """Compare raw, Platt and isotonic calibration on development data only."""
-    feature_names = FEATURE_SETS[config.feature_set]
+    """Compare raw, Platt and isotonic calibration for F1 (champion) and F3 (reference)."""
     cohort = _primary_cohort(features, episodes)
-    pooled, per_fold, dropped = _fold_calibrated_predictions(cohort, config, feature_names)
+    pooled, per_fold, dropped = _fold_calibrated_predictions(cohort, config)
 
     arm_metrics = _arm_pooled_metrics(pooled, config)
     reliability, ece = _reliability_tables(pooled, config)
     alerts = _alert_budget(pooled, episodes, config)
     paired = _paired_arm_differences(pooled, config)
     audit = _sparse_predictor_audit(pooled, config)
-    fixed_window = _fixed_window_stress(cohort, config, feature_names)
+    fixed_window = _fixed_window_stress(cohort, config)
     sensitivity = _one_day_gap_sensitivity(
         features=features,
         injury_reports=injury_reports,
         player_registry=player_registry,
         config=config,
-        feature_names=feature_names,
         primary_metrics=arm_metrics,
     )
     findings = _calibration_findings(
@@ -188,22 +203,23 @@ def run_exp_009_calibration(
         per_fold=per_fold,
         audit=audit,
         sensitivity=sensitivity,
-        feature_names=feature_names,
         config=config,
         arm_metrics=arm_metrics,
         paired=paired,
     )
     failures = findings.filter(pl.col("status") == "FAIL").height
     estimable_folds = per_fold.filter(
-        (pl.col("arm") == "raw") & (pl.col("heldout_positive_days") > 0)
+        (pl.col("arm") == "F1_raw") & (pl.col("heldout_positive_days") > 0)
     ).height
     zero_positive_folds = per_fold.filter(
-        (pl.col("arm") == "raw") & (pl.col("heldout_positive_days") == 0)
+        (pl.col("arm") == "F1_raw") & (pl.col("heldout_positive_days") == 0)
     ).height
     summary = {
         "experiment_id": config.base_config.experiment_id,
-        "model_id": "M1-F3-CAL",
-        "candidate_feature_set": config.feature_set,
+        "champion_model_id": "M1-F1-CAL",
+        "reference_model_id": "M1-F3-CAL",
+        "champion_predictor_set": "F1",
+        "reference_predictor_set": "F3",
         "status": "PASS" if failures == 0 else "FAIL",
         "decision_gate": "PROJECT_OWNER_CALIBRATION_REVIEW",
         "calibration_arms": list(ARMS),
@@ -211,7 +227,7 @@ def run_exp_009_calibration(
         "calibrator_fitting": "fold_wise_inner_cv_out_of_fold_disjoint_from_evaluation",
         "pooled_player_days": pooled.height,
         "pooled_positive_days": int(pooled["target"].sum()),
-        "contributing_fold_count": per_fold.filter(pl.col("arm") == "raw").height,
+        "contributing_fold_count": per_fold.filter(pl.col("arm") == "F1_raw").height,
         "estimable_discrimination_fold_count": estimable_folds,
         "zero_positive_fold_count": zero_positive_folds,
         "dropped_fold_count": len(dropped),
@@ -223,7 +239,7 @@ def run_exp_009_calibration(
     }
     tables = {
         "dataset_manifest": _dataset_manifest(config),
-        "predictor_contract": _predictor_contract(feature_names, config),
+        "predictor_contract": _predictor_contract(config),
         "arm_pooled_metrics": arm_metrics,
         "arm_reliability_bins": reliability,
         "expected_calibration_error": ece,
@@ -252,7 +268,6 @@ def _primary_cohort(features: pl.DataFrame, episodes: pl.DataFrame) -> pl.DataFr
 def _fold_calibrated_predictions(
     cohort: pl.DataFrame,
     config: Exp009CalibrationConfig,
-    feature_names: tuple[str, ...],
 ) -> tuple[pl.DataFrame, pl.DataFrame, list[dict[str, Any]]]:
     target = config.base_config.target
     fold_frames: list[pl.DataFrame] = []
@@ -275,7 +290,13 @@ def _fold_calibrated_predictions(
                 }
             )
             continue
-        arm_probabilities = _fold_arm_probabilities(train, heldout, config, feature_names)
+        arm_probabilities: dict[str, list[float]] = {}
+        for predictor_set in PREDICTOR_SETS:
+            method_probabilities = _fold_arm_probabilities(
+                train, heldout, config, FEATURE_SETS[predictor_set]
+            )
+            for method, probabilities in method_probabilities.items():
+                arm_probabilities[f"{predictor_set}_{method}"] = probabilities
         availability = (
             pl.col(config.robust_fatigue_availability).cast(pl.Int64).alias("robust_available")
             if config.robust_fatigue_availability in heldout.columns
@@ -401,7 +422,9 @@ def _arm_pooled_metrics(pooled: pl.DataFrame, config: Exp009CalibrationConfig) -
         rows.append(
             {
                 "arm": arm,
-                "model_id": "M1-F3-CAL",
+                "predictor_set": _arm_predictor_set(arm),
+                "calibration_method": _arm_method(arm),
+                "model_id": f"M1-{arm}-CAL",
                 "pooled_player_days": pooled.height,
                 "pooled_positive_days": sum(all_targets),
                 "prevalence": pooled_metrics["prevalence"],
@@ -484,7 +507,7 @@ def _alert_budget(
             target=config.base_config.target,
             horizon_days=config.base_config.primary_horizon_days,
             review_rates=config.base_config.alert_review_rates,
-            model_id=f"M1-F3-CAL-{arm}",
+            model_id=f"M1-{arm}-CAL",
         )
         frames.append(alerts.with_columns(pl.lit(arm).alias("arm")))
     return pl.concat(frames, how="vertical")
@@ -515,37 +538,48 @@ def _paired_arm_differences(pooled: pl.DataFrame, config: Exp009CalibrationConfi
         )
 
     frames: list[pl.DataFrame] = []
-    for reference, candidate in (("raw", "platt"), ("raw", "isotonic")):
-        brier_only = paired_prediction_bootstrap_differences(
-            reference_predictions=_frame(pooled, reference),
-            candidate_predictions=_frame(pooled, candidate),
-            target=target,
-            iterations=config.base_config.bootstrap_iterations,
-            random_seed=config.base_config.random_seed,
-            reference_model_id=f"M1-F3-CAL-{reference}",
-            candidate_model_id=f"M1-F3-CAL-{candidate}",
-            metrics=("brier_score",),
-        )
-        ap_only = paired_prediction_bootstrap_differences(
-            reference_predictions=_frame(discrimination, reference),
-            candidate_predictions=_frame(discrimination, candidate),
-            target=target,
-            iterations=config.base_config.bootstrap_iterations,
-            random_seed=config.base_config.random_seed,
-            reference_model_id=f"M1-F3-CAL-{reference}",
-            candidate_model_id=f"M1-F3-CAL-{candidate}",
-            metrics=("average_precision",),
-        )
-        frames.append(
-            pl.concat([brier_only, ap_only], how="vertical").with_columns(
-                pl.lit(reference).alias("reference_arm"),
-                pl.lit(candidate).alias("candidate_arm"),
+    for predictor_set in PREDICTOR_SETS:
+        for method in ("platt", "isotonic"):
+            reference = f"{predictor_set}_raw"
+            candidate = f"{predictor_set}_{method}"
+            brier_only = paired_prediction_bootstrap_differences(
+                reference_predictions=_frame(pooled, reference),
+                candidate_predictions=_frame(pooled, candidate),
+                target=target,
+                iterations=config.base_config.bootstrap_iterations,
+                random_seed=config.base_config.random_seed,
+                reference_model_id=f"M1-{reference}-CAL",
+                candidate_model_id=f"M1-{candidate}-CAL",
+                metrics=("brier_score",),
             )
-        )
+            ap_only = paired_prediction_bootstrap_differences(
+                reference_predictions=_frame(discrimination, reference),
+                candidate_predictions=_frame(discrimination, candidate),
+                target=target,
+                iterations=config.base_config.bootstrap_iterations,
+                random_seed=config.base_config.random_seed,
+                reference_model_id=f"M1-{reference}-CAL",
+                candidate_model_id=f"M1-{candidate}-CAL",
+                metrics=("average_precision",),
+            )
+            frames.append(
+                pl.concat([brier_only, ap_only], how="vertical").with_columns(
+                    pl.lit(reference).alias("reference_arm"),
+                    pl.lit(candidate).alias("candidate_arm"),
+                )
+            )
     return pl.concat(frames, how="vertical")
 
 
 def _sparse_predictor_audit(pooled: pl.DataFrame, config: Exp009CalibrationConfig) -> pl.DataFrame:
+    """Audit scoped to the F3 arms only: the audited predictor is not in F1's contract.
+
+    `fatigue_lag1_robust_z_prior` and its availability indicator exist only within the
+    F3 predictor set (`DEC-043`). F1 carries no such predictor, so splitting F1's
+    predictions by this availability flag would measure a grouping variable the F1
+    model never sees, not a meaningful audit.
+    """
+    f3_arms = tuple(arm for arm in ARMS if _arm_predictor_set(arm) == "F3")
     rows: list[dict[str, Any]] = []
     subsets = {
         "robust_fatigue_observed": pooled.filter(pl.col("robust_available") == 1),
@@ -555,7 +589,7 @@ def _sparse_predictor_audit(pooled: pl.DataFrame, config: Exp009CalibrationConfi
         if frame.height == 0:
             continue
         targets = [int(value) for value in frame["target"]]
-        for arm in ARMS:
+        for arm in f3_arms:
             probabilities = [float(value) for value in frame[f"probability_{arm}"]]
             metrics = classification_metrics(targets, probabilities)
             calibration = calibration_diagnostics(targets, probabilities)
@@ -580,7 +614,6 @@ def _sparse_predictor_audit(pooled: pl.DataFrame, config: Exp009CalibrationConfi
 def _fixed_window_stress(
     cohort: pl.DataFrame,
     config: Exp009CalibrationConfig,
-    feature_names: tuple[str, ...],
 ) -> pl.DataFrame:
     train = cohort.filter(
         pl.col("prediction_date").is_between(PARTITIONS[0]["start_date"], PARTITIONS[0]["end_date"])
@@ -588,28 +621,32 @@ def _fixed_window_stress(
     validation = cohort.filter(
         pl.col("prediction_date").is_between(PARTITIONS[1]["start_date"], PARTITIONS[1]["end_date"])
     )
-    arm_probabilities = _fold_arm_probabilities(train, validation, config, feature_names)
     targets = _targets(validation, config.base_config.target)
     rows: list[dict[str, Any]] = []
-    for arm in ARMS:
-        metrics = classification_metrics(targets, arm_probabilities[arm])
-        calibration = calibration_diagnostics(targets, arm_probabilities[arm])
-        rows.append(
-            {
-                "window": "fixed_validation_window",
-                "arm": arm,
-                "player_days": validation.height,
-                "positive_days": sum(targets),
-                "brier_score": metrics["brier_score"],
-                "log_loss": metrics["log_loss"],
-                "average_precision": metrics["average_precision"],
-                "roc_auc": metrics["roc_auc"],
-                "mean_prediction": calibration["mean_prediction"],
-                "observed_rate": calibration["observed_rate"],
-                "calibration_intercept": calibration["calibration_intercept"],
-                "calibration_slope": calibration["calibration_slope"],
-            }
+    for predictor_set in PREDICTOR_SETS:
+        arm_probabilities = _fold_arm_probabilities(
+            train, validation, config, FEATURE_SETS[predictor_set]
         )
+        for method, probabilities in arm_probabilities.items():
+            arm = f"{predictor_set}_{method}"
+            metrics = classification_metrics(targets, probabilities)
+            calibration = calibration_diagnostics(targets, probabilities)
+            rows.append(
+                {
+                    "window": "fixed_validation_window",
+                    "arm": arm,
+                    "player_days": validation.height,
+                    "positive_days": sum(targets),
+                    "brier_score": metrics["brier_score"],
+                    "log_loss": metrics["log_loss"],
+                    "average_precision": metrics["average_precision"],
+                    "roc_auc": metrics["roc_auc"],
+                    "mean_prediction": calibration["mean_prediction"],
+                    "observed_rate": calibration["observed_rate"],
+                    "calibration_intercept": calibration["calibration_intercept"],
+                    "calibration_slope": calibration["calibration_slope"],
+                }
+            )
     return pl.DataFrame(rows)
 
 
@@ -619,7 +656,6 @@ def _one_day_gap_sensitivity(
     injury_reports: pl.DataFrame,
     player_registry: pl.DataFrame,
     config: Exp009CalibrationConfig,
-    feature_names: tuple[str, ...],
     primary_metrics: pl.DataFrame,
 ) -> pl.DataFrame:
     rows: list[dict[str, Any]] = []
@@ -631,7 +667,7 @@ def _one_day_gap_sensitivity(
         features, injury_reports, player_registry, SENSITIVITY_GAP_DAYS
     )
     cohort_gap = _primary_cohort(features_gap, episodes_gap)
-    pooled_gap, _, _ = _fold_calibrated_predictions(cohort_gap, config, feature_names)
+    pooled_gap, _, _ = _fold_calibrated_predictions(cohort_gap, config)
     for row in _arm_pooled_metrics(pooled_gap, config).iter_rows(named=True):
         rows.append({"episode_gap_days": SENSITIVITY_GAP_DAYS, **_sensitivity_row(row)})
     return pl.DataFrame(rows)
@@ -680,26 +716,29 @@ def _rebuild_features_for_gap(
 
 
 def _platt_preserves_fold_ranking(per_fold: pl.DataFrame) -> bool:
-    """Check Platt keeps raw ordering within each estimable fold (`CAL-04`).
+    """Check Platt keeps raw ordering within each estimable fold, per predictor set (`CAL-04`).
 
     Platt is a monotone one-dimensional map of the raw probabilities inside a single
     fold, so per-fold ROC-AUC must be identical. Pooled ROC-AUC legitimately differs
     because each fold applies a different monotone map, which is not a violation.
     """
-    raw = per_fold.filter((pl.col("arm") == "raw") & pl.col("roc_auc").is_not_null()).sort(
-        "fold_id"
-    )
-    platt = per_fold.filter((pl.col("arm") == "platt") & pl.col("roc_auc").is_not_null()).sort(
-        "fold_id"
-    )
-    if raw.height == 0 or raw.height != platt.height:
-        return False
-    if raw["fold_id"].to_list() != platt["fold_id"].to_list():
-        return False
-    return all(
-        abs(cast(float, raw_value) - cast(float, platt_value)) < 1e-9
-        for raw_value, platt_value in zip(raw["roc_auc"], platt["roc_auc"], strict=True)
-    )
+    for predictor_set in PREDICTOR_SETS:
+        raw = per_fold.filter(
+            (pl.col("arm") == f"{predictor_set}_raw") & pl.col("roc_auc").is_not_null()
+        ).sort("fold_id")
+        platt = per_fold.filter(
+            (pl.col("arm") == f"{predictor_set}_platt") & pl.col("roc_auc").is_not_null()
+        ).sort("fold_id")
+        if raw.height == 0 or raw.height != platt.height:
+            return False
+        if raw["fold_id"].to_list() != platt["fold_id"].to_list():
+            return False
+        if not all(
+            abs(cast(float, raw_value) - cast(float, platt_value)) < 1e-9
+            for raw_value, platt_value in zip(raw["roc_auc"], platt["roc_auc"], strict=True)
+        ):
+            return False
+    return True
 
 
 def _calibration_findings(
@@ -708,12 +747,11 @@ def _calibration_findings(
     per_fold: pl.DataFrame,
     audit: pl.DataFrame,
     sensitivity: pl.DataFrame,
-    feature_names: tuple[str, ...],
     config: Exp009CalibrationConfig,
     arm_metrics: pl.DataFrame,
     paired: pl.DataFrame,
 ) -> pl.DataFrame:
-    contract_ok = tuple(feature_names) == FEATURE_SETS["F3"] and len(feature_names) == 23
+    contract_ok = FEATURE_SETS["F1"] and FEATURE_SETS["F3"] and len(FEATURE_SETS["F3"]) == 23
     ranking_preserved = _platt_preserves_fold_ranking(per_fold)
     zero_positive_folds = (
         pooled.group_by("fold_id")
@@ -723,10 +761,15 @@ def _calibration_findings(
     )
     audit_ok = audit.height > 0 and audit["availability_subset"].n_unique() >= 2
     sensitivity_ok = SENSITIVITY_GAP_DAYS in sensitivity["episode_gap_days"].to_list()
+    boot_pairs = tuple(
+        (f"{predictor_set}_raw", f"{predictor_set}_{method}")
+        for predictor_set in PREDICTOR_SETS
+        for method in ("platt", "isotonic")
+    )
     boot_sign_ok = _bootstrap_sign_agreement_ok(
         arm_metrics=arm_metrics,
         paired=paired,
-        pairs=(("raw", "platt"), ("raw", "isotonic")),
+        pairs=boot_pairs,
     )
     return pl.DataFrame(
         [
@@ -749,7 +792,10 @@ def _calibration_findings(
                 "finding_id": "CAL-03",
                 "status": "PASS" if contract_ok else "FAIL",
                 "domain": "predictor_contract",
-                "evidence": f"frozen F3 contract used: {len(feature_names)} predictors",
+                "evidence": (
+                    f"frozen contracts used: F1 champion {len(FEATURE_SETS['F1'])} predictors, "
+                    f"F3 reference {len(FEATURE_SETS['F3'])} predictors"
+                ),
             },
             {
                 "finding_id": "CAL-04",
@@ -835,7 +881,8 @@ def _dataset_manifest(config: Exp009CalibrationConfig) -> pl.DataFrame:
         [
             {
                 "experiment_id": config.base_config.experiment_id,
-                "model_id": "M1-F3-CAL",
+                "champion_model_id": "M1-F1-CAL",
+                "reference_model_id": "M1-F3-CAL",
                 "data_version": config.base_config.data_version,
                 "target": config.base_config.target,
                 "horizon_days": config.base_config.primary_horizon_days,
@@ -850,18 +897,18 @@ def _dataset_manifest(config: Exp009CalibrationConfig) -> pl.DataFrame:
     )
 
 
-def _predictor_contract(
-    feature_names: tuple[str, ...], config: Exp009CalibrationConfig
-) -> pl.DataFrame:
+def _predictor_contract(config: Exp009CalibrationConfig) -> pl.DataFrame:
     return pl.DataFrame(
         [
             {
-                "feature_set": config.feature_set,
+                "predictor_set": predictor_set,
+                "role": "champion" if predictor_set == "F1" else "historical_reference",
                 "predictor": feature,
                 "is_robust_fatigue_predictor": feature == config.robust_fatigue_predictor,
                 "allowed": True,
             }
-            for feature in feature_names
+            for predictor_set in PREDICTOR_SETS
+            for feature in FEATURE_SETS[predictor_set]
         ]
     )
 
@@ -917,7 +964,15 @@ def build_exp_009_figures(result: Exp009CalibrationResult) -> dict[str, Figure]:
     alerts = result.tables["alert_budget_results"]
     audit = result.tables["sparse_predictor_audit"]
     sensitivity = result.tables["one_day_gap_sensitivity"]
-    colours = {"raw": "#4C78A8", "platt": "#F58518", "isotonic": "#59A14F"}
+    colours = {
+        "F1_raw": "#4C78A8",
+        "F1_platt": "#F58518",
+        "F1_isotonic": "#59A14F",
+        "F3_raw": "#B279A2",
+        "F3_platt": "#E45756",
+        "F3_isotonic": "#9D7660",
+    }
+    f3_arms = tuple(arm for arm in ARMS if _arm_predictor_set(arm) == "F3")
     figures: dict[str, Figure] = {}
 
     fig, axis = plt.subplots(figsize=(7, 5))
@@ -1007,7 +1062,7 @@ def build_exp_009_figures(result: Exp009CalibrationResult) -> dict[str, Figure]:
     figures["per_fold_average_precision"] = fig
 
     fig, axis = plt.subplots(figsize=(8, 4.5))
-    raw_bins = reliability.filter(pl.col("arm") == "raw")
+    raw_bins = reliability.filter(pl.col("arm") == "F1_raw")
     supported = raw_bins.filter(pl.col("bin_supported"))
     axis.bar(
         raw_bins["reliability_bin"], raw_bins["positive_days"], color="#BAB0AC", label="all bins"
@@ -1048,7 +1103,7 @@ def build_exp_009_figures(result: Exp009CalibrationResult) -> dict[str, Figure]:
     fig, axis = plt.subplots(figsize=(8, 4.5))
     if audit.height:
         subsets = audit["availability_subset"].unique().sort().to_list()
-        positions = list(range(len(ARMS)))
+        positions = list(range(len(f3_arms)))
         width = 0.8 / max(len(subsets), 1)
         for offset, subset in enumerate(subsets):
             values = [
@@ -1057,7 +1112,7 @@ def build_exp_009_figures(result: Exp009CalibrationResult) -> dict[str, Figure]:
                         (pl.col("arm") == arm) & (pl.col("availability_subset") == subset)
                     )["brier_score"][0]
                 )
-                for arm in ARMS
+                for arm in f3_arms
             ]
             axis.bar(
                 [position + offset * width for position in positions],
@@ -1065,8 +1120,11 @@ def build_exp_009_figures(result: Exp009CalibrationResult) -> dict[str, Figure]:
                 width,
                 label=subset,
             )
-        axis.set_xticks([position + width / 2 for position in positions], list(ARMS))
-    axis.set(title="Sparse-predictor audit: Brier by availability", ylabel="Brier score")
+        axis.set_xticks([position + width / 2 for position in positions], list(f3_arms))
+    axis.set(
+        title="Sparse-predictor audit: Brier by availability (F3 reference only)",
+        ylabel="Brier score",
+    )
     axis.legend()
     figures["sparse_predictor_audit"] = fig
 
@@ -1122,18 +1180,21 @@ def _render_report(result: Exp009CalibrationResult) -> str:
     findings = result.tables["calibration_findings"]
     summary = result.summary
     lines = [
-        "# EXP-009 - M1-F3 Calibration Comparison Report",
+        "# EXP-009 - M1 Calibration Comparison Report",
         "",
         "## Automated Status",
         "",
         f"Development run: **{summary['status']}**. Project-owner calibration review required.",
         "",
         (
-            "Raw, Platt and isotonic calibration are compared on the frozen F3 candidate using "
-            "development data only. Calibrators are fitted fold-wise on inner cross-validated "
-            "out-of-fold training probabilities and applied to disjoint held-out probabilities, "
-            "so each calibrated arm is a monotone map of the raw arm. No post-hoc calibrator is "
-            "selected and no final-test prediction or performance is created."
+            "Raw, Platt and isotonic calibration are compared on the frozen F1 champion "
+            "predictor contract (`DEC-054`), the primary evaluation, with the frozen F3 "
+            "predictor contract retained as historical reference only (the superseded "
+            "candidate under `DEC-054`), using development data only. Calibrators are fitted "
+            "fold-wise on inner cross-validated out-of-fold training probabilities and applied "
+            "to disjoint held-out probabilities, so each calibrated arm is a monotone map of "
+            "its own raw arm. No post-hoc calibrator is selected and no final-test prediction "
+            "or performance is created."
         ),
         "",
         "## Power Limitation (binding)",
@@ -1206,8 +1267,9 @@ def _render_report(result: Exp009CalibrationResult) -> str:
             "",
             (
                 f"Robust fatigue predictor `{_audit_predictor(audit)}` calibration split by "
-                "availability. Materially different behaviour indicates a reporting-process "
-                "artefact rather than physiology."
+                "availability, scoped to the F3 reference arms only (this predictor is absent "
+                "from F1's contract). Materially different behaviour indicates a "
+                "reporting-process artefact rather than physiology."
             ),
             "",
             "| Subset | Arm | Player-days | +days | Brier | Mean pred | Observed |",

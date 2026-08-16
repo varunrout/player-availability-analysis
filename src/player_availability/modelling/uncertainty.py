@@ -151,28 +151,34 @@ def paired_prediction_bootstrap_differences(
 
 
 def paired_bootstrap_agrees_with_point_estimate(
-    paired: pl.DataFrame,
-    point_estimate_differences: dict[str, float],
-    *,
-    negligible_difference: float = 1e-5,
+    paired: pl.DataFrame, point_estimate_differences: dict[str, float]
 ) -> bool:
-    """Check every paired-bootstrap median shares its point estimate's sign (`BOOT-01`).
+    """Check bootstrap sign agrees with the point estimate where a direction is claimed (`BOOT-01`).
 
     `point_estimate_differences` maps metric name to the candidate-minus-reference
     point-estimate difference, computed on the same population as that metric's
-    bootstrap (see `paired_prediction_bootstrap_differences`). A defined median whose
-    sign contradicts a point-estimate difference larger than `negligible_difference`
-    indicates a population mismatch between the point estimate and the bootstrap.
-    Differences at or below `negligible_difference` are exempt: with very few clusters
-    (as few as two players), ordinary resampling noise can flip the sign of a
-    razor-thin, effectively-zero difference without any population mismatch, and that
-    is not the failure this check exists to catch.
+    bootstrap (see `paired_prediction_bootstrap_differences`).
+
+    Sign agreement is a property of a *claimed* direction. Where a paired interval
+    includes zero, no direction is claimed and the comparison is recorded as not
+    distinguishable; the sign of a difference indistinguishable from zero is
+    arbitrary, so requiring agreement there would test nothing and produce false
+    failures (`DEC-057`). The check therefore applies only to rows whose interval
+    excludes zero: there, a median sign that contradicts the point-estimate
+    difference indicates a population mismatch between the point estimate and the
+    bootstrap, which is the defect this check exists to catch.
     """
     for metric, point_difference in point_estimate_differences.items():
-        if abs(point_difference) <= negligible_difference:
+        if point_difference == 0.0:
             continue
-        for median in paired.filter(pl.col("metric") == metric)["median"]:
-            if median is None or not math.isfinite(median) or median == 0.0:
+        for row in paired.filter(pl.col("metric") == metric).iter_rows(named=True):
+            lower, upper, median = row["lower_95"], row["upper_95"], row["median"]
+            if None in (lower, upper, median) or not all(
+                math.isfinite(value) for value in (lower, upper, median)
+            ):
+                continue
+            interval_excludes_zero = (lower > 0.0 and upper > 0.0) or (lower < 0.0 and upper < 0.0)
+            if not interval_excludes_zero or median == 0.0:
                 continue
             if (median > 0) != (point_difference > 0):
                 return False

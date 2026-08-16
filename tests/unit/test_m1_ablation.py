@@ -45,10 +45,14 @@ def test_ablation_runs_frozen_four_arm_contract() -> None:
     assert result.summary["final_test_rows_evaluated"] == 0
     assert result.summary["final_test_predictions_created"] is False
     assert result.tables["arm_pooled_metrics"]["arm"].to_list() == ["A", "B", "C", "D"]
-    # BOOT-01 is exempted here only: on this two-player fixture, arm-A-to-B average
-    # precision has a razor-thin point difference that can flip sign under week-block
-    # resampling from ordinary noise with so few clusters, unrelated to the population
-    # -mismatch defect BOOT-01 targets. Every other finding must still pass.
+    # BOOT-01 is exempted here only. BOOT-01 (DEC-057) requires sign agreement only
+    # where the paired interval excludes zero, which is the principled fix for
+    # razor-thin differences. But with only two synthetic players, player-cluster and
+    # week-block resampling each draw from as few as two clusters, so an interval can
+    # narrowly and spuriously exclude zero on pure resampling noise around an
+    # effectively-arbitrary sign; that is a property of this fixture's cluster count,
+    # not of BOOT-01 or the estimator, and cannot be fixed by adjusting either. Every
+    # other finding must still pass.
     findings = result.tables["ablation_findings"]
     non_boot_failures = findings.filter(
         (pl.col("status") == "FAIL") & (pl.col("finding_id") != "BOOT-01")
