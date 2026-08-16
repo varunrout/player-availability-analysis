@@ -1500,13 +1500,92 @@ Adopting `docs/specifications/` as a deliberate new convention and moving the EX
 
 ---
 
+## DEC-051
+
+**Decision ID:** DEC-051
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+State v48 recorded a single open decision: project-owner approval of the V1
+delivery programme in section 5A of `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`
+and the `EXP-009` calibration specification in section 5 D1 of the same document.
+Both were drafted under the stage-gate model used since Stage 0, which requires an
+approved specification before any implementation. The scope of `EXP-009` was
+authorised by `DEC-044`; V1 scope and the mapping of phases onto existing
+experiment identifiers were fixed by `DEC-046`; the headline evaluation protocol,
+outcome sensitivity and calibrator-fitting rule were fixed by `DEC-047`, `DEC-048`
+and `DEC-049` respectively. Implementation of phase V1-P1 was blocked pending this
+approval.
+
+**Decision:**
+As project owner, approve both documents as drafted, with no amendments:
+- the V1 delivery programme, section 5A;
+- the `EXP-009` calibration specification, section 5 D1.
+
+This closes the single open decision recorded in state v48 and authorises
+implementation of phase V1-P1 (`EXP-009`) against development data only.
+
+This approval does not authorise any access to the final-test partition, which
+remains locked until phase V1-P5 and is then spent exactly once, per `DEC-046`;
+nor does it authorise any V1-P2 (`EXP-007` Cox survival) or V1-P3 (`EXP-008`
+boosted classification) work, each of which remains blocked pending its own
+specification approval.
+
+**Rationale:**
+The specifications are complete and internally consistent with the decisions that
+authorised their scope. The outcome-support limitation is a quantified, accepted
+property of the dataset that `EXP-009` is designed around rather than expected to
+resolve, so there is no reason to defer approval pending a cohort or horizon
+change. Approving as drafted preserves the stage-gate discipline: the method
+choice is settled before implementation, not implicitly during a run.
+
+**Alternatives Considered:**
+Amending the specification before approval, for example altering the calibration
+arms or the metric set. Not selected; the drafts are complete and no amendment was
+identified. Deferring approval until the five-onset support problem is addressed
+through a cohort or horizon change. This was considered and rejected under
+`DEC-044`, on the grounds that characterising the measured overestimation now is
+cheap and reversible; nothing has changed to reopen it.
+
+**Consequences:**
+- Phase V1-P1 implementation is authorised against development data only, under the
+  output contract of `DEC-029` and the integrity checks `CAL-01` to `CAL-08`.
+- The gate-table rows "V1 delivery plan" and "EXP-009 specification" move from
+  PENDING APPROVAL to APPROVED, citing `DEC-051`.
+- The Open Decisions section is cleared; Immediate Next Actions reflect that
+  V1-P1 implementation is now authorised.
+- The final-test lock is unaffected. V1-P2 and V1-P3 remain unauthorised.
+- Implementation is bound by the specification as written: fold-wise calibrator
+  fitting on partitions disjoint from evaluation (`DEC-049`), pooled rolling-origin
+  as the headline with estimable-fold counts and per-fold values (`DEC-047`), the
+  one-day-gap sensitivity on every headline figure (`DEC-048`), the mandatory
+  sparse-predictor audit of the 8.4%-coverage robust fatigue z-score (`DEC-043`),
+  and the binding power limitation under which "no calibration method is
+  distinguishable at this support" is a valid and expected result.
+- Known ordering conflict, not resolved by this decision: section 5 "Model ladder
+  advancement" places `EXP-007` and `EXP-008` only after operational-utility
+  analysis, while section 5A places them at V1-P2 and V1-P3, ahead of the V1-P4
+  operational-utility work. This must be settled by a superseding decision before
+  V1-P2 begins. It does not affect V1-P1.
+
+**Affected Components:** V1 delivery authorisation, EXP-009 implementation, phase
+sequencing, final-test governance, project state
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-The `EXP-009` calibration specification, now section 5 D1 of doc 19, requires owner approval before implementation, alongside the V1 delivery programme in section 5A. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete.
+The V1 delivery programme (section 5A of doc 19) and the `EXP-009` calibration specification (section 5 D1) were approved by `DEC-051`; phase V1-P1 implementation is authorised against development data only. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Resolved in this revision: V1 scope is defined by `DEC-046`; the headline evaluation question is settled by `DEC-047`; the episode-gap question is settled by `DEC-048`; the calibrator-fitting rule is settled by `DEC-049`; the specification-location convention is settled by `DEC-050`.
+Open for a future revision, not blocking V1-P1: doc 19 sections 5 and 5A conflict on whether `EXP-007` and `EXP-008` precede or follow operational-utility analysis. This requires a superseding decision before phase V1-P2 begins.
+
+Resolved in this revision: owner approval of the V1 delivery programme and the `EXP-009` calibration specification is recorded by `DEC-051`.
 
 ### Resolved
 
