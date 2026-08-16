@@ -2180,13 +2180,90 @@ champion calibration traceability, V1-P4 entry conditions
 
 ---
 
+## DEC-058
+
+**Decision ID:** DEC-058
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-057` extended `EXP-009` with F1 raw, Platt and isotonic arms so that
+the champion's calibration claim would rest on a measured result rather
+than on transfer from the superseded F3 candidate.
+
+**Decision:**
+Select raw probabilities for the F1 champion. No post-hoc calibrator is
+adopted for V1. The finding that no calibration method is distinguishable
+from raw at this support is now recorded against the champion itself.
+
+**Rationale:**
+Pooled rolling-origin results across the three F1 arms are: raw Brier
+0.006325, log loss 0.042009, calibration intercept 2.007319, calibration
+slope 2.019474, average precision 0.096668, ROC-AUC 0.835537; Platt Brier
+0.007765, log loss 0.044835, intercept -1.482620, slope 1.044271, average
+precision 0.095012, ROC-AUC 0.838287; isotonic Brier 0.007509, log loss
+0.062091, intercept -4.435530, slope 0.128850, average precision 0.071853,
+ROC-AUC 0.824284. Paired bootstrap differences against F1 raw are: raw to
+Platt Brier, player-cluster median +0.001335 with 95% interval
+[-0.000004, 0.003681] (includes zero), temporal week-block median +0.001431
+with interval [0.000844, 0.002004] (excludes zero, Platt worse); raw to
+isotonic Brier, player-cluster median +0.001179 with interval
+[0.000320, 0.002238] (excludes zero, isotonic worse), temporal week-block
+median +0.001189 with interval [0.000775, 0.001660] (excludes zero,
+isotonic worse). Average-precision intervals for both comparisons include
+zero under both resampling schemes.
+
+Both Platt and isotonic pull the calibration slope toward 1 (from 2.019 to
+1.044 and 0.129 respectively), but that correction is bought entirely at a
+Brier-score cost: isotonic's degradation excludes zero under both
+resampling schemes and Platt's excludes zero under temporal week-block
+resampling, so neither meets the pre-registered gate for adoption.
+
+Under `DEC-007` calibration is a first-class metric, and under the
+pre-registered gate a difference is claimed only where the paired interval
+excludes zero under both resampling schemes. No arm meets that bar on
+probability quality. The binding constraint remains 104 pooled positive
+player-days fitted fold-wise, which is a property of the cohort rather than
+of any candidate, and the result reproduces the pattern already recorded
+for F3 under `DEC-052`.
+
+**Alternatives Considered:**
+Adopting a calibrator on the strength of an improved calibration slope
+alone, rejected on the same grounds as `DEC-052`: a slope correction bought
+at a measured probability-accuracy cost is not an improvement in calibrated
+performance. Deferring the calibration decision to V1-P5, rejected because
+the final test is single-use and the probability transform must be frozen
+before it is spent.
+
+**Consequences:**
+- The V1 champion reports raw F1 probabilities. This is now traceable to a
+  measured result on the champion.
+- The probability transform is frozen ahead of V1-P5 and may not be revised
+  without a superseding decision.
+- V1-P4 begins: champion selection gate, `EXP-018` explanation stability
+  and `EXP-019` alert-budget simulation, against raw F1.
+- Alert-budget behaviour is percentile-based and therefore rank-determined,
+  so this decision does not alter capture at the frozen 1%, 2.5% and 5%
+  review rates.
+- The model card records that calibration was tested on the champion and
+  that no method was adopted, with the support limitation stated.
+- The final-test lock is unaffected.
+
+**Affected Components:** champion probability output, V1-P4 entry, V1-P5
+pre-registration, model card content
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
 
-Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised against the F1 champion selected by `DEC-054`, and begins only once the `EXP-009` F1 calibration outcome under `DEC-057` is recorded. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
+Phase V1-P4 (champion selection, `EXP-018` explanation stability, `EXP-019` alert-budget simulation) is authorised and begins against raw F1 probabilities, per `DEC-054` and `DEC-058`. Final-test performance access remains prohibited until the V1 pre-registration checklist is complete at phase V1-P5.
 
-Resolved in this revision: the `BOOT-01` false-failure question on the raw-versus-isotonic average-precision comparison (`DEC-057`, reformulated to require sign agreement only where the paired interval excludes zero; the prior FAIL was a specification defect, not an estimator defect); the `EXP-008` complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion); the `DEC-052` average-precision claim (superseded by the corrected estimator; the calibration selection itself stands).
+Resolved in this revision: the F1 champion calibration question (`DEC-058`, raw selected for V1; no post-hoc calibrator adopted); the `BOOT-01` false-failure question on the raw-versus-isotonic average-precision comparison (`DEC-057`, reformulated to require sign agreement only where the paired interval excludes zero; the prior FAIL was a specification defect, not an estimator defect); the `EXP-008` complexity-verdict question (`DEC-056`, boosted classification rejected for V1; F1 remains champion); the `DEC-052` average-precision claim (superseded by the corrected estimator; the calibration selection itself stands).
 
 Resolved previously: the `EXP-007` survival-framing question (`DEC-055`, rejected for V1 on evidence-backed diagnostic grounds; F1 remains champion). Noted, no action required until V1-P7: the `lifelines` dependency added for `EXP-007` constrains numpy to 1.26 and scipy to 1.17, and is a removal candidate now that survival framing is rejected. The `EXP-009` calibration method question (`DEC-052`, raw selected); the doc 19 section 5 / section 5A ordering conflict (`DEC-053`, section 5A governs); the `EXP-016` champion question (`DEC-054`, F1 becomes the V1 champion candidate, superseding `DEC-043` in respect of candidate selection only).
 
