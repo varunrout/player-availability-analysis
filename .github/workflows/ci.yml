@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install "poetry>=2.0,<3.0"
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Lockfile integrity
+        run: poetry check --lock
+
+      - name: Lint
+        run: poetry run ruff check src tests jobs
+
+      - name: Format check
+        run: poetry run ruff format --check src tests jobs
+
+      - name: Type check
+        run: poetry run mypy
+
+      - name: Test
+        run: poetry run pytest -q
+
+  web-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
