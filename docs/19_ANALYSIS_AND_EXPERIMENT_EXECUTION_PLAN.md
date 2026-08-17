@@ -706,9 +706,57 @@ Deferred to V2: EXP-011 and EXP-012 GPS work, EXP-015 neural survival, and onlin
 4. Any material design change requires a decision record before the work, not after.
 5. V1-P1 through V1-P3 may be reordered if evidence justifies it; V1-P4 onwards is strictly ordered.
 
+### V1-P6 build specification
+
+**Status:** specified, authorised. Phase V1-P6. Authorised by `DEC-064`, superseding `DEC-046`'s scope-control cut order in respect of the API layer only (below).
+
+**Architecture.** FastAPI plus Next.js, deployed as two Cloud Run services, authenticated. Batch inference writes to `paa_product` in BigQuery as the product table of record, and additionally emits a compact serving artefact to Cloud Storage; the API reads the artefact and does not query BigQuery per request. The web application fetches server side; the browser never calls the API directly, so the API can run with internal ingress reachable only by the web service's identity. See `DEC-064` for the full rationale.
+
+**Batch inference.** A canonical job loads the development-refitted F1 artefact evaluated at V1-P5, scores every eligible player-day across the covered period, and writes:
+
+- the `paa_product` BigQuery table of record;
+- a compact serving artefact to Cloud Storage containing, per player-day: probability, rank within team-day, alert flag at each offered operating point, the eight displayable driver contributions, and data completeness.
+
+A reconciliation check confirms the artefact and the BigQuery table agree row for row.
+
+**API, FastAPI, internal ingress.** Endpoints:
+
+- squad overview for a team and date;
+- player detail for a player and date, returning the risk series and driver contributions;
+- data-quality series for a team;
+- model health, returning calibration, operating-point burden and the V1-P5 result;
+- health endpoint for Cloud Run.
+
+Every response carries the "as at" date and the operating point in force. Typed response models. Same strict mypy and ruff gates as the rest of the repository.
+
+**Web, Next.js, public ingress behind authentication.** Server-side data fetching only. Four views:
+
+- **Squad overview.** Team selector, date selector, squad ranked by risk for that date, alerts marked at the operating point in force. Days with no alert display as such and are not padded to a fixed count. The operating-point burden is shown on the same screen as the alerts.
+- **Player detail.** Risk over time for the selected player with onset dates marked, the displayable driver contributions for the selected date, and that player's reporting completeness.
+- **Data quality.** Reporting coverage over time by team, the wellness reporting decline across the covered period, and the coverage range across players.
+- **Model health.** Reliability curve with bin counts, operating-point table with burden and capture, and the V1-P5 confirmatory result with its five-onset support stated inline.
+
+Authentication in front of the web service, credentials from Secret Manager, no credential in the repository or in any image.
+
+The interface presents an explicit "as at" date with a date selector across the covered period, defaulting to the last date in the final-test period. No view presents a live or current-day framing.
+
+Drivers displayed in the player detail view are restricted to the eight predictors holding constant coefficient sign across all estimable folds under `EXP-018`. `daily_load_log1p` is not displayed as a driver.
+
+**Copy constraints, enforced by test.** No diagnosis, clearance, fitness, injury-prediction or participation language anywhere in the rendered interface. Every screen presenting a risk figure also presents the operating-point burden and the data-completeness context. Every screen carries its "as at" date.
+
+**Build order.** Build end to end before building wide:
+
+1. Batch inference job, both outputs, reconciliation check, tests.
+2. API with all endpoints, tests, running locally against the artefact.
+3. Web with the squad overview view only.
+4. Deploy both services to Cloud Run with authentication working end to end. Confirm a reviewer can reach the squad overview and nothing else is publicly reachable.
+5. Then add player detail, data quality and model health.
+
+Do not build all four views locally and deploy at the end. A deployed and authenticated product with one working view is worth considerably more than four views on localhost. Report after step 4 before continuing to step 5.
+
 ### Scope control
 
-If time pressure rises, cut in this order: the boosted-classification complexity test, recording the omission; then the API layer, keeping the dashboard; then monitoring depth, keeping data-quality surfaces.
+If time pressure rises, cut in this order: the boosted-classification complexity test, recording the omission; then monitoring depth, keeping data-quality surfaces. The API layer is no longer independently cuttable ahead of the dashboard (`DEC-064` supersedes `DEC-046` on this point only): under the two-service architecture the API is a dependency of the dashboard, not an addition to it, so cutting it would cut the dashboard.
 
 Never cut: leak-safe validation, calibration, the limitations account, the model card, the dashboard, or single-use final-test discipline.
 

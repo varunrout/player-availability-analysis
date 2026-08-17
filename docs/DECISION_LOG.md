@@ -2784,6 +2784,103 @@ model card content, V2 backlog, V1-P6 authorisation
 
 ---
 
+## DEC-064
+
+**Decision ID:** DEC-064
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-063` authorised phase V1-P6. `DEC-046` requires batch inference writing
+to `paa_product` and a dashboard covering squad overview, player detail,
+data quality and model health, with every risk figure displayed alongside
+uncertainty and data-completeness context and no prohibited language in the
+interface. The architecture was not specified.
+
+**Decision:**
+Build the dashboard as a FastAPI service and a Next.js application deployed
+as two Cloud Run services. Access is authenticated against a fixed set of
+review credentials.
+
+Batch inference writes to `paa_product` in BigQuery as the product table of
+record, and additionally emits a compact serving artefact to Cloud Storage.
+The API reads the serving artefact. It does not query BigQuery per request.
+
+The interface presents an explicit "as at" date with a date selector across
+the covered period, defaulting to the last date in the final-test period.
+No view presents a live or current-day framing.
+
+Drivers displayed in the player detail view are restricted to the eight
+predictors holding constant coefficient sign across all estimable folds
+under `EXP-018`. `daily_load_log1p` is not displayed as a driver.
+
+**Rationale:**
+Two services keep the API surface separable from the presentation layer,
+which is the configuration a reviewer would expect and which allows the API
+to be closed to public ingress entirely. The Next.js application fetches
+server side, so the browser never calls the API directly and the API can run
+with internal ingress, reachable only by the web service's identity.
+
+Querying BigQuery per request would add cold-start latency and cost for no
+benefit at this scale. The full product surface is 50 players across 731
+dates, which is small enough to serve from a compact artefact. BigQuery
+remains the table of record; the artefact is a serving convenience derived
+from it.
+
+The data period ends in 2021. Presenting any view as current would
+misrepresent the system, and a fixed single date would prevent a reviewer
+from seeing how risk and alerts move around an onset, which is the most
+informative thing the product can show. A date selector with a prominent
+"as at" label serves both accuracy and demonstration.
+
+Authentication is required because the interface presents player-level
+availability risk. The underlying data is a public research dataset, but
+publishing per-player risk screens at an open URL invites a reasonable
+objection that the project's own ethics position would not survive.
+
+Restricting displayed drivers to sign-stable predictors follows the gate
+recorded in `DEC-060` and measured in `EXP-018`. Showing a driver whose
+direction changes across folds would present instability as explanation.
+
+**Alternatives Considered:**
+Streamlit, rejected because the deliverable is a product a reviewer will
+operate and judge, and the framework's constraints on layout and presentation
+would undercut that. A single container serving both API and static build,
+rejected because it forecloses closing the API to public ingress and blurs
+the separation the architecture is meant to demonstrate. Live BigQuery
+queries per request, rejected on latency and cost for no benefit at this
+scale. Open public access, rejected on the grounds above. A single fixed "as
+at" date, rejected because it removes the ability to demonstrate alert
+behaviour around an onset.
+
+**Consequences:**
+- Two Cloud Run services are deployed: an API with internal ingress and a
+  web application with public ingress behind authentication.
+- Credentials are held in Secret Manager and are never committed. A fixed
+  set of review credentials is provisioned.
+- Authentication is shared-credential and is recorded as a review-access
+  control, not as production authentication. This limitation is stated in
+  the model card.
+- Batch inference writes both the `paa_product` BigQuery table and the
+  serving artefact, and the two are reconciled by a check.
+- Every view carries its "as at" date. No view is framed as current.
+- Every risk figure is displayed with its operating-point burden and the
+  player's data-completeness context.
+- The interface contains no diagnosis, clearance, fitness or participation
+  language. This is enforced by a test over the rendered copy, not by
+  review alone.
+- `DEC-046`'s scope-control order, which cuts the API layer before the
+  dashboard, no longer applies as written, since the API is now a
+  dependency of the dashboard rather than an addition to it.
+
+**Affected Components:** V1-P6 architecture, batch inference outputs,
+deployment topology, access control, model card content, scope-control order
+
+**Supersedes:** `DEC-046`, in respect of the scope-control cut order only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
