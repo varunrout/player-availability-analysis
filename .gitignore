@@ -62,3 +62,13 @@ logs/
 
 # Local tool settings
 .claude/settings.local.json
+
+# Node / web (V1-P6, DEC-064). web/.gitignore already covers these locally;
+# repeated here so the root policy file is explicit and a broad `git add`
+# from the repo root cannot sweep build output in by omission.
+web/node_modules/
+web/.next/
+web/out/
+web/.vercel/
+web/*.tsbuildinfo
+web/next-env.d.ts
