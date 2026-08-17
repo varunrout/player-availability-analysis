@@ -4,6 +4,7 @@
   "bq_table_id": "player-availability-analysis.paa_product.paa_product",
   "gcs_artifact_uri": "gs://paa-artifacts-979927072833/product/paa_product_serving_artifact.parquet",
   "gcs_manifest_uri": "gs://paa-artifacts-979927072833/product/paa_product_serving_manifest.json",
+  "gcs_onset_calendar_uri": "gs://paa-artifacts-979927072833/product/paa_product_onset_calendar.parquet",
   "reconciliation": {
     "artifact_row_count": 34600,
     "bq_row_count": 34600,
@@ -28,12 +29,12 @@
       "readiness_mean_prior_7d",
       "readiness_mean_prior_28d"
     ],
-    "generated_at_utc": "2026-08-17T14:36:09.555881+00:00",
+    "generated_at_utc": "2026-08-17T16:19:35.679783+00:00",
     "model_id": "M1-F1-PRODUCT",
     "operating_point_thresholds": {
       "0.025": 0.03383118401132315,
       "0.05": 0.026711496132413855
     }
   },
-  "written_at_utc": "2026-08-17T14:36:21.459537+00:00"
+  "written_at_utc": "2026-08-17T16:19:43.615204+00:00"
 }
