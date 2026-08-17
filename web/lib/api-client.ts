@@ -62,7 +62,10 @@ export interface CoveredPeriod {
 export interface OperatingPointInForce {
   review_rate: number;
   probability_threshold: number;
-  false_alerts_per_captured_onset: number | null;
+  development_false_alerts_per_captured_onset: number | null;
+  held_out_realised_alert_rate: number | null;
+  held_out_false_alerts_per_captured_onset: number | null;
+  held_out_represented_onsets: number | null;
 }
 
 export interface PlayerRiskRow {

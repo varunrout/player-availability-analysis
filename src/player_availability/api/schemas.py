@@ -12,11 +12,21 @@ from pydantic import BaseModel
 
 
 class OperatingPointInForce(BaseModel):
-    """The alerting rule applied to this response, with its measured burden."""
+    """The alerting rule applied to this response, with both measured burdens.
+
+    Development burden (`EXP-019`, 16,815 pooled rolling-origin player-days, 18
+    represented onsets) and held-out burden (`DEC-062`/`DEC-063`, the V1-P5
+    confirmatory result, 8,845 player-days, 5 represented onsets) are reported
+    together, never the development figure alone: a reviewer who reads the model
+    card and then opens the dashboard must not encounter two unreconciled numbers.
+    """
 
     review_rate: float
     probability_threshold: float
-    false_alerts_per_captured_onset: float | None
+    development_false_alerts_per_captured_onset: float | None
+    held_out_realised_alert_rate: float | None
+    held_out_false_alerts_per_captured_onset: float | None
+    held_out_represented_onsets: int | None
 
 
 class PlayerRiskRow(BaseModel):

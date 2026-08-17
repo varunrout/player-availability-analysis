@@ -94,6 +94,16 @@ main {
   margin-bottom: 1rem;
   font-size: 0.85rem;
   background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.held-out-burden {
+  padding: 0.4rem 0.55rem;
+  border-radius: 4px;
+  background: var(--alert-bg);
+  border: 1px solid var(--alert-border);
 }
 
 table {

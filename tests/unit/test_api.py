@@ -71,6 +71,33 @@ def test_squad_overview_returns_ranked_players_with_operating_point(client: Test
     assert ranks == sorted(ranks)
 
 
+def test_squad_overview_operating_point_includes_held_out_figure_not_development_alone(
+    client: TestClient,
+) -> None:
+    # DEC-063 fix: a screen showing an operating-point burden must show the V1-P5
+    # held-out figure alongside the EXP-019 development figure, never development
+    # alone, so a reviewer cannot see one number here and a different one in the
+    # model card with nothing reconciling them.
+    from player_availability.api.app import get_artifact
+
+    artifact = get_artifact()
+    team_id = artifact.predictions["team_id"][0]
+
+    response = client.get("/squad-overview", params={"team_id": team_id})
+    assert response.status_code == 200
+    operating_point = response.json()["operating_point"]
+    assert operating_point["development_false_alerts_per_captured_onset"] is not None
+    assert operating_point["held_out_false_alerts_per_captured_onset"] is not None
+    assert operating_point["held_out_realised_alert_rate"] is not None
+    assert operating_point["held_out_represented_onsets"] == 5
+    # The held-out figure is the real (worse) number; it must not be silently equal
+    # to the development figure, which would indicate the wrong table was wired up.
+    assert (
+        operating_point["held_out_false_alerts_per_captured_onset"]
+        != operating_point["development_false_alerts_per_captured_onset"]
+    )
+
+
 def test_squad_overview_unknown_team_returns_404(client: TestClient) -> None:
     response = client.get("/squad-overview", params={"team_id": "NoSuchTeam"})
     assert response.status_code == 404

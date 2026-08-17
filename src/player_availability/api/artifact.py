@@ -44,6 +44,7 @@ class ModelHealthReference:
 
     calibration: dict[str, Any]
     operating_points: list[dict[str, Any]]
+    held_out_operating_points: dict[float, dict[str, Any]]
     final_test_metrics: dict[str, Any]
     final_test_claims: list[dict[str, Any]]
 
@@ -103,9 +104,16 @@ def load_model_health_reference(reference_root: Path | None = None) -> ModelHeal
         root / "v1_p5_final_test" / "tables" / "final_test_metrics.csv"
     )
     final_test_claims = pl.read_csv(root / "v1_p5_final_test" / "tables" / "claims.csv")
+    held_out_operating_points = pl.read_csv(
+        root / "v1_p5_final_test" / "tables" / "operating_point_results.csv"
+    )
     return ModelHealthReference(
         calibration=calibration.row(0, named=True),
         operating_points=operating_points.sort("operating_point_value").to_dicts(),
+        held_out_operating_points={
+            float(row["review_rate"]): row
+            for row in held_out_operating_points.iter_rows(named=True)
+        },
         final_test_metrics=final_test_metrics.row(0, named=True),
         final_test_claims=final_test_claims.to_dicts(),
     )

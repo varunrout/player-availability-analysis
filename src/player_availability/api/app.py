@@ -80,7 +80,7 @@ def _operating_point_in_force(artifact: ServingArtifact, rate: float) -> Operati
     if threshold is None:
         raise HTTPException(status_code=400, detail=f"Unsupported review rate: {rate}")
     reference = get_model_health_reference()
-    burden = next(
+    development_burden = next(
         (
             row["false_alerts_per_captured_onset"]
             for row in reference.operating_points
@@ -88,8 +88,25 @@ def _operating_point_in_force(artifact: ServingArtifact, rate: float) -> Operati
         ),
         None,
     )
+    held_out = next(
+        (
+            row
+            for held_out_rate, row in reference.held_out_operating_points.items()
+            if abs(held_out_rate - rate) < 1e-9
+        ),
+        None,
+    )
     return OperatingPointInForce(
-        review_rate=rate, probability_threshold=threshold, false_alerts_per_captured_onset=burden
+        review_rate=rate,
+        probability_threshold=threshold,
+        development_false_alerts_per_captured_onset=development_burden,
+        held_out_realised_alert_rate=(
+            held_out["alerts_per_100_player_days"] / 100 if held_out else None
+        ),
+        held_out_false_alerts_per_captured_onset=(
+            held_out["false_alerts_per_captured_onset"] if held_out else None
+        ),
+        held_out_represented_onsets=(held_out["represented_onsets"] if held_out else None),
     )
 
 

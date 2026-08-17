@@ -1,3 +1,4 @@
+import { OperatingPointBanner } from "@/components/OperatingPointBanner";
 import { ApiError, getCoveredPeriod, getSquadOverview } from "@/lib/api-client";
 
 interface SquadPageProps {
@@ -70,18 +71,7 @@ export default async function SquadPage({ searchParams }: SquadPageProps) {
 
       {overview && (
         <>
-          <div className="operating-point-banner">
-            Operating point: {(overview.operating_point.review_rate * 100).toFixed(1)}% review
-            rate, probability threshold {overview.operating_point.probability_threshold.toFixed(4)}
-            .{" "}
-            {overview.operating_point.false_alerts_per_captured_onset !== null && (
-              <>
-                Measured burden:{" "}
-                {overview.operating_point.false_alerts_per_captured_onset.toFixed(1)} false
-                alerts per captured onset (development evidence).
-              </>
-            )}
-          </div>
+          <OperatingPointBanner operatingPoint={overview.operating_point} />
 
           <table>
             <thead>
