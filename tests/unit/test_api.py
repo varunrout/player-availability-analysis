@@ -39,6 +39,15 @@ def test_health(client: TestClient) -> None:
     assert response.json() == {"status": "ok"}
 
 
+def test_covered_period_lists_teams_and_date_bounds(client: TestClient) -> None:
+    response = client.get("/covered-period")
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["team_ids"]) > 0
+    assert body["covered_date_start"] <= body["covered_date_end"]
+    assert body["default_as_at_date"] == body["covered_date_end"]
+
+
 def test_squad_overview_returns_ranked_players_with_operating_point(client: TestClient) -> None:
     probe = client.get("/model-health")
     assert probe.status_code == 200

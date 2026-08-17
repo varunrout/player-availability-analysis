@@ -25,6 +25,7 @@ from player_availability.api.artifact import (
 )
 from player_availability.api.schemas import (
     CalibrationReference,
+    CoveredPeriodResponse,
     DataQualityResponse,
     DriverContribution,
     FinalTestClaim,
@@ -102,6 +103,19 @@ def _resolve_date(artifact: ServingArtifact, requested: date | None) -> date:
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(status="ok")
+
+
+@app.get("/covered-period", response_model=CoveredPeriodResponse)
+def covered_period() -> CoveredPeriodResponse:
+    """Team identifiers and the date range available, for the web selectors."""
+    artifact = get_artifact()
+    team_ids = sorted(artifact.predictions["team_id"].unique().to_list())
+    return CoveredPeriodResponse(
+        team_ids=team_ids,
+        covered_date_start=artifact.covered_date_start,
+        covered_date_end=artifact.covered_date_end,
+        default_as_at_date=artifact.covered_date_end,
+    )
 
 
 @app.get("/squad-overview", response_model=SquadOverviewResponse)

@@ -125,3 +125,12 @@ class ModelHealthResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+
+class CoveredPeriodResponse(BaseModel):
+    """Team identifiers and the date range available for the selectors."""
+
+    team_ids: list[str]
+    covered_date_start: date
+    covered_date_end: date
+    default_as_at_date: date
