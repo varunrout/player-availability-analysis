@@ -11,8 +11,11 @@ V1 is complete and deployed. Its headline evidence is methodological rigour and 
 **Deployed dashboard:** https://paa-web-979927072833.europe-west2.run.app (shared review credential; ask the project owner for access — no credential is ever committed to this repository).
 
 Current state and open items: [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md)
-Full decision history (65 recorded decisions): [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
+Full decision history (66 recorded decisions): [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
 Analysis and experiment execution plan: [`docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`](docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md)
+Model card (limitations-first): [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md)
+Architecture diagrams: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+Claim-by-claim source mapping: [`docs/CLAIM_TRACEABILITY.md`](docs/CLAIM_TRACEABILITY.md)
 
 ## What is actually true about this model
 
