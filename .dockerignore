@@ -13,6 +13,8 @@ web/node_modules
 !.env.example
 outputs
 !outputs/modelling/exp_009_calibration/tables/arm_pooled_metrics.csv
+!outputs/modelling/exp_009_calibration/tables/arm_reliability_bins.csv
 !outputs/modelling/exp_019_alert_budget/tables/alert_budget_results.csv
 !outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv
 !outputs/modelling/v1_p5_final_test/tables/claims.csv
+!outputs/modelling/v1_p5_final_test/tables/operating_point_results.csv

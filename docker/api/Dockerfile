@@ -23,9 +23,11 @@ COPY configs ./configs
 # governing decisions rest on, not the full outputs tree. Paths preserved so
 # repo_root()/outputs/modelling/... resolves the same way as in local dev.
 COPY outputs/modelling/exp_009_calibration/tables/arm_pooled_metrics.csv outputs/modelling/exp_009_calibration/tables/arm_pooled_metrics.csv
+COPY outputs/modelling/exp_009_calibration/tables/arm_reliability_bins.csv outputs/modelling/exp_009_calibration/tables/arm_reliability_bins.csv
 COPY outputs/modelling/exp_019_alert_budget/tables/alert_budget_results.csv outputs/modelling/exp_019_alert_budget/tables/alert_budget_results.csv
 COPY outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv
 COPY outputs/modelling/v1_p5_final_test/tables/claims.csv outputs/modelling/v1_p5_final_test/tables/claims.csv
+COPY outputs/modelling/v1_p5_final_test/tables/operating_point_results.csv outputs/modelling/v1_p5_final_test/tables/operating_point_results.csv
 
 RUN pip install --no-deps -e .
 
