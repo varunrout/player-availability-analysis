@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 61
-Last Updated UTC: 2026-08-17T18:30:00Z
+State Version: 62
+Last Updated UTC: 2026-08-17T18:45:00Z
 Coordination Session ID: PAA-IMPL-20260817-02
 Git Branch: main
-Git HEAD: c6f8e30 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: V1 Delivery Programme - Phase V1-P7 Complete: Repository Public, CI Added
-Current Phase Status: `DEC-065` superseded the standing local-only Git constraint: the repository is now a public GitHub remote (`https://github.com/varunrout/player-availability-analysis`), pushed after a full-history credential scan found nothing. `DEC-066` corrected `DEC-065`'s premise that `lifelines` had become unused: `m1_survival.py` and its tests still exercise it directly as the `EXP-007` reproduction path, so it is retained. A V1-P6 review correction added a reconciling note to the data-quality view, since three different but individually-correct onset counts (73 full-calendar, 18 pooled development, 5 final-test) appeared across views with nothing explaining the gap; redeployed and confirmed live. The README was rewritten to describe the actually-deployed V1 system rather than the pre-modelling foundation stage it described until now. A GitHub Actions workflow running the five quality gates plus a web build is committed, pushed and green (run `32050226040`): the first push failed immediately on a GitHub-account billing lock unrelated to the workflow, which cleared on its own before the control-document push and has not recurred. Service-account documentation is reconciled (`paa-ci-sa` was never provisioned; CI needs no GCP identity; `paa-build-sa` is a vestigial, unused Cloud Build artifact, flagged for deletion but not deleted, since deleting a live IAM resource was outside this session's authorisation). Running cost is estimated, not billed, since the Cloud Billing API is disabled on the project; the estimate is dominated by the 99 GB archive bucket at Standard storage class. The archive bucket has no lifecycle or storage-class rule; billing-budget-alert configuration could not be verified by the same Cloud-Billing-API-disabled blocker. Phase V1-P8 is not begun.
+Git HEAD: b30b4f5 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: V1 Delivery Programme - Complete: V1-P8 Release Evidence Delivered
+Current Phase Status: `DEC-046`'s three V1-P8 deliverables are complete. `docs/MODEL_CARD.md` leads with limitations (outcome support, the reporting-engagement decay, shared-credential access) before any model detail, per `DEC-046`'s explicit requirement, and records the champion, both operating-point burdens side by side, the V1-P5 confirmatory result, the `daily_load_log1p` exclusion, and the three findings that overturned an initially favourable result before adoption (`EXP-016`, `EXP-007`, `EXP-008`). `docs/ARCHITECTURE.md` carries two GitHub-rendered Mermaid diagrams: the data/serving path and the evidence chain from stage-gated analysis through experiments and decisions to the deployed artefact. `docs/CLAIM_TRACEABILITY.md`, generated from `src/player_availability/claims.py`, maps 43 factual claims across `README.md`, the model card and hardcoded interface text to the committed artefact that measures each one; `tests/unit/test_claim_traceability.py` checks every entry mechanically on every run, not by review. Coverage: 43 claims, 43 traced, 0 untraceable. Building the audit surfaced one real staleness bug it exists to catch: `README.md` had drifted to "65 recorded decisions" against the actual 66; fixed, and now covered by the suite. CI is green (run `32053906302`). V1 is complete; the case study and interview narrative are being drafted separately by the project owner. Phase V1-P8 is complete; V1-P9 has no open specification.
 
 ## Current Objective
 
-None outstanding from implementation. One item needs the project owner directly: decide whether to enable the Cloud Billing API (or check the console directly) to get an exact cost figure and confirm budget-alert configuration. CI is green; no action needed there. Await direction on Phase V1-P8 (release evidence, model card, case study).
+None outstanding from implementation. The one item recorded at v61 remains with the project owner, not implementation work: whether to enable the Cloud Billing API (or check the console directly) for an exact cost figure and budget-alert confirmation. V1 delivery is complete. Await direction on any further phase.
 
 ## V1 Delivery Context
 
@@ -306,6 +306,15 @@ State v60 to v61, under coordination session `PAA-IMPL-20260817-02`.
 - Verified archive-bucket lifecycle rules and billing-budget alerts, both long-standing Known Issues items, rather than assuming their state. `paa-source-archives-979927072833` (the 99 GB archive bucket) has no lifecycle rule of any kind — confirmed, not assumed. `paa-data-979927072833` has a working three-day deletion rule scoped to a `tmp/` prefix. `paa-artifacts-979927072833` has none, low-risk given its near-zero size and constant overwrite pattern. Billing-budget-alert configuration could not be verified by the same Cloud-Billing-API-disabled blocker that limited the cost estimate; this needs the project owner to check `console.cloud.google.com/billing/budgets` directly or authorise enabling the API.
 - Full quality gate passes throughout this revision: lockfile, Ruff, format, strict mypy and pytest (`130 passed`, one expected ZIP duplicate-name warning), `npm run build` succeeding for all four Next.js routes. No `Co-Authored-By` trailer and no credential appear in any diff or commit from this revision, confirmed by direct scan.
 
+State v61 to v62, under coordination session `PAA-IMPL-20260817-02`.
+
+- Wrote `docs/MODEL_CARD.md`, committed at `24ec65b`. Limitations lead, per `DEC-046`'s explicit instruction, not a section at the end: outcome support (66 represented onsets, 56/5/5 across train/validation/test, 74.6% from five players, 12 of 50 players carrying any development event), the reporting-engagement decay (onsets fall from 135 in 2020 to 12 in 2021 at flat player-days, wellness reporting rising from 62.9% to 97.3% on onset days), and the shared-credential review-access limitation. Records the champion (raw F1, no calibrator, `DEC-058`/`DEC-059`), both operating-point burdens side by side, the V1-P5 confirmatory result with its claims table and five-onset support stated inline, the `daily_load_log1p` exclusion, and the three findings that overturned an initially favourable result before adoption: `EXP-016`'s robust-fatigue predictor was an availability artefact, not a value effect; `EXP-007`'s Cox unseen-player advantage was gap-time-clock leakage; `EXP-008`'s boosted classifier won on Brier alone and failed the adoption gate on calibration and discrimination.
+- Wrote `docs/ARCHITECTURE.md`, committed at `7538c3b`. Two Mermaid diagrams, validated before commit and rendered natively on GitHub: the data and serving path (source archive through GCS, BigQuery provenance, batch inference, the serving artefact, the API and the web dashboard) and the evidence chain (stage-gated analysis through experiments, decisions and the deployed artefact).
+- Built the claim-traceability audit, `DEC-046`'s stated V1-P8 exit criterion, committed at `b30b4f5`. `src/player_availability/claims.py` is a registry of 43 factual claims across `README.md`, `docs/MODEL_CARD.md` and hardcoded interpretive text in the API layer's C3 explanation, each naming the specific committed artefact and exact figure that measures it. `tests/unit/test_claim_traceability.py` checks every entry mechanically: a literal claim must appear verbatim, after whitespace normalisation, in both its citing document and its source artefact; a computed claim (a sum by year, an overprediction ratio, a decision count, a training/validation gap) must reproduce its stated figure from the source's own column values. `docs/CLAIM_TRACEABILITY.md` is generated from the same registry, not maintained separately. Coverage: 43 claims, 43 traced, 0 untraceable — no claim required softening to make the table work.
+- Building the audit surfaced a real, previously unnoticed staleness bug: `README.md`'s decision-log link read "65 recorded decisions" against the actual 66 already in `docs/DECISION_LOG.md` after `DEC-066`. This is exactly the failure mode the audit exists to catch. Fixed in the same commit as the audit that caught it, and now covered by the suite so it cannot silently drift again without a test failure.
+- Full quality gate passes throughout this revision: lockfile, Ruff, format, strict mypy and pytest (`175 passed` — 130 carried forward plus 45 new claim-traceability tests — one expected ZIP duplicate-name warning). CI green on the push (run `32053906302`).
+- No code, evidence, figure or report outside the three new documents and the traceability module was regenerated; V1's champion, operating points, predictor contract and every prior decision are unchanged.
+
 ## Current Repository State
 
 ```text
@@ -314,12 +323,17 @@ jobs/product/                V1-P6 batch inference CLI entrypoint
 notebooks/analysis/          matching output-cleared notebooks
 outputs/analysis/            retained script-generated analysis artifacts
 src/player_availability/     ingestion, outcomes, features, quality, configuration,
-                              modelling, product (batch inference) and api (FastAPI)
+                              modelling, product (batch inference), api (FastAPI)
+                              and claims (traceability registry)
 web/                         Next.js dashboard (squad, player, quality, health views)
 docker/api/, docker/web/     Cloud Run container definitions
 .github/workflows/ci.yml     GitHub Actions: five quality gates plus web build
-tests/                       130 passing tests, including Stage 0-8, M0/M1 ladder,
-                              V1-P5, V1-P6 batch inference, API and web copy-constraint tests
+tests/                       175 passing tests, including Stage 0-8, M0/M1 ladder,
+                              V1-P5, V1-P6 batch inference, API, web copy-constraint
+                              and claim-traceability tests
+docs/MODEL_CARD.md           Limitations-first model card (V1-P8)
+docs/ARCHITECTURE.md         Two Mermaid diagrams: data/serving path, evidence chain
+docs/CLAIM_TRACEABILITY.md   Generated from src/player_availability/claims.py
 docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md
 docs/PROJECT_STATE.md
 docs/DECISION_LOG.md
@@ -382,7 +396,9 @@ EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is comp
 
 V1-P6 is complete and deployed under `DEC-064`. Batch inference writes the `paa_product` BigQuery table of record and a compact serving artefact to Cloud Storage that the API reads directly; the API never queries BigQuery per request. Two Cloud Run services are live: `paa-api` (`--no-allow-unauthenticated`, reachable only by the web service's IAM identity) and `paa-web` (Basic-Auth-gated, shared review credential). Four web views are implemented and verified against live data: squad overview (daily ranked display, percentile alerting per `DEC-061`), player detail (risk over time with onset dates marked and the eight `EXP-018` sign-stable drivers), data quality (reporting coverage, the onset-decline finding by year, and a reconciling note across the three onset counts a reviewer sees across screens) and model health (reliability curve, operating-point table with development and held-out burden together, and the V1-P5 confirmatory result with its C3 explanation). Every operating-point display carries the held-out (V1-P5) figure alongside the development (EXP-019) figure, enforced by a structural test, never the development figure alone. Copy constraints (no diagnosis, clearance, fitness, injury-prediction or participation language) are enforced by an automated source-text scan. The intended product remains practitioner decision support, never diagnosis, clearance or participation advice.
 
-The source repository is now public under `DEC-065` at `https://github.com/varunrout/player-availability-analysis`, with a committed GitHub Actions workflow for the five quality gates. The deployed dashboard itself is unaffected: it remains behind Basic Auth, and no credential appears in the public repository.
+The source repository is now public under `DEC-065` at `https://github.com/varunrout/player-availability-analysis`, with a committed and green GitHub Actions workflow for the five quality gates. The deployed dashboard itself is unaffected: it remains behind Basic Auth, and no credential appears in the public repository.
+
+V1-P8 release evidence is complete: `docs/MODEL_CARD.md` (limitations-first), `docs/ARCHITECTURE.md` (two GitHub-rendered Mermaid diagrams) and `docs/CLAIM_TRACEABILITY.md` (43 claims, 43 traced, mechanically checked on every test run). This closes `DEC-046`'s definition of done. The case study and interview narrative are being drafted separately by the project owner and are explicitly out of scope for this implementation session.
 
 ## Locked Decisions
 
@@ -431,8 +447,10 @@ Resolved since the previous revision: the V1-P6 build specification (`DEC-064`, 
 
 ## Known Issues / Technical Debt
 
+- Resolved: `docs/MODEL_CARD.md`, `docs/ARCHITECTURE.md` and `docs/CLAIM_TRACEABILITY.md` are complete, closing `DEC-046`'s V1-P8 release-evidence requirement. 43 claims, 43 traced, 0 untraceable, mechanically checked by `tests/unit/test_claim_traceability.py` on every run rather than by review.
+- Resolved by the traceability audit: `README.md`'s decision-log link had drifted to "65 recorded decisions" against the actual 66; a real staleness bug the audit was built to catch, fixed in the same commit.
 - Resolved by `DEC-065`: the repository is public with a GitHub Actions CI workflow (`.github/workflows/ci.yml`) running the five quality gates plus a web build.
-- Resolved: the CI workflow's first push failed immediately on a `varunrout`-account GitHub Actions billing lock, unrelated to the workflow or the code; it cleared on its own before the next push and CI is now green (run `32050226040`).
+- Resolved: the CI workflow's first push failed immediately on a `varunrout`-account GitHub Actions billing lock, unrelated to the workflow or the code; it cleared on its own before the next push and CI is now green (run `32053906302`).
 - Resolved by `DEC-065`/doc 18: service-account naming reconciled against the live project. `paa-ci-sa` was never provisioned, since CI runs in GitHub Actions and touches no GCP resource. `paa-build-sa` exists (`roles/logging.logWriter` only), unused since the abandoned Cloud Build attempt during V1-P6; flagged as a deletion candidate below, not yet deleted.
 - Not remediated: `paa-build-sa` is an unused service account with a standing IAM binding. Deleting it is a routine cleanup action, but was blocked by this environment's safety controls when attempted without prior explicit authorisation for that specific action; needs the project owner to delete it directly (`gcloud iam service-accounts delete paa-build-sa@player-availability-analysis.iam.gserviceaccount.com`) or to explicitly authorise it in a future session.
 - Not remediated: `paa-source-archives-979927072833` (the 99 GB archive bucket) has no lifecycle rule of any kind, verified directly rather than assumed. It is a rarely-accessed, effectively write-once verified copy; a Standard-to-Archive/Coldline storage-class transition rule would cut its storage cost by roughly an order of magnitude with no functional loss, since nothing reads it on a recurring basis.
@@ -481,17 +499,16 @@ Standing analytical constraint, not a blocker: effective outcome support is 104 
 
 ## Work In Progress
 
-No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `EXP-018`, `EXP-019`, the V1-P5 final-test governance gate and the V1-P6 dashboard are all implemented, executed, deployed and committed. The repository is public with a green CI workflow. Phase V1-P5 is closed under `DEC-062`/`DEC-063`; phase V1-P6 is complete under `DEC-064`; phase V1-P7 is complete under `DEC-065`/`DEC-066` except for the one owner-only cost/budget item below. Phase V1-P8 is not begun. No other control session is known to be modifying the working tree.
+No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `EXP-018`, `EXP-019`, the V1-P5 final-test governance gate and the V1-P6 dashboard are all implemented, executed, deployed and committed. The repository is public with a green CI workflow. V1-P8's model card, architecture diagrams and claim-traceability audit are complete and committed. Phase V1-P5 is closed under `DEC-062`/`DEC-063`; phase V1-P6 is complete under `DEC-064`; phase V1-P7 is complete under `DEC-065`/`DEC-066` except for the one owner-only cost/budget item below; **phase V1-P8 is complete**. The V1 delivery programme, as scoped by `DEC-046`, is complete. The case study and interview narrative are being drafted separately by the project owner, outside this implementation session's scope. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
 1. Check `console.cloud.google.com/billing` for an exact running-cost figure and confirm whether a budget alert is configured, or authorise enabling the Cloud Billing API so this can be verified programmatically.
 2. Decide whether to delete the unused `paa-build-sa` service account (flagged under Known Issues) or leave it; deletion was blocked pending explicit authorisation for that specific action.
 3. Consider a Standard-to-Archive/Coldline storage-class transition rule for `paa-source-archives-979927072833`, which has no lifecycle rule today and would cost roughly an order of magnitude less at rest.
-4. Write the model card, citing the V1-P5 result as a confirmatory check with its five-onset support stated inline, stating the C3 diagnosis (`DEC-063`) explicitly, and never as a performance claim.
-5. Carry the `DEC-063` out-of-fold-threshold finding into any V2 work that derives operating thresholds.
-6. Await direction on Phase V1-P8 (release evidence, model card, case study). No open specification exists for it in this revision.
-7. The final test is spent. Any further access requires a superseding decision recorded before it occurs.
+4. Carry the `DEC-063` out-of-fold-threshold finding into any V2 work that derives operating thresholds.
+5. Await direction on any further phase. V1 delivery is complete under `DEC-046`; no open specification exists for a next phase in this revision. The case study and interview narrative are being drafted separately by the project owner.
+6. The final test is spent. Any further access requires a superseding decision recorded before it occurs.
 
 ## Validation / Quality Gate Status
 
@@ -658,20 +675,26 @@ No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `E
 | Running-cost recording | ESTIMATED, NOT BILLED | Cloud Billing API disabled on the project; usage-based estimate roughly $2-3/month from measured resource sizes at list rates |
 | Archive-bucket lifecycle verification | VERIFIED: NO RULE | `paa-source-archives-979927072833` confirmed to have no lifecycle rule; `paa-data-979927072833` has a working `tmp/` three-day rule |
 | Billing-budget-alert verification | NOT VERIFIABLE | blocked by the same Cloud-Billing-API-disabled condition; needs manual console check or API access |
+| V1-P8 model card | PASS | committed at `24ec65b`; limitations lead, per `DEC-046`; every figure cites its committed artefact |
+| V1-P8 architecture diagrams | PASS | committed at `7538c3b`; two Mermaid diagrams, syntax-validated before commit, render natively on GitHub |
+| V1-P8 claim traceability audit | PASS | committed at `b30b4f5`; 43 claims, 43 traced, 0 untraceable; mechanically checked by `tests/unit/test_claim_traceability.py` |
+| V1-P8 exit criterion (`DEC-046`) | CLOSED | model card, architecture diagrams and claim-traceability audit all complete; V1 delivery programme complete |
+| CI on V1-P8 push | PASS | run `32053906302`, green |
 
-Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 114 files, strict mypy clean across 88 source files, `130 passed` with one expected ZIP warning, `poetry check --lock` passing, and `npm run build` succeeding for all four Next.js routes.
+Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 116 files, strict mypy clean across 90 source files, `175 passed` with one expected ZIP warning, `poetry check --lock` passing, and `npm run build` succeeding for all four Next.js routes.
 
 ## State Synchronisation Status
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v61, 2026-08-17T18:30:00Z | v61, 2026-08-17T18:30:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-066 | DEC-001 to DEC-066 |
+| `PROJECT_STATE.md` | v62, 2026-08-17T18:45:00Z | v62, 2026-08-17T18:45:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-066 (unchanged this revision) | DEC-001 to DEC-066 (unchanged this revision) |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | unchanged this revision | unchanged this revision |
-| `18_GCP_ARCHITECTURE_AND_DEVELOPMENT_OPERATING_MODEL.md` (Drive-only, not part of the git-tracked mirror set) | not applicable | service-account section corrected against live-project ground truth (`paa-ci-sa` never provisioned, `paa-build-sa` flagged for deletion) |
+| `18_GCP_ARCHITECTURE_AND_DEVELOPMENT_OPERATING_MODEL.md` (Drive-only, not part of the git-tracked mirror set) | not applicable | unchanged this revision |
+| `MODEL_CARD.md`, `ARCHITECTURE.md`, `CLAIM_TRACEABILITY.md` (git-tracked, public GitHub repository) | new this revision, committed at `24ec65b`/`7538c3b`/`b30b4f5` | not part of `DEC-050`'s mirrored set; publicly readable on GitHub instead |
 
-Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files. Doc 18 is edited directly on Drive when its content changes, since it is not part of the git-tracked mirror set and carries no hash-verification obligation.
+Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files. Doc 18 is edited directly on Drive when its content changes, since it is not part of the git-tracked mirror set and carries no hash-verification obligation. The three new V1-P8 documents are git-tracked and public on GitHub, which serves the same "not lost, not solely local" purpose the Drive mirror serves for the three control documents; they are not added to `DEC-050`'s mirrored set, since that set's hash-verification discipline exists for documents that could otherwise diverge between two independently-edited copies, and these have only one copy.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260817-02`. `DECISION_LOG.md` gains `DEC-065` (public GitHub remote, CI, README, service-account and cost review) and `DEC-066` (correcting `DEC-065`'s `lifelines`-removal premise); doc 19 is unchanged this revision, since this round's work is repository-hosting and product-review policy, not an analysis or experiment specification change; `PROJECT_STATE.md` advances to v61, covering the public push, the CI workflow (green after a transient GitHub-account billing lock on the first push cleared on its own), the onset-count reconciliation fix, the README rewrite, the service-account and cost review, and the archive-bucket/billing-budget verification. All three git-tracked pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `c6f8e30`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260817-02`. Neither `DECISION_LOG.md` nor doc 19 changed in this revision; `PROJECT_STATE.md` advances to v62, covering V1-P8's three deliverables (model card, architecture diagrams, claim-traceability audit), the staleness bug the traceability audit caught and fixed in `README.md`, and the completion of the V1 delivery programme as scoped by `DEC-046`. All three git-tracked control-document pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `b30b4f5`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
