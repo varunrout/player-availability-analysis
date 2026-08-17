@@ -1,8 +1,13 @@
 """FastAPI service reading only the batch-inference serving artefact (`DEC-064`).
 
-Internal ingress: reachable only by the web service's identity in deployment. No
-endpoint queries BigQuery. Every data response carries the "as at" date and the
-operating point in force.
+Reachable only by the web service's identity in deployment: the service is deployed
+with `--no-allow-unauthenticated` and an IAM `run.invoker` binding restricted to the
+web service's own service account, which is what Cloud Run same-project
+service-to-service calls actually check (network-level `--ingress internal` requires
+Direct VPC egress on the caller, which this project does not provision; IAM
+authentication delivers the same "reachable only by this identity" property without
+that infrastructure). No endpoint queries BigQuery. Every data response carries the
+"as at" date and the operating point in force.
 """
 
 from __future__ import annotations

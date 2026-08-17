@@ -719,7 +719,7 @@ Deferred to V2: EXP-011 and EXP-012 GPS work, EXP-015 neural survival, and onlin
 
 A reconciliation check confirms the artefact and the BigQuery table agree row for row.
 
-**API, FastAPI, internal ingress.** Endpoints:
+**API, FastAPI, reachable only by the web service's identity.** Deployed with `--no-allow-unauthenticated` and an IAM `run.invoker` binding restricted to the web service's own service account. Deployed with default (public) network ingress rather than `--ingress internal`: literal network-level internal ingress requires the calling service to route egress through a VPC via Direct VPC egress or a Serverless VPC Access connector, which this project does not provision, and same-project Cloud Run-to-Cloud Run calls are not otherwise exempted from an internal-ingress block. IAM authentication delivers the same "reachable only by this identity" property that `DEC-064` requires without that additional infrastructure. Endpoints:
 
 - squad overview for a team and date;
 - player detail for a player and date, returning the risk series and driver contributions;

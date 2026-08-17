@@ -1,6 +1,8 @@
-# V1-P6 API service (DEC-064). Internal ingress only; reads the batch-inference
-# serving artefact from Cloud Storage and the committed evidence tables below.
-# No credential is baked into this image; Cloud Run supplies ADC at runtime.
+# V1-P6 API service (DEC-064). Deployed with --no-allow-unauthenticated and an IAM
+# run.invoker binding restricted to the web service's identity; reads the
+# batch-inference serving artefact from Cloud Storage and the committed evidence
+# tables below. No credential is baked into this image; Cloud Run supplies ADC
+# at runtime.
 FROM python:3.12-slim AS base
 
 ENV POETRY_VIRTUALENVS_CREATE=false \
