@@ -2881,6 +2881,96 @@ deployment topology, access control, model card content, scope-control order
 
 ---
 
+## DEC-065
+
+**Decision ID:** DEC-065
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+Git has been local-only since the project's foundation, recorded as a
+standing constraint in `PROJECT_STATE.md`. The `DEC-046` definition of done
+requires continuous integration running the lockfile, lint, type and test
+gates plus the leakage checks. Continuous integration requires a remote.
+The two requirements have been in unresolved conflict since `DEC-046` was
+accepted and phase V1-P7 is the point at which it must be settled.
+
+The repository now contains 640 tracked files, 130 tests, 64 decision
+records and the full evidence chain for nine analysis stages and seven
+experiments, none of which exists anywhere except one workstation.
+
+**Decision:**
+Publish the repository to a public GitHub remote and run the five quality
+gates in GitHub Actions on push and on pull request. The local-only
+constraint is superseded.
+
+No credential, key or secret is committed at any point. Review credentials
+for the deployed dashboard remain in Secret Manager and are supplied on
+request, never in the repository or the README.
+
+Before the first push, scan the entire commit history, not only the working
+tree, for credentials and keys. The push is not reversible in any practical
+sense once the history is public.
+
+**Rationale:**
+The local-only constraint was a sensible default while the project was
+unpublished and its value was entirely in the working tree. It is now a
+single point of failure for the whole body of work, and it blocks a
+requirement the project has already committed to.
+
+The repository is also a deliverable in its own right. A reviewer assessing
+this project will read the decision log and the commit history, and both
+demonstrate the methodological discipline that `DEC-046` names as V1's
+headline evidence. Neither is visible while the repository is local.
+
+Public rather than private because the repository is portfolio material and
+a private repository requires the reviewer to be granted access
+individually, which is friction at exactly the moment attention is
+scarcest. The underlying dataset is public research data and the deployed
+dashboard remains behind authentication.
+
+Scanning the full history rather than the working tree is necessary because
+a secret removed in a later commit remains recoverable from an earlier one,
+and a public push makes that permanent.
+
+**Alternatives Considered:**
+Remaining local-only and amending the definition of done to drop continuous
+integration, rejected because it removes a stated requirement to preserve a
+default that no longer serves a purpose, and leaves the work unbacked. A
+private remote, rejected because the repository is portfolio material and
+access friction defeats its purpose; it remains available if a specific
+concern emerges. Publishing without a history scan, rejected because the
+action is effectively irreversible.
+
+**Consequences:**
+- The repository is pushed to a public GitHub remote.
+- GitHub Actions runs `poetry check --lock`, `ruff check`, `ruff format
+  --check`, `mypy` and `pytest` on push and pull request. A red pipeline
+  blocks merge.
+- Tests must run without GCP credentials. Any test requiring live access is
+  either fixture-backed or excluded from continuous integration with the
+  exclusion recorded.
+- The README is rewritten before the push. Its current text describes the
+  project as at foundation stage with modelling not yet begun, which is
+  false and would be the first thing a reviewer reads.
+- Secret scanning is enabled on the repository.
+- The `lifelines` dependency is removed. It became unused when `DEC-055`
+  rejected the survival framing and it pins numpy to 1.26 and scipy to 1.17
+  for no benefit.
+- Service-account naming is reconciled between `paa-build-sa` and
+  `paa-ci-sa` in the architecture documentation.
+- Running cost is recorded and confirmed against the envelope.
+- Archive-bucket lifecycle rules and billing-budget alerts are verified.
+
+**Affected Components:** version control policy, continuous integration,
+dependency envelope, README, cost governance, architecture documentation
+
+**Supersedes:** the standing local-only Git constraint recorded in
+`PROJECT_STATE.md`
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
