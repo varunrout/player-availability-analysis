@@ -2971,6 +2971,72 @@ dependency envelope, README, cost governance, architecture documentation
 
 ---
 
+## DEC-066
+
+**Decision ID:** DEC-066
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-065` recorded, as a consequence, that the `lifelines` dependency would
+be removed on the grounds that it became unused when `DEC-055` rejected the
+survival framing. That premise is factually wrong.
+`src/player_availability/modelling/m1_survival.py` and its focused tests
+import and exercise `lifelines` directly and are part of the passing suite.
+
+**Decision:**
+Retain `lifelines`, `m1_survival.py` and `tests/unit/test_m1_survival.py`.
+Supersede `DEC-065` in respect of the dependency-removal consequence only.
+Every other consequence of `DEC-065` stands, including the public remote,
+continuous integration, the README rewrite, the history scan, service-account
+reconciliation, cost recording and the lifecycle and budget verification.
+
+Record that `m1_survival.py` is retained as the reproduction path for
+`EXP-007` evidence, not as an active modelling component, and is not a
+deletion candidate on the grounds that the survival framing was rejected.
+
+**Rationale:**
+`DEC-055` rejected a modelling conclusion. It did not invalidate the code
+that produced the evidence for that conclusion. The retained `EXP-007`
+evidence is committed and is cited by `DEC-055` and by the V1-P8 case study,
+including the leakage diagnostic that overturned the initial result.
+Removing the implementation would leave those claims unreproducible from the
+repository and would contradict the `DEC-046` requirement that every external
+claim be traceable to a measured result.
+
+The cost of retention is that `lifelines` constrains numpy to 1.26 and scipy
+to 1.17. No current behaviour depends on a later version, all five gates pass,
+and both container images build. The constraint is recorded rather than
+removed.
+
+**Alternatives Considered:**
+Deleting the module and its tests, rejected because it makes `EXP-007`
+evidence unreproducible and discards the implementation behind one of V1's
+principal findings to remove a dependency that constrains nothing currently
+working. Retaining the module while excluding its tests from the suite,
+rejected as it converts verified code into untested code and weakens the
+gate for no gain. Moving `lifelines` to the development dependency group,
+rejected because Poetry resolves one lockfile across groups, so the numpy and
+scipy constraints would remain while the packaging became less obvious.
+
+**Consequences:**
+- `lifelines`, `m1_survival.py` and its tests are retained. The suite stays
+  at 130 tests.
+- numpy remains at 1.26 and scipy at 1.17. This is recorded under Known
+  Issues as an accepted constraint with its cause, not as debt to be cleared.
+- `m1_survival.py` is documented as the `EXP-007` reproduction path and is
+  not a deletion candidate on rejection grounds.
+- All other `DEC-065` consequences are unaffected.
+
+**Affected Components:** dependency envelope, EXP-007 reproducibility,
+V1-P7 scope, Known Issues
+
+**Supersedes:** `DEC-065`, in respect of the dependency-removal consequence
+only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
