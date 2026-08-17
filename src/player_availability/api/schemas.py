@@ -80,13 +80,26 @@ class PlayerCoverage(BaseModel):
     mean_data_completeness: float
 
 
+class OnsetsByYear(BaseModel):
+    year: int
+    represented_onsets: int
+    player_days: int
+
+
 class DataQualityResponse(BaseModel):
-    """Reporting coverage over time and across players for one team."""
+    """Reporting coverage over time and across players for one team.
+
+    Also carries the cohort-wide (not team-scoped) onset-decline finding: onsets fall
+    roughly tenfold from 2020 to 2021 at flat player-days, tracking reporting
+    engagement rather than injury incidence.
+    """
 
     team_id: str
     as_at_date: date
     coverage_over_time: list[TeamDataQualityPoint]
     player_coverage_range: list[PlayerCoverage]
+    onsets_by_year: list[OnsetsByYear]
+    onset_decline_note: str
 
 
 class CalibrationReference(BaseModel):
@@ -98,6 +111,15 @@ class CalibrationReference(BaseModel):
     calibration_slope: float | None
     brier_score: float
     log_loss: float
+
+
+class ReliabilityBin(BaseModel):
+    reliability_bin: int
+    player_days: int
+    positive_days: int
+    mean_prediction: float
+    observed_rate: float
+    bin_supported: bool
 
 
 class OperatingPointBurden(BaseModel):
@@ -122,14 +144,18 @@ class FinalTestResult(BaseModel):
     roc_auc: float | None
     claims: list[FinalTestClaim]
     interpretation: str
+    c3_explanation: str
 
 
 class ModelHealthResponse(BaseModel):
-    """Calibration, operating-point burden and the V1-P5 confirmatory result."""
+    """Calibration, operating-point burden (development and held-out) and the V1-P5
+    confirmatory result."""
 
     as_at_date: date
     calibration: CalibrationReference
+    reliability_bins: list[ReliabilityBin]
     operating_points: list[OperatingPointBurden]
+    held_out_operating_points: list[OperatingPointBurden]
     final_test_result: FinalTestResult
 
 

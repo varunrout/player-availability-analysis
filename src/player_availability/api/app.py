@@ -37,11 +37,13 @@ from player_availability.api.schemas import (
     FinalTestResult,
     HealthResponse,
     ModelHealthResponse,
+    OnsetsByYear,
     OperatingPointBurden,
     OperatingPointInForce,
     PlayerCoverage,
     PlayerDetailResponse,
     PlayerRiskRow,
+    ReliabilityBin,
     RiskSeriesPoint,
     SquadOverviewResponse,
     TeamDataQualityPoint,
@@ -233,6 +235,17 @@ def data_quality(
         .agg(pl.col("data_completeness").mean().alias("mean_data_completeness"))
         .sort("player_id")
     )
+    onsets_by_year_table = (
+        artifact.predictions.with_columns(pl.col("prediction_date").dt.year().alias("year"))
+        .group_by("year")
+        .agg(
+            pl.col("is_onset_date").sum().alias("represented_onsets"),
+            pl.len().alias("player_days"),
+        )
+        .sort("year")
+    )
+    onsets_by_year = [OnsetsByYear(**row) for row in onsets_by_year_table.iter_rows(named=True)]
+    onset_decline_note = _onset_decline_note(onsets_by_year)
     return DataQualityResponse(
         team_id=team_id,
         as_at_date=as_at_date,
@@ -242,6 +255,29 @@ def data_quality(
         player_coverage_range=[
             PlayerCoverage(**row) for row in player_coverage.iter_rows(named=True)
         ],
+        onsets_by_year=onsets_by_year,
+        onset_decline_note=onset_decline_note,
+    )
+
+
+def _onset_decline_note(onsets_by_year: list[OnsetsByYear]) -> str:
+    if len(onsets_by_year) < 2:
+        return (
+            "Insufficient year coverage to compute the onset-decline finding. "
+            "The 2020-to-2021 decline is documented in the project decision log "
+            "(DEC-046) and tracks reporting engagement rather than injury incidence."
+        )
+    first, last = onsets_by_year[0], onsets_by_year[-1]
+    ratio = first.represented_onsets / last.represented_onsets if last.represented_onsets else None
+    ratio_text = f"roughly {ratio:.0f}-fold" if ratio else "a large factor"
+    return (
+        f"Represented onsets fell from {first.represented_onsets} in {first.year} to "
+        f"{last.represented_onsets} in {last.year} ({ratio_text}), while player-days "
+        f"stayed roughly flat ({first.player_days} against {last.player_days}). This "
+        "decline tracks reporting engagement, not injury incidence (DEC-046): "
+        "wellness reporting rises sharply on injury-onset days relative to ordinary "
+        "days, so a decline in reported onsets reflects fewer players reporting, not "
+        "fewer injuries occurring."
     )
 
 
@@ -257,6 +293,17 @@ def model_health() -> ModelHealthResponse:
         brier_score=reference.calibration["brier_score"],
         log_loss=reference.calibration["log_loss"],
     )
+    reliability_bins = [
+        ReliabilityBin(
+            reliability_bin=int(row["reliability_bin"]),
+            player_days=int(row["player_days"]),
+            positive_days=int(row["positive_days"]),
+            mean_prediction=row["mean_prediction"],
+            observed_rate=row["observed_rate"],
+            bin_supported=bool(row["bin_supported"]),
+        )
+        for row in reference.reliability_bins
+    ]
     operating_points = [
         OperatingPointBurden(
             review_rate=float(row["operating_point_value"]),
@@ -265,6 +312,15 @@ def model_health() -> ModelHealthResponse:
             false_alerts_per_captured_onset=row["false_alerts_per_captured_onset"],
         )
         for row in reference.operating_points
+    ]
+    held_out_operating_points = [
+        OperatingPointBurden(
+            review_rate=rate,
+            alerts_per_100_player_days=row["alerts_per_100_player_days"],
+            recall=row["recall"],
+            false_alerts_per_captured_onset=row["false_alerts_per_captured_onset"],
+        )
+        for rate, row in sorted(reference.held_out_operating_points.items())
     ]
     final_test_result = FinalTestResult(
         player_days=int(reference.final_test_metrics["player_days"]),
@@ -275,10 +331,26 @@ def model_health() -> ModelHealthResponse:
             "Confirmatory sanity check on five represented onsets, not a performance "
             "claim (DEC-062, DEC-063)."
         ),
+        c3_explanation=(
+            "C3 (false-alert burden of development order) was not supported: at the "
+            "2.5% operating point the held-out burden was 135.0 false alerts per "
+            "captured onset against a development figure of 34.8. DEC-063 attributes "
+            "this to two compounding, non-champion causes rather than a champion "
+            "deficiency: the held-out partition's onset density is roughly half "
+            "development's (0.565 against 1.071 onsets per thousand player-days), and "
+            "the in-sample-derived threshold realised a 4.737% alert rate rather than "
+            "the intended 2.5%. The two factors multiply to approximately 3.6x, closely "
+            "reproducing the observed burden, while recall transferred within one "
+            "percentage point (0.600 against 0.611 in development), confirming the "
+            "champion's ranking behaviour held even though the threshold's calibration "
+            "to a target rate did not."
+        ),
     )
     return ModelHealthResponse(
         as_at_date=artifact.covered_date_end,
         calibration=calibration,
+        reliability_bins=reliability_bins,
         operating_points=operating_points,
+        held_out_operating_points=held_out_operating_points,
         final_test_result=final_test_result,
     )

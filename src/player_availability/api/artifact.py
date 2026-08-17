@@ -43,6 +43,7 @@ class ModelHealthReference:
     """Static evidence for the model-health view, read from committed tables."""
 
     calibration: dict[str, Any]
+    reliability_bins: list[dict[str, Any]]
     operating_points: list[dict[str, Any]]
     held_out_operating_points: dict[float, dict[str, Any]]
     final_test_metrics: dict[str, Any]
@@ -94,6 +95,11 @@ def load_model_health_reference(reference_root: Path | None = None) -> ModelHeal
     calibration = pl.read_csv(
         root / "exp_009_calibration" / "tables" / "arm_pooled_metrics.csv"
     ).filter(pl.col("arm") == "F1_raw")
+    reliability_bins = (
+        pl.read_csv(root / "exp_009_calibration" / "tables" / "arm_reliability_bins.csv")
+        .filter(pl.col("arm") == "F1_raw")
+        .sort("reliability_bin")
+    )
     operating_points = pl.read_csv(
         root / "exp_019_alert_budget" / "tables" / "alert_budget_results.csv"
     ).filter(
@@ -109,6 +115,7 @@ def load_model_health_reference(reference_root: Path | None = None) -> ModelHeal
     )
     return ModelHealthReference(
         calibration=calibration.row(0, named=True),
+        reliability_bins=reliability_bins.to_dicts(),
         operating_points=operating_points.sort("operating_point_value").to_dicts(),
         held_out_operating_points={
             float(row["review_rate"]): row

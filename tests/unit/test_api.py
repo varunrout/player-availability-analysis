@@ -131,6 +131,8 @@ def test_data_quality_returns_coverage_series(client: TestClient) -> None:
     assert body["team_id"] == team_id
     assert len(body["coverage_over_time"]) > 0
     assert len(body["player_coverage_range"]) > 0
+    assert len(body["onsets_by_year"]) > 0
+    assert body["onset_decline_note"]
 
 
 def test_model_health_reports_calibration_and_final_test_result(client: TestClient) -> None:
@@ -138,8 +140,17 @@ def test_model_health_reports_calibration_and_final_test_result(client: TestClie
     assert response.status_code == 200
     body = response.json()
     assert body["calibration"]["mean_prediction"] > 0
+    assert len(body["reliability_bins"]) > 0
+    assert all("bin_supported" in row for row in body["reliability_bins"])
     assert len(body["operating_points"]) == 2
+    assert len(body["held_out_operating_points"]) == 2
     assert body["final_test_result"]["player_days"] > 0
     claim_ids = {claim["claim_id"] for claim in body["final_test_result"]["claims"]}
     assert claim_ids == {"C1", "C2", "C3"}
     assert "not a performance claim" in body["final_test_result"]["interpretation"]
+    c3_claim = next(
+        claim for claim in body["final_test_result"]["claims"] if claim["claim_id"] == "C3"
+    )
+    assert c3_claim["supported"] is False
+    assert "not supported" in body["final_test_result"]["c3_explanation"]
+    assert "onset density" in body["final_test_result"]["c3_explanation"]
