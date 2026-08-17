@@ -112,6 +112,7 @@ def run_batch_inference(
         pl.Series("data_completeness", completeness),
         *[pl.Series(f"driver_{driver}", contributions[driver]) for driver in DISPLAYABLE_DRIVERS],
     )
+    predictions = _mark_onset_dates(predictions, episodes)
     predictions = _add_rank_within_team_day(predictions)
     for rate, threshold in thresholds.items():
         predictions = predictions.with_columns(
@@ -159,6 +160,24 @@ def _predictor_contributions(pipeline: Any, matrix: Any) -> dict[str, Any]:
         columns = [index for index, name in enumerate(names) if parent[name] == predictor]
         contributions[predictor] = per_column[:, columns].sum(axis=1)
     return contributions
+
+
+def _mark_onset_dates(predictions: pl.DataFrame, episodes: pl.DataFrame) -> pl.DataFrame:
+    """Flag player-days that are an injury episode's own start date.
+
+    Used by the player-detail view to mark onsets on the risk-over-time series
+    (`DEC-064`). Distinct from `actual_label`, which marks days that *precede* an
+    onset within the forward label horizon, not the onset day itself.
+    """
+    onset_dates = (
+        episodes.select("player_id", "episode_start")
+        .unique()
+        .rename({"episode_start": "prediction_date"})
+        .with_columns(pl.lit(True).alias("is_onset_date"))
+    )
+    return predictions.join(
+        onset_dates, on=["player_id", "prediction_date"], how="left"
+    ).with_columns(pl.col("is_onset_date").fill_null(False))
 
 
 def _add_rank_within_team_day(predictions: pl.DataFrame) -> pl.DataFrame:
@@ -283,7 +302,16 @@ def write_batch_inference_outputs(
     blob = bucket.blob("product/paa_product_serving_artifact.parquet")
     blob.upload_from_string(buffer.getvalue(), content_type="application/octet-stream")
 
+    manifest_blob = bucket.blob("product/paa_product_serving_manifest.json")
+    manifest_blob.upload_from_string(
+        json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n",
+        content_type="application/json",
+    )
+
     artifact_rows.write_parquet(directories["tables"] / "paa_product_serving_artifact.parquet")
+    (directories["tables"] / "paa_product_serving_manifest.json").write_text(
+        json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
+    )
     write_report = {
         "summary": result.summary,
         "reconciliation": reconciliation,
@@ -291,6 +319,7 @@ def write_batch_inference_outputs(
         "bq_live_row_count": written_table.num_rows,
         "bq_live_row_count_matches": live_row_count_matches,
         "gcs_artifact_uri": f"gs://{artifacts_bucket}/{blob.name}",
+        "gcs_manifest_uri": f"gs://{artifacts_bucket}/{manifest_blob.name}",
         "written_at_utc": datetime.now(UTC).isoformat(),
     }
     (directories["metadata"] / "batch_inference_manifest.json").write_text(

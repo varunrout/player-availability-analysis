@@ -18,6 +18,8 @@ dependencies = [
     "scikit-learn (>=1.9,<2.0)",
     "joblib (>=1.5,<2.0)",
     "lifelines (>=0.28,<0.30)",
+    "fastapi (>=0.115,<1.0)",
+    "uvicorn[standard] (>=0.34,<1.0)",
 ]
 
 [build-system]
@@ -45,6 +47,9 @@ src = ["src", "tests", "jobs"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Query", "fastapi.Depends"]
 
 [tool.ruff.format]
 quote-style = "double"

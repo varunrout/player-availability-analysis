@@ -38,6 +38,8 @@ def test_batch_inference_scores_every_eligible_player_day() -> None:
     assert (predictions["rank_within_team_day"] >= 1).all()
     assert "alert_0.025" in predictions.columns
     assert "alert_0.05" in predictions.columns
+    assert "is_onset_date" in predictions.columns
+    assert predictions["is_onset_date"].dtype == pl.Boolean
     # Rank within team-day never exceeds the number of players in that team-day.
     team_day_sizes = predictions.group_by(["team_id", "prediction_date"]).agg(
         pl.len().alias("size")
