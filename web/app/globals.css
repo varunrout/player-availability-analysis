@@ -38,6 +38,24 @@ body {
   font-size: 0.85rem;
 }
 
+.app-nav {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.5rem 1.5rem;
+  background: #eef3f8;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.app-nav a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.app-nav a:hover {
+  text-decoration: underline;
+}
+
 main {
   padding: 1.5rem;
   max-width: 960px;

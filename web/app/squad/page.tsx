@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { OperatingPointBanner } from "@/components/OperatingPointBanner";
 import { ApiError, getCoveredPeriod, getSquadOverview } from "@/lib/api-client";
 
@@ -87,7 +88,11 @@ export default async function SquadPage({ searchParams }: SquadPageProps) {
               {overview.players.map((player) => (
                 <tr key={player.player_id} className={player.alert ? "alert-row" : undefined}>
                   <td>{player.rank_within_team_day}</td>
-                  <td>{player.player_id}</td>
+                  <td>
+                    <Link href={`/player?player_id=${encodeURIComponent(player.player_id)}&date=${asAtDate}`}>
+                      {player.player_id}
+                    </Link>
+                  </td>
                   <td>{player.predicted_probability.toFixed(4)}</td>
                   <td>{player.alert ? <span className="alert-tag">Alert</span> : "—"}</td>
                   <td>{(player.data_completeness * 100).toFixed(0)}%</td>

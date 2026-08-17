@@ -83,6 +83,103 @@ export interface SquadOverview {
   players: PlayerRiskRow[];
 }
 
+export interface DriverContribution {
+  predictor: string;
+  contribution: number;
+}
+
+export interface RiskSeriesPoint {
+  prediction_date: string;
+  predicted_probability: number;
+  alert: boolean;
+  is_onset_date: boolean;
+}
+
+export interface PlayerDetail {
+  player_id: string;
+  team_id: string;
+  as_at_date: string;
+  operating_point: OperatingPointInForce;
+  risk_series: RiskSeriesPoint[];
+  driver_contributions: DriverContribution[];
+  data_completeness: number;
+}
+
+export interface TeamDataQualityPoint {
+  prediction_date: string;
+  mean_data_completeness: number;
+}
+
+export interface PlayerCoverage {
+  player_id: string;
+  mean_data_completeness: number;
+}
+
+export interface OnsetsByYear {
+  year: number;
+  represented_onsets: number;
+  player_days: number;
+}
+
+export interface DataQuality {
+  team_id: string;
+  as_at_date: string;
+  coverage_over_time: TeamDataQualityPoint[];
+  player_coverage_range: PlayerCoverage[];
+  onsets_by_year: OnsetsByYear[];
+  onset_decline_note: string;
+}
+
+export interface CalibrationReference {
+  mean_prediction: number;
+  observed_rate: number;
+  calibration_intercept: number | null;
+  calibration_slope: number | null;
+  brier_score: number;
+  log_loss: number;
+}
+
+export interface ReliabilityBin {
+  reliability_bin: number;
+  player_days: number;
+  positive_days: number;
+  mean_prediction: number;
+  observed_rate: number;
+  bin_supported: boolean;
+}
+
+export interface OperatingPointBurden {
+  review_rate: number;
+  alerts_per_100_player_days: number;
+  recall: number | null;
+  false_alerts_per_captured_onset: number | null;
+}
+
+export interface FinalTestClaim {
+  claim_id: string;
+  statement: string;
+  supported: boolean;
+  evidence: string;
+}
+
+export interface FinalTestResult {
+  player_days: number;
+  positive_days: number;
+  roc_auc: number | null;
+  claims: FinalTestClaim[];
+  interpretation: string;
+  c3_explanation: string;
+}
+
+export interface ModelHealth {
+  as_at_date: string;
+  calibration: CalibrationReference;
+  reliability_bins: ReliabilityBin[];
+  operating_points: OperatingPointBurden[];
+  held_out_operating_points: OperatingPointBurden[];
+  final_test_result: FinalTestResult;
+}
+
 export function getCoveredPeriod(): Promise<CoveredPeriod> {
   return apiGet<CoveredPeriod>("/covered-period");
 }
@@ -97,4 +194,24 @@ export function getSquadOverview(
     date: date ?? "",
     review_rate: reviewRate ?? "",
   });
+}
+
+export function getPlayerDetail(
+  playerId: string,
+  date?: string,
+  reviewRate?: string,
+): Promise<PlayerDetail> {
+  return apiGet<PlayerDetail>("/player-detail", {
+    player_id: playerId,
+    date: date ?? "",
+    review_rate: reviewRate ?? "",
+  });
+}
+
+export function getDataQuality(teamId: string, date?: string): Promise<DataQuality> {
+  return apiGet<DataQuality>("/data-quality", { team_id: teamId, date: date ?? "" });
+}
+
+export function getModelHealth(): Promise<ModelHealth> {
+  return apiGet<ModelHealth>("/model-health");
 }
