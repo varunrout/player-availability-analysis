@@ -56,6 +56,16 @@ PRODUCT_TABLE_ID = "paa_product"
 MODEL_ID = "M1-F1-PRODUCT"
 
 
+def alert_column_name(rate: float) -> str:
+    """A BigQuery-safe column name for an operating point's alert flag.
+
+    BigQuery column names may not contain `.`, so `f"alert_{rate:g}"` (e.g.
+    `alert_0.025`) is rejected on load. Basis points avoid the decimal point
+    entirely: 0.025 -> `alert_bp250`, 0.05 -> `alert_bp500`.
+    """
+    return f"alert_bp{round(rate * 10_000):d}"
+
+
 @dataclass(frozen=True, slots=True)
 class BatchInferenceConfig:
     """Frozen V1-P6 batch inference configuration."""
@@ -116,7 +126,7 @@ def run_batch_inference(
     predictions = _add_rank_within_team_day(predictions)
     for rate, threshold in thresholds.items():
         predictions = predictions.with_columns(
-            (pl.col("predicted_probability") >= threshold).alias(f"alert_{rate:g}")
+            (pl.col("predicted_probability") >= threshold).alias(alert_column_name(rate))
         )
 
     summary = {

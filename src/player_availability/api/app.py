@@ -42,7 +42,7 @@ from player_availability.api.schemas import (
     TeamDataQualityPoint,
 )
 from player_availability.config import get_settings
-from player_availability.product.batch_inference import DISPLAYABLE_DRIVERS
+from player_availability.product.batch_inference import DISPLAYABLE_DRIVERS, alert_column_name
 
 app = FastAPI(
     title="Player Availability Analysis - Product API",
@@ -127,7 +127,7 @@ def squad_overview(
     artifact = get_artifact()
     as_at_date = _resolve_date(artifact, as_of)
     operating_point = _operating_point_in_force(artifact, review_rate)
-    alert_column = f"alert_{review_rate:g}"
+    alert_column = alert_column_name(review_rate)
     rows = artifact.predictions.filter(
         (pl.col("team_id") == team_id) & (pl.col("prediction_date") == as_at_date)
     ).sort("rank_within_team_day")
@@ -157,7 +157,7 @@ def player_detail(
     artifact = get_artifact()
     as_at_date = _resolve_date(artifact, as_of)
     operating_point = _operating_point_in_force(artifact, review_rate)
-    alert_column = f"alert_{review_rate:g}"
+    alert_column = alert_column_name(review_rate)
     history = artifact.predictions.filter(pl.col("player_id") == player_id).sort("prediction_date")
     if history.height == 0:
         raise HTTPException(status_code=404, detail=f"No data for player {player_id}")

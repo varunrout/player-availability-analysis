@@ -36,8 +36,8 @@ def test_batch_inference_scores_every_eligible_player_day() -> None:
     assert "driver_daily_load_log1p" not in predictions.columns
     assert predictions["data_completeness"].is_between(0.0, 1.0).all()
     assert (predictions["rank_within_team_day"] >= 1).all()
-    assert "alert_0.025" in predictions.columns
-    assert "alert_0.05" in predictions.columns
+    assert "alert_bp250" in predictions.columns
+    assert "alert_bp500" in predictions.columns
     assert "is_onset_date" in predictions.columns
     assert predictions["is_onset_date"].dtype == pl.Boolean
     # Rank within team-day never exceeds the number of players in that team-day.
@@ -46,6 +46,8 @@ def test_batch_inference_scores_every_eligible_player_day() -> None:
     )
     joined = predictions.join(team_day_sizes, on=["team_id", "prediction_date"])
     assert (joined["rank_within_team_day"] <= joined["size"]).all()
+    # BigQuery column names may not contain a period (BadRequest on load otherwise).
+    assert all("." not in column for column in predictions.columns)
 
 
 def test_batch_inference_reconciliation_passes_for_identical_frames() -> None:
