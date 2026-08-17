@@ -2353,6 +2353,97 @@ future gates, uncertainty-suite limitations, model card content
 
 ---
 
+## DEC-060
+
+**Decision ID:** DEC-060
+**Date:** 2026-08-17
+
+**Status:** ACCEPTED
+
+**Context:**
+Phase V1-P4 covers champion selection, explanation stability (`EXP-018`) and
+alert-budget simulation (`EXP-019`). Champion selection has been settled
+across three prior decisions: `DEC-054` selected F1 over F3 and arm C,
+`DEC-058` selected raw probabilities with no post-hoc calibrator, and
+`DEC-059` corrected the grounds for that selection. `EXP-018` has no
+specification in this document, carrying only two passing references.
+`EXP-019` carries a brief specification in section 5 D2 whose review rates
+of 5%, 10% and 20% differ from the 1%, 2.5% and 5% budgets frozen under
+`DEC-036` and used in every experiment since `EXP-002`.
+
+**Decision:**
+Close the champion selection gate. The V1 champion is F1 reporting raw
+probabilities: nine predictors comprising `daily_load_log1p`,
+`daily_load_sum_7d_log1p`, `daily_load_sum_28d_log1p`, `fatigue_lag1`,
+`fatigue_mean_prior_7d`, `fatigue_mean_prior_28d`, `readiness_lag1`,
+`readiness_mean_prior_7d` and `readiness_mean_prior_28d`. No further
+candidate is evaluated in V1.
+
+Specify and authorise `EXP-018` and `EXP-019` as set out in doc 19 sections
+5 D2 and 5 D3, development data only.
+
+Adopt top-N-per-team-day as the product-facing operating point for the V1
+dashboard. The frozen 1%, 2.5% and 5% review rates remain the comparison
+basis for cross-experiment evidence under `DEC-036` and are unaffected;
+both are reported alongside each other.
+
+**Rationale:**
+The champion question is settled and re-opening it would relitigate three
+decisions without new evidence. Recording the gate closure explicitly
+prevents the selection resting on inference across three separate records.
+
+Top-N is the form in which a practitioner actually works. A coach reviews a
+fixed number of players before training, not a percentage of player-days,
+and a percentage is not interpretable at the point of use. It is computed
+within team-day rather than globally because the cohort contains two squads
+and a global ranking could place every alert in one of them, which would be
+operationally useless to the other.
+
+Retaining the percentile budgets as the comparison basis preserves
+comparability with `EXP-002`, `EXP-003`, `EXP-009`, `EXP-016`, `EXP-007` and
+`EXP-008`, all of which report capture at 1%, 2.5% and 5%. Superseding
+`DEC-036` would invalidate that comparability for no gain, since both views
+can be reported from the same predictions.
+
+Explanation stability is inexpensive for this champion because F1 is a
+nine-predictor linear model whose attribution is its standardised
+coefficients. Had the boosted candidate been adopted under `EXP-008`, this
+phase would have required a full attribution framework. The rejection
+recorded in `DEC-056` reduced the cost of this phase as a side effect.
+
+**Alternatives Considered:**
+Making the percentile budgets product-facing, rejected because a review rate
+is not actionable at the point of use and the dashboard must be operable
+without reading code, per the `DEC-046` definition of done. Superseding
+`DEC-036` to replace the frozen budgets with top-N, rejected because it
+would break comparability across six completed experiments to no purpose.
+Computing top-N across the full cohort rather than within team-day, rejected
+because it could concentrate every alert in one squad.
+
+**Consequences:**
+- The champion is frozen for V1. Any change requires a superseding decision
+  before V1-P5.
+- `EXP-018` and `EXP-019` are authorised against raw F1, development data
+  only.
+- The dashboard presents top-N per team-day as its primary operating point,
+  with the false-alert burden displayed alongside every operating point
+  offered.
+- Percentile capture continues to be reported in all experiment evidence.
+- Any predictor whose coefficient sign is unstable across estimable folds
+  may not be displayed as a driver in the dashboard. The `EXP-018` result
+  determines which predictors those are.
+- No alert threshold is a medical threshold, a clearance decision or
+  participation advice, in any artefact or interface.
+- The final-test lock is unaffected.
+
+**Affected Components:** champion freeze, V1-P4 scope, EXP-018 and EXP-019
+specifications, dashboard operating point, model card content
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
