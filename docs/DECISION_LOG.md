@@ -2555,6 +2555,129 @@ only
 
 ---
 
+## DEC-062
+
+**Decision ID:** DEC-062
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+The final-test partition has been locked since `DEC-036` froze the Stage 7
+protocol. It contains 8,845 player-days and five represented onsets. It has
+been read for support counts only and no prediction, threshold or
+performance metric has ever been produced against it. `DEC-046` provides
+that it is spent exactly once, at phase V1-P5, against claims registered in
+advance.
+
+The champion is fixed by `DEC-054`, `DEC-058`, `DEC-059` and `DEC-060`: F1
+reporting raw probabilities over nine predictors. The operating points are
+fixed by `DEC-061`.
+
+**Decision:**
+Register the specification below and authorise exactly one evaluation
+against the final-test partition. No second access is permitted without a
+superseding decision.
+
+**Model artefact.** F1 with the regularisation strength already selected on
+chronological validation, refitted once on the full development partition,
+training plus validation, respecting the existing embargo. Preprocessing is
+learned on that same development partition and on nothing else. Predictors
+are exactly `daily_load_log1p`, `daily_load_sum_7d_log1p`,
+`daily_load_sum_28d_log1p`, `fatigue_lag1`, `fatigue_mean_prior_7d`,
+`fatigue_mean_prior_28d`, `readiness_lag1`, `readiness_mean_prior_7d` and
+`readiness_mean_prior_28d`. Raw probabilities, no calibrator.
+
+**Metrics.** Exactly these and no others: Brier score, log loss, calibration
+intercept, calibration slope, reliability curve with bin counts shown, mean
+predicted risk against observed rate, average precision, ROC-AUC.
+
+**Operating points.** The 2.5% default and the 5% selectable rate from
+`DEC-061`. The probability thresholds corresponding to those rates are
+derived from the development-partition prediction distribution and are
+frozen before the final test is read. They are not recomputed as percentiles
+of the final-test predictions, because that would fit the threshold on the
+data it is being evaluated against. Report alerts issued, alerts per 100
+player-days, distinct onsets captured, recall over represented onsets,
+precision, and false alerts per captured onset.
+
+**Claims registered in advance.** Three, all modest and all falsifiable:
+
+- C1. Ranking on unseen future data is better than chance, ROC-AUC above
+  0.5.
+- C2. The champion overpredicts risk in the large, with mean predicted risk
+  exceeding the observed rate, consistent with the development finding of
+  roughly 3.7 times.
+- C3. At the 2.5% operating point the false-alert burden is high and of the
+  order observed in development, tens of false alerts per captured onset.
+
+**Power statement, registered before any result exists.** The final-test
+partition contains five represented onsets. This evaluation has almost no
+inferential power. A single onset falling either side of a threshold can
+halve or double average precision, and no interval computable on this
+partition will be narrow enough to support a comparison against any other
+model or operating point. This is a confirmatory sanity check that the
+champion behaves on unseen future data as it behaved in development. It is
+not a performance claim and must never be cited as one.
+
+No result, favourable or unfavourable, will change the champion, the
+operating points, the predictor contract or any prior decision. The purpose
+of registering this in advance is that it cannot later be offered as an
+explanation for a disappointing number.
+
+**Reporting commitment.** The result is reported in full, in the standard
+evidence format, whether favourable or not. Each of C1, C2 and C3 is
+recorded as supported or not supported. Every metric carries its supporting
+event count inline.
+
+**Rationale:**
+Refitting on the full development partition is the deployable configuration
+and is what V1-P6 will serve, so the evaluated artefact and the shipped
+artefact are the same object. The regularisation strength was selected on
+chronological validation folds before this refit, so reusing validation rows
+for fitting introduces no information from the final test.
+
+Deriving the operating thresholds from development is the difference between
+evaluating a fixed decision rule and evaluating a rule tuned to its own test
+set. The former is what a deployed system does.
+
+The claims are deliberately modest because five onsets cannot support
+ambitious ones. Registering claims that the data could plausibly falsify is
+the only version of this exercise that carries information.
+
+**Alternatives Considered:**
+Evaluating the model as fitted on the training partition alone, rejected
+because it is not the artefact the product would ship and discards the
+validation partition's 8,690 player-days for no inferential gain. Computing
+operating thresholds as percentiles of the final-test predictions, rejected
+as fitting the decision rule to the evaluation data. Registering
+discrimination targets such as a minimum ROC-AUC or average precision,
+rejected because five onsets cannot support a threshold-based claim and a
+target set now would function as a post-hoc goalpost. Deferring the final
+test until after V1-P6, rejected because the dashboard would then display a
+model whose held-out behaviour was unknown at the time it was built.
+
+**Consequences:**
+- One evaluation against the final-test partition is authorised. It is
+  executed once and the access is logged in the retained evidence.
+- A second access requires a superseding decision recorded before it occurs.
+  No tuning, feature change, model change, threshold change or reselection
+  may follow this evaluation.
+- The result is reported in full regardless of outcome and each registered
+  claim is marked supported or not supported.
+- The result may not be cited as a performance claim in the model card,
+  README, case study, portfolio material or any interview narrative. It is
+  cited as a confirmatory check with its five-onset support stated inline.
+- V1-P6 proceeds against the same refitted artefact evaluated here.
+- The champion and operating points are unchanged by this decision.
+
+**Affected Components:** final-test governance, deployable model artefact,
+V1-P6 input, model card content, portfolio claims
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
