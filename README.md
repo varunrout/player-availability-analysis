@@ -1,32 +1,42 @@
 # Player Availability Analysis
 
-Longitudinal athlete-monitoring pipeline and player-availability risk stratification for elite football performance environments.
+An injury-risk decision-support dashboard for elite football performance environments, built end to end from a public subjective-data source: ingestion, outcome definition, leakage-audited modelling, a governed champion selection, one single-use confirmatory final test, and a deployed two-service product.
 
-The system estimates how unusual a player's current state is relative to their own history, how that translates into availability risk over a defined horizon, which signals contribute, and how uncertain the estimate is. It is decision support for practitioners. It is not a diagnostic tool, it does not issue clearance decisions, and it makes no causal claims.
+The system estimates how unusual a player's current state is relative to their own history, translates that into a probability of an injury onset within the next seven days, and surfaces which signals drive the estimate. It is decision support for practitioners. It is not a diagnostic tool, it does not issue clearance or return-to-play decisions, and it makes no causal claims.
 
 ## Status
 
-Foundation stage. The configuration layer and repository architecture are in place; the SoccerMon subjective ingestion vertical slice is the next deliverable. No modelling work begins until the ingestion foundation and outcome definitions are validated.
+V1 is complete and deployed. Its headline evidence is methodological rigour and product completeness, not discrimination performance — the dataset supports at most a handful of injury onsets in any evaluation partition, and every claim in this project is scoped to that limitation rather than around it.
 
-Current state and open decisions: [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md)
-Decision history: [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
+**Deployed dashboard:** https://paa-web-979927072833.europe-west2.run.app (shared review credential; ask the project owner for access — no credential is ever committed to this repository).
 
-## Approach
+Current state and open items: [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md)
+Full decision history (65 recorded decisions): [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
+Analysis and experiment execution plan: [`docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md`](docs/19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md)
 
-**Grain.** One row per player per date. Every feature must be computable from information available at that day's prediction cutoff.
+## What is actually true about this model
 
-**Validation.** Chronological holdout and rolling-window evaluation, plus leave-one-player-out to measure generalisation to unseen athletes. Random row-level splitting is not used, because it leaks future information and produces metrics that do not survive deployment conditions.
+- **Champion:** a regularised logistic regression (nine frozen predictors, raw probabilities, no post-hoc calibrator) selected after a Cox proportional-hazards model was rejected on a pre-registered leakage diagnostic and a gradient-boosted classifier was rejected on generalisation grounds, not on a single headline metric.
+- **Confirmatory final test:** pre-registered before any evaluation code existed, spent exactly once. ROC-AUC 0.827 and a 3.7x overprediction pattern both transferred from development to the held-out partition; the false-alert burden did not, and that gap was diagnosed from already-committed evidence as two compounding, non-champion causes (halved onset density and an in-sample threshold that did not transfer its target alert rate), not remediated by a second access.
+- **Outcome support is small and stated everywhere it matters.** 73 recorded onsets across the full source period; 18 in the pooled rolling-origin development evidence after eligibility and burn-in; 5 in the confirmatory final test after partitioning. All three are correct and describe different populations — the dashboard's data-quality view reconciles them explicitly rather than leaving a reviewer to guess.
+- **The dashboard never shows a development figure without its held-out counterpart**, enforced by an automated test, not by review alone.
 
-**Calibration.** Reported for every headline model. A stated 20% risk must mean approximately 20%, otherwise the output cannot support the decisions it is designed to inform.
+## Product
 
-**Model progression.** Operational baseline, logistic regression, gradient boosting, Cox proportional hazards, survival forest, boosted survival. Each step must demonstrate incremental value over the previous one. Complexity is not a success criterion.
+Two Cloud Run services, deployed independently:
 
-**Staged ingestion.** Subjective data first, then a single team-season GPS pilot with measured runtime and cost, then full objective expansion. The objective archive is roughly 99 GB compressed, so it is not the first debugging environment.
+- **API** (`src/player_availability/api/`, `docker/api/`): FastAPI, reads only a compact serving artefact from Cloud Storage written by batch inference — never queries BigQuery per request. Reachable only by the web service's own identity (IAM `run.invoker`, no public ingress).
+- **Web** (`web/`): Next.js, four server-rendered views — squad overview, player detail, data quality, model health — each carrying an explicit "as at" date. Behind a shared review credential.
+
+Batch inference (`src/player_availability/product/batch_inference.py`, `jobs/product/run_batch_inference.py`) scores every eligible player-day with the frozen champion, writes the `paa_product` BigQuery table of record and the GCS serving artefact the API reads, and reconciles the two representations row for row before either write.
+
+Interface copy constraints (no diagnosis, clearance, fitness, injury-prediction or participation language; no operating-point burden shown without its held-out counterpart) are enforced by an automated source-text scan (`tests/unit/test_web_copy_constraints.py`), not by review alone.
 
 ## Requirements
 
 - Python 3.12
 - [Poetry](https://python-poetry.org/) 2.0 or later
+- Node.js 20+ (for the `web/` dashboard)
 - Google Cloud SDK with Application Default Credentials, for cloud-backed work
 
 ## Setup
@@ -43,6 +53,15 @@ gcloud auth application-default login
 ```
 
 Service-account key files are not used and must never be created for this project.
+
+For the web dashboard:
+
+```bash
+cd web
+npm install
+cp .env.example .env    # PAA_API_BASE_URL and friends
+npm run dev
+```
 
 ## Configuration
 
@@ -76,43 +95,57 @@ Everything is validated at process start, so a misconfigured job fails immediate
 ## Development
 
 ```bash
-make install    # install dependencies
-make lint       # ruff check and format check
-make typecheck  # mypy, strict
-make test       # pytest with coverage
-make check      # all of the above
+make install         # install dependencies
+make lint             # ruff check and format check
+make typecheck        # mypy, strict
+make test             # pytest with coverage
+make check            # lint, typecheck and test
+poetry check --lock   # lockfile in sync with pyproject.toml (run alongside make check)
 ```
 
-Production logic lives under `src/`, `jobs/` and `pipelines/`. Notebooks are for exploration only and are not part of any pipeline.
+All five gates above run in CI on every push and pull request; a red pipeline blocks merge.
+
+Production logic lives under `src/`, `jobs/` and `web/`. Notebooks are for exploration only and are not part of any pipeline.
 
 ## Layout
 
 ```
-configs/    Layered YAML: analytical behaviour
-docs/       Project state, decision log, architecture notes
-infra/      Infrastructure as code
-jobs/       Entry points for individual pipeline stages
-notebooks/  Exploration only
-scripts/    Operational helper scripts
+configs/                      Layered YAML: analytical behaviour
+docker/api/, docker/web/      Cloud Run container definitions
+docs/                         Project state, decision log, architecture and execution plan
+infra/                        Infrastructure as code
+jobs/                         Entry points for individual pipeline stages
+  analysis/                   Stage 0-8 script runners
+  modelling/                  M0/M1 experiment jobs
+  product/                    Batch inference CLI entrypoint
+notebooks/                    Exploration only, committed output-free
+scripts/                      Operational helper scripts
 src/player_availability/
-  config/     Typed runtime settings
-  ingestion/  Source discovery, provenance, deterministic parsing
-  schemas/    Data contracts
-  quality/    Data-quality gates and leakage controls
-  utils/      Shared helpers
-tests/
-  unit/            Fast isolated tests
-  data_contracts/  Schema conformance
-  leakage/         Temporal and player-identity leakage checks
-  smoke/           End-to-end pipeline runs
+  analysis/    Stage 0-8 shared analysis code
+  api/         FastAPI service and the serving-artefact reader
+  config/      Typed runtime settings
+  features/    Feature engineering
+  ingestion/   Source discovery, provenance, deterministic parsing
+  modelling/   M0/M1 models, calibration, alert-budget and explanation modules
+  outcomes/    Leak-safe player-day cohort and label construction
+  product/     V1-P6 batch inference
+  quality/     Data-quality gates and leakage controls
+  schemas/     Data contracts
+  utils/       Shared helpers
+tests/         Fast isolated tests, plus API, batch-inference and web copy-constraint tests
+web/           Next.js dashboard
 ```
 
 ## Data
 
-Source dataset: SoccerMon. A subjective archive of wellness, training-load, injury and illness reports, and an objective GNSS archive of approximately 99 GB compressed.
+Source dataset: SoccerMon. A public subjective archive of wellness, training-load, injury and illness self-reports, and an objective GNSS archive of approximately 99 GB compressed. V1 uses the subjective archive only; the objective archive is deferred to V2.
 
 Source archives are not committed. Provenance, checksums and ingestion-run metadata are recorded for every ingested file so that any derived table can be traced back to its source.
 
 ## Limitations
 
-The public injury data consists of repeated self-reported observations, not medically verified clinical episodes. Episode boundaries are reconstructed from reporting patterns and are sensitive to the gap rule chosen. Results describe self-reported injury-related events, not clinically confirmed injuries, and generalisation beyond the source cohort is not assumed.
+The injury data consists of repeated self-reported observations, not medically verified clinical episodes. Episode boundaries are reconstructed from reporting patterns and are sensitive to the gap rule chosen. Results describe self-reported injury-related events, not clinically confirmed injuries, and generalisation beyond the source cohort is not assumed.
+
+Outcome support is small and concentrated: a handful of onsets carry most of the evaluable signal in every partition, and five players account for the majority of recorded onsets across the whole period. Every headline figure in the decision log and the dashboard is reported with its support stated alongside it for exactly this reason.
+
+Reporting behaviour, not injury incidence, drives most of the temporal variation in recorded onsets: self-reporting decays sharply over the covered period, and wellness-report rates spike on injury-onset days relative to ordinary days. The data-quality view states this explicitly rather than leaving a reader to infer a causal story that is not there.
