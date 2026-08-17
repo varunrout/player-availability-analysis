@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 62
-Last Updated UTC: 2026-08-17T18:45:00Z
+State Version: 63
+Last Updated UTC: 2026-08-17T19:00:00Z
 Coordination Session ID: PAA-IMPL-20260817-02
 Git Branch: main
-Git HEAD: b30b4f5 (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: a080999 (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: V1 Delivery Programme - Complete: V1-P8 Release Evidence Delivered
-Current Phase Status: `DEC-046`'s three V1-P8 deliverables are complete. `docs/MODEL_CARD.md` leads with limitations (outcome support, the reporting-engagement decay, shared-credential access) before any model detail, per `DEC-046`'s explicit requirement, and records the champion, both operating-point burdens side by side, the V1-P5 confirmatory result, the `daily_load_log1p` exclusion, and the three findings that overturned an initially favourable result before adoption (`EXP-016`, `EXP-007`, `EXP-008`). `docs/ARCHITECTURE.md` carries two GitHub-rendered Mermaid diagrams: the data/serving path and the evidence chain from stage-gated analysis through experiments and decisions to the deployed artefact. `docs/CLAIM_TRACEABILITY.md`, generated from `src/player_availability/claims.py`, maps 43 factual claims across `README.md`, the model card and hardcoded interface text to the committed artefact that measures each one; `tests/unit/test_claim_traceability.py` checks every entry mechanically on every run, not by review. Coverage: 43 claims, 43 traced, 0 untraceable. Building the audit surfaced one real staleness bug it exists to catch: `README.md` had drifted to "65 recorded decisions" against the actual 66; fixed, and now covered by the suite. CI is green (run `32053906302`). V1 is complete; the case study and interview narrative are being drafted separately by the project owner. Phase V1-P8 is complete; V1-P9 has no open specification.
+Current Phase Status: `DEC-046`'s three V1-P8 deliverables are complete. `docs/MODEL_CARD.md` leads with limitations before any model detail. `docs/ARCHITECTURE.md` carries two GitHub-rendered Mermaid diagrams. `docs/CLAIM_TRACEABILITY.md`, generated from `src/player_availability/claims.py`, maps 42 factual claims across `README.md`, the model card and hardcoded interface text to the committed artefact that measures each one, plus a forbidden-claims guard; `tests/unit/test_claim_traceability.py` checks every entry mechanically on every run, not by review. Coverage: 42 claims, 42 traced, 0 untraceable, 1 forbidden-claim guard. A project-owner review of the V1-P8 deliverables found `README.md` citing the V1-P5 confirmatory ROC-AUC (0.827) without its five-onset support stated inline, which `DEC-063` permits only with that support attached; the README's prose format cannot attach a table's support annotation to a bare number the way the model card can, so the fix removes the figure from the README entirely, reporting what transferred (ranking, the 3.7x overprediction pattern) without naming it, and points to the model card for the figures themselves. A new `FORBIDDEN_CLAIMS` registry and `test_forbidden_claim_does_not_appear` guard against "0.827" reappearing in `README.md`. CI is green. V1 is complete; the case study and interview narrative are being drafted separately by the project owner. Phase V1-P8 is complete.
 
 ## Current Objective
 
@@ -314,6 +314,12 @@ State v61 to v62, under coordination session `PAA-IMPL-20260817-02`.
 - Building the audit surfaced a real, previously unnoticed staleness bug: `README.md`'s decision-log link read "65 recorded decisions" against the actual 66 already in `docs/DECISION_LOG.md` after `DEC-066`. This is exactly the failure mode the audit exists to catch. Fixed in the same commit as the audit that caught it, and now covered by the suite so it cannot silently drift again without a test failure.
 - Full quality gate passes throughout this revision: lockfile, Ruff, format, strict mypy and pytest (`175 passed` — 130 carried forward plus 45 new claim-traceability tests — one expected ZIP duplicate-name warning). CI green on the push (run `32053906302`).
 - No code, evidence, figure or report outside the three new documents and the traceability module was regenerated; V1's champion, operating points, predictor contract and every prior decision are unchanged.
+
+State v62 to v63, under coordination session `PAA-IMPL-20260817-02`.
+
+- Project-owner review of the V1-P8 deliverables found `README.md` line 23 citing the V1-P5 confirmatory ROC-AUC (0.827) without its five-onset support stated alongside it, which `DEC-063` permits the figure to be reported only with that support attached. The README's prose bullet format has no table cell to attach the support to the way the model card's claims table does, so the fix removes the bare figure entirely rather than trying to squeeze the support into the same sentence: the bullet now reports that ranking transferred and the 3.7x overprediction pattern reproduced, without naming the ROC-AUC value, and points to the model card for the figures themselves.
+- Added `FORBIDDEN_CLAIMS` to `src/player_availability/claims.py` and `test_forbidden_claim_does_not_appear` to `tests/unit/test_claim_traceability.py`: a guard that fails if `"0.827"` reappears anywhere in `README.md`, so this cannot silently drift back. Removed the now-stale `readme-final-test-roc-auc` traceability entry (the figure it cited is no longer in the README) and regenerated `docs/CLAIM_TRACEABILITY.md`, which now also documents the forbidden-claims mechanism. Coverage: 42 claims, 42 traced, 0 untraceable, 1 forbidden-claim guard (down from 43 claims — one entry removed, not one left untraced).
+- Full quality gate passes: lockfile, Ruff, format, strict mypy and pytest (`175 passed`, unchanged count — one parametrized claim check removed, one forbidden-claim check added). Committed alone at `a080999` and pushed; CI confirmed green.
 
 ## Current Repository State
 
@@ -679,6 +685,7 @@ No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `E
 | V1-P8 architecture diagrams | PASS | committed at `7538c3b`; two Mermaid diagrams, syntax-validated before commit, render natively on GitHub |
 | V1-P8 claim traceability audit | PASS | committed at `b30b4f5`; 43 claims, 43 traced, 0 untraceable; mechanically checked by `tests/unit/test_claim_traceability.py` |
 | V1-P8 exit criterion (`DEC-046`) | CLOSED | model card, architecture diagrams and claim-traceability audit all complete; V1 delivery programme complete |
+| README bare-ROC-AUC correction | RESOLVED | committed alone at `a080999`; figure removed from README per `DEC-063`, `FORBIDDEN_CLAIMS` guard added; 42 claims, 42 traced, 0 untraceable, 1 forbidden-claim guard |
 | CI on V1-P8 push | PASS | run `32053906302`, green |
 
 Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 116 files, strict mypy clean across 90 source files, `175 passed` with one expected ZIP warning, `poetry check --lock` passing, and `npm run build` succeeding for all four Next.js routes.
@@ -687,14 +694,14 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v62, 2026-08-17T18:45:00Z | v62, 2026-08-17T18:45:00Z |
+| `PROJECT_STATE.md` | v63, 2026-08-17T19:00:00Z | v63, 2026-08-17T19:00:00Z |
 | `DECISION_LOG.md` | DEC-001 to DEC-066 (unchanged this revision) | DEC-001 to DEC-066 (unchanged this revision) |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | unchanged this revision | unchanged this revision |
 | `18_GCP_ARCHITECTURE_AND_DEVELOPMENT_OPERATING_MODEL.md` (Drive-only, not part of the git-tracked mirror set) | not applicable | unchanged this revision |
-| `MODEL_CARD.md`, `ARCHITECTURE.md`, `CLAIM_TRACEABILITY.md` (git-tracked, public GitHub repository) | new this revision, committed at `24ec65b`/`7538c3b`/`b30b4f5` | not part of `DEC-050`'s mirrored set; publicly readable on GitHub instead |
+| `MODEL_CARD.md`, `ARCHITECTURE.md`, `CLAIM_TRACEABILITY.md` (git-tracked, public GitHub repository) | committed at `24ec65b`/`7538c3b`/`b30b4f5`; `CLAIM_TRACEABILITY.md` regenerated this revision at `a080999` | not part of `DEC-050`'s mirrored set; publicly readable on GitHub instead |
 
 Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files. Doc 18 is edited directly on Drive when its content changes, since it is not part of the git-tracked mirror set and carries no hash-verification obligation. The three new V1-P8 documents are git-tracked and public on GitHub, which serves the same "not lost, not solely local" purpose the Drive mirror serves for the three control documents; they are not added to `DEC-050`'s mirrored set, since that set's hash-verification discipline exists for documents that could otherwise diverge between two independently-edited copies, and these have only one copy.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260817-02`. Neither `DECISION_LOG.md` nor doc 19 changed in this revision; `PROJECT_STATE.md` advances to v62, covering V1-P8's three deliverables (model card, architecture diagrams, claim-traceability audit), the staleness bug the traceability audit caught and fixed in `README.md`, and the completion of the V1 delivery programme as scoped by `DEC-046`. All three git-tracked control-document pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `b30b4f5`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260817-02`. Neither `DECISION_LOG.md` nor doc 19 changed in this revision; `PROJECT_STATE.md` advances to v63, covering the project-owner review correction to `README.md`'s bare V1-P5 ROC-AUC citation (removed, per `DEC-063`) and the new forbidden-claims guard that prevents its return. All three git-tracked control-document pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `a080999`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
