@@ -1,0 +1,6 @@
+data_version: subjective_v1
+target: injury_next_7d
+primary_horizon_days: 7
+max_iterations: 5000
+reliability_bins: 10
+preregistration_commit: 650f67e1883b655124324219c20cca09f19c3eba

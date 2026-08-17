@@ -81,6 +81,15 @@ from player_availability.modelling.m1_survival import (
     run_exp_007_survival,
     write_exp_007_outputs,
 )
+from player_availability.modelling.v1_p5_final_test import (
+    V1P5FinalTestConfig,
+    V1P5FinalTestResult,
+    build_v1_p5_figures,
+    load_v1_p5_config,
+    load_v1_p5_from_gcp,
+    run_v1_p5_final_test,
+    write_v1_p5_outputs,
+)
 
 __all__ = [
     "Exp007SurvivalConfig",
@@ -101,6 +110,8 @@ __all__ = [
     "M1F1Result",
     "M1FeatureLadderConfig",
     "M1FeatureLadderResult",
+    "V1P5FinalTestConfig",
+    "V1P5FinalTestResult",
     "build_exp_007_figures",
     "build_exp_008_figures",
     "build_exp_009_figures",
@@ -110,6 +121,7 @@ __all__ = [
     "build_m0_figures",
     "build_m1_f1_figures",
     "build_m1_feature_ladder_figures",
+    "build_v1_p5_figures",
     "load_exp_007_config",
     "load_exp_007_from_gcp",
     "load_exp_008_config",
@@ -128,6 +140,8 @@ __all__ = [
     "load_m1_f1_from_gcp",
     "load_m1_feature_ladder_config",
     "load_m1_feature_ladder_from_gcp",
+    "load_v1_p5_config",
+    "load_v1_p5_from_gcp",
     "run_exp_007_survival",
     "run_exp_008_boosting",
     "run_exp_009_calibration",
@@ -137,6 +151,7 @@ __all__ = [
     "run_m0_baselines",
     "run_m1_f1",
     "run_m1_feature_ladder",
+    "run_v1_p5_final_test",
     "write_exp_007_outputs",
     "write_exp_008_outputs",
     "write_exp_009_outputs",
@@ -146,4 +161,5 @@ __all__ = [
     "write_m0_outputs",
     "write_m1_f1_outputs",
     "write_m1_feature_ladder_outputs",
+    "write_v1_p5_outputs",
 ]

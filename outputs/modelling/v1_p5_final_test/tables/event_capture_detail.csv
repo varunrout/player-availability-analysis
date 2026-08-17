@@ -1,0 +1,11 @@
+model_id,review_rate,onset_id,player_id,team_id,onset_date,captured,first_alert_lead_days,last_alert_lead_days,alert_days_in_window
+M1-F1-FINAL,0.025,TeamB-7ab47f4e-6eca-4793-880f-6a0dad3459c3|2021-10-05,TeamB-7ab47f4e-6eca-4793-880f-6a0dad3459c3,TeamB,2021-10-05,true,7,2,6
+M1-F1-FINAL,0.025,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-09-11,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-09-11,false,,,0
+M1-F1-FINAL,0.025,TeamA-5cd7a61b-88b2-46d2-94f8-5a0d4f682d93|2021-09-16,TeamA-5cd7a61b-88b2-46d2-94f8-5a0d4f682d93,TeamA,2021-09-16,false,,,0
+M1-F1-FINAL,0.025,TeamA-74afe68c-f348-414c-9754-6d6f9df12587|2021-09-16,TeamA-74afe68c-f348-414c-9754-6d6f9df12587,TeamA,2021-09-16,true,7,1,7
+M1-F1-FINAL,0.025,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-11-03,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-11-03,true,7,7,1
+M1-F1-FINAL,0.05,TeamA-74afe68c-f348-414c-9754-6d6f9df12587|2021-09-16,TeamA-74afe68c-f348-414c-9754-6d6f9df12587,TeamA,2021-09-16,true,7,1,7
+M1-F1-FINAL,0.05,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-11-03,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-11-03,true,7,7,1
+M1-F1-FINAL,0.05,TeamA-5cd7a61b-88b2-46d2-94f8-5a0d4f682d93|2021-09-16,TeamA-5cd7a61b-88b2-46d2-94f8-5a0d4f682d93,TeamA,2021-09-16,false,,,0
+M1-F1-FINAL,0.05,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a|2021-09-11,TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,TeamA,2021-09-11,false,,,0
+M1-F1-FINAL,0.05,TeamB-7ab47f4e-6eca-4793-880f-6a0dad3459c3|2021-10-05,TeamB-7ab47f4e-6eca-4793-880f-6a0dad3459c3,TeamB,2021-10-05,true,7,2,6

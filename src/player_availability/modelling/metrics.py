@@ -147,6 +147,62 @@ def alert_and_event_tables(
     return pl.DataFrame(alert_rows), pl.DataFrame(event_rows)
 
 
+def threshold_alert_and_event_tables(
+    *,
+    predictions: pl.DataFrame,
+    episodes: pl.DataFrame,
+    target: str,
+    horizon_days: int,
+    thresholds: dict[float, float],
+    model_id: str,
+) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """Evaluate fixed, pre-frozen probability-threshold operating points (`DEC-062`).
+
+    Unlike `alert_and_event_tables`, alerts are selected by a probability threshold
+    frozen before this population is read, not recomputed as a percentile of it.
+    Recomputing a percentile of the evaluation population's own predictions would fit
+    the decision rule to the data it is being scored against, which a locked
+    confirmatory evaluation must not do. `thresholds` maps each review rate to its
+    frozen probability threshold, both already fixed by the caller.
+    """
+    alert_rows: list[dict[str, Any]] = []
+    event_rows: list[dict[str, Any]] = []
+    for rate, threshold in thresholds.items():
+        selected = predictions.filter(pl.col("predicted_probability") >= threshold)
+        events = _event_capture(
+            selected=selected,
+            validation=predictions,
+            episodes=episodes,
+            horizon_days=horizon_days,
+            model_id=model_id,
+            review_rate=rate,
+        )
+        event_rows.extend(events)
+        captured = sum(int(row["captured"]) for row in events)
+        alert_count = selected.height
+        positive_alerts = int(selected[target].sum()) if alert_count else 0
+        false_alerts = alert_count - positive_alerts
+        alert_rows.append(
+            {
+                "model_id": model_id,
+                "review_rate": rate,
+                "probability_threshold": threshold,
+                "eligible_player_days": predictions.height,
+                "alert_count": alert_count,
+                "alerts_per_100_player_days": (
+                    100 * alert_count / predictions.height if predictions.height else None
+                ),
+                "positive_alert_days": positive_alerts,
+                "precision": positive_alerts / alert_count if alert_count else None,
+                "represented_onsets": len(events),
+                "captured_onsets": captured,
+                "recall": captured / len(events) if events else None,
+                "false_alerts_per_captured_onset": (false_alerts / captured if captured else None),
+            }
+        )
+    return pl.DataFrame(alert_rows), pl.DataFrame(event_rows)
+
+
 def top_n_per_team_day_alert_and_event_tables(
     *,
     predictions: pl.DataFrame,

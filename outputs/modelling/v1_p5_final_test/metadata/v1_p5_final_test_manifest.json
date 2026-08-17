@@ -1,0 +1,33 @@
+{
+  "source_paths": {
+    "episodes": "silver/subjective/soccermon/zenodo-10033832/injury_episodes.parquet",
+    "features": "gold/subjective/soccermon/zenodo-10033832/player_day_features.parquet"
+  },
+  "source_sha256": {
+    "episodes": "e5077c16db69b88e07828d456739603b22a523c7d7e832bab8007e15a6d1f3da",
+    "features": "775cb3c73bb62affebdb9bd5156d4b32bdec6707bf9bbafb70149ba293b16ac6"
+  },
+  "summary": {
+    "c1_ranking_above_chance": true,
+    "c2_overprediction_in_the_large": true,
+    "c3_high_false_alert_burden": false,
+    "development_player_days": 25055,
+    "development_positive_days": 308,
+    "final_test_performance_accessed": true,
+    "final_test_positive_days": 35,
+    "final_test_predictions_created": true,
+    "final_test_read_at_utc": "2026-08-17T13:17:38.037821+00:00",
+    "final_test_represented_onsets": 5,
+    "final_test_rows_evaluated": 8845,
+    "generated_at_utc": "2026-08-17T13:17:38.104352+00:00",
+    "governance_gate": "V1-P5",
+    "model_id": "M1-F1-FINAL",
+    "operating_point_thresholds": {
+      "0.025": 0.03383118401132315,
+      "0.05": 0.026711496132413855
+    },
+    "preregistration_commit": "650f67e1883b655124324219c20cca09f19c3eba",
+    "status": "PASS",
+    "thresholds_frozen_at_utc": "2026-08-17T13:17:38.037821+00:00"
+  }
+}

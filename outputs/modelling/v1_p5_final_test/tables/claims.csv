@@ -1,0 +1,4 @@
+claim_id,statement,supported,evidence
+C1,Ranking on unseen future data is better than chance (ROC-AUC above 0.5),true,ROC-AUC=0.827204
+C2,The champion overpredicts risk in the large (development finding: roughly 3.7x),true,mean prediction=0.014824 vs observed rate=0.003957 (3.7x)
+C3,At the 2.5% operating point the false-alert burden is high and of the development order (tens of false alerts per captured onset),false,false alerts per captured onset at 2.5%=135.000000

@@ -1,0 +1,8 @@
+finding_id,status,domain,evidence
+FINAL-01,PASS,single_read,"final-test partition is read exactly once in this function, logged with a timestamp"
+FINAL-02,PASS,predictor_contract,evaluated model uses exactly the 9 named F1 predictors
+FINAL-03,PASS,preprocessing_scope,imputer and scaler are fitted on the development partition only
+FINAL-04,PASS,threshold_freezing,operating-point thresholds are computed from the fitted model's own development-partition predictions and recorded before the final-test read
+FINAL-05,PASS,embargo_exclusion,700 embargoed player-days excluded across two gaps
+FINAL-06,PASS,event_count_reporting,every operating point carries its represented-onset and player-day counts
+FINAL-07,PASS,no_post_read_adjustment,"no fitting, tuning, selection or threshold-adjustment function is called after the logged final-test read timestamp"
