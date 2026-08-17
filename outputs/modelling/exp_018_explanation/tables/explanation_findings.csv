@@ -1,0 +1,6 @@
+finding_id,status,domain,evidence
+EXPL-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+EXPL-02,PASS,standardisation_scope,"each fold's imputer and scaler are fitted on that fold's own training portion only, matching the frozen F1 pipeline"
+EXPL-03,PASS,attribution_exactness,summed per-predictor contributions plus intercept reproduce the model's own logit to within 0.00e+00
+EXPL-04,PASS,stability_support_reporting,every stability figure states its estimable-fold count (54 distinct fold fits)
+EXPL-05,PASS,sign_unstable_disclosure,1 of 9 predictors have unstable sign: daily_load_log1p

@@ -385,16 +385,77 @@ Decision gate:
 
 #### D2. EXP-019: Alert-budget simulation
 
-Translate probability estimates into review workflow simulations:
+**Status:** specified, authorised. Phase V1-P4. Authorised by `DEC-060`.
 
-- top 1, 3 and 5 players per day where available;
-- top 5%, 10% and 20% of eligible player-days;
+Translate raw F1 champion probabilities into review-workflow operating points and quantify their cost.
+
+**Why this experiment exists.** A calibrated or ranked probability is not by itself a workflow. A practitioner needs an operating point: a rule that turns daily probabilities into a bounded review list, together with the cost of following that rule. `DEC-060` closed the champion selection gate and adopted top-N-per-team-day as the product-facing operating point; this experiment measures both that view and the frozen percentile comparison basis from the same predictions, so neither is asserted without evidence.
+
+**Operating points.**
+
+- Primary, product-facing: top 1, 3 and 5 players per team-day, ranked among eligible players within each team on each date. Computed within team-day, never globally, because the cohort contains two squads and a global ranking could place every alert in one of them. Ties are broken deterministically by predicted probability descending, then `player_id` ascending, and this rule is recorded in the output.
+- Secondary, frozen comparison basis under `DEC-036`: 1%, 2.5% and 5% review rates, unchanged from every experiment since `EXP-002`. `DEC-060` does not supersede `DEC-036`; both views are reported alongside each other from the same prediction set.
+- Retained sensitivity from the prior stub: 5%, 10% and 20% review rates, labelled a capacity sensitivity and never a headline figure.
+
+**Evaluation.** Raw F1 probabilities per `DEC-058` and `DEC-059`, pooled rolling-origin as the headline with per-fold values and estimable-fold counts, one-day-gap sensitivity on every headline figure, zero-positive folds identified and excluded from discrimination-dependent figures with counts stated. Development data only; final-test predictions and performance are neither read nor produced. Cohort, partitions, embargoes and preprocessing scope are unchanged.
+
+Required metrics, per operating point:
+
 - alerts per 100 player-days;
-- episode starts captured;
-- false alerts per captured episode;
-- persistence of consecutive-day alerts.
+- distinct represented onsets captured;
+- false alerts per captured onset;
+- precision;
+- recall over represented onsets;
+- persistence: the distribution of consecutive-day alert runs for the same player;
+- lead time: days between a player's first alert in a run and the onset it precedes.
 
-The selected threshold is a review-prioritisation policy. It is never a medical threshold.
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| ALERT-01 | Zero final-test predictions or performance metrics produced |
+| ALERT-02 | Top-N ranking computed within team-day, never globally |
+| ALERT-03 | Every operating point reports its false-alert burden inline |
+| ALERT-04 | Every metric carries its supporting event count |
+| ALERT-05 | One-day-gap sensitivity present for every headline figure |
+| ALERT-06 | Percentile and top-N views generated from the same prediction set |
+
+Decision gate: record which operating points the dashboard will offer, each with its false-alert burden stated. The selected point is a review prioritisation policy and is never a medical threshold, a clearance decision or participation advice. If no operating point captures onsets at a burden a practitioner would accept, that is a valid and reportable finding and must be stated plainly rather than resolved by loosening the budget. No decision record is required for this result unless a stop condition triggers; it is a measurement feeding V1-P6, not an adopt-or-reject gate.
+
+#### D3. EXP-018: Explanation stability
+
+**Status:** specified, authorised. Phase V1-P4. Authorised by `DEC-060`.
+
+Determine whether the champion's explanation is stable enough to display to a practitioner, and which predictors may be shown as drivers.
+
+**Why this experiment exists.** A decision-support dashboard that shows a risk figure without saying why invites the figure to be read as authoritative rather than as a prioritisation aid. `DEC-060` closed the champion gate on F1 raw, a nine-predictor logistic model, which makes attribution exact rather than approximated; this experiment is inexpensive as a direct consequence of `DEC-056`'s rejection of the boosted candidate, which would have required a full attribution framework instead.
+
+**Method.** Attribution for a player-day is the standardised contribution of each predictor, computed as the train-only standardised predictor value multiplied by its fitted coefficient. No external attribution library is introduced; for a nine-predictor logistic model the contribution is exact, not approximated, since the model's decision function is a sum of exactly these terms plus the intercept.
+
+Measured across every estimable rolling-origin fold and every estimable leave-one-player-out fold:
+
+- coefficient sign, and whether it is constant across folds;
+- standardised coefficient magnitude, with range and interquartile range;
+- rank of absolute standardised coefficient, and rank stability;
+- for each flagged player-day, the set of the three largest positive contributors, and the mean pairwise Jaccard overlap of that set across folds.
+
+Report explicitly which predictors hold a constant sign across all estimable folds and which do not.
+
+**Evaluation.** Raw F1, development data only, same cohort, partitions and preprocessing scope as every prior F1 experiment. No model is refitted outside the existing fold structure; attribution is read from the coefficients each fold already fits for its own evaluation.
+
+Automated integrity checks:
+
+| ID | Check |
+|---|---|
+| EXPL-01 | Zero final-test predictions or performance metrics produced |
+| EXPL-02 | Standardisation learned on training portions only |
+| EXPL-03 | Attribution computed from the same fitted coefficients used for the reported predictions |
+| EXPL-04 | Every stability figure carries the number of folds it rests on |
+| EXPL-05 | Sign-unstable predictors listed explicitly |
+
+Decision gate: predictors with constant sign across all estimable folds are eligible for display as drivers in the dashboard. Predictors with unstable sign are not, and are recorded as such. Low attribution stability is a valid finding and constrains the product rather than invalidating the model. No decision record is required for this result unless the stop condition below triggers; it is a measurement feeding V1-P6, not an adopt-or-reject gate.
+
+**Stop condition:** if a majority of the nine predictors show unstable sign across estimable folds, stop and report to the project owner rather than proceeding. That outcome would mean the champion cannot be explained to a practitioner and changes the dashboard design, which is a project-owner decision.
 
 ### Robustness and ablations
 

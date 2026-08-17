@@ -1,0 +1,105 @@
+player_id,prediction_date,rolling_top3_contributors,lopo_top3_contributors,jaccard_overlap
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-21,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-22,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-23,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-24,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-25,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-26,"","",
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-07-27,"daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-08-04,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-08-05,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-08-06,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2020-08-07,"fatigue_mean_prior_28d, fatigue_mean_prior_7d, readiness_mean_prior_28d","fatigue_mean_prior_28d, fatigue_mean_prior_7d, readiness_mean_prior_28d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-06,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-07,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-08,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-09,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-10,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-11,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-12,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-14,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-15,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-16,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-23,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-24,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-25,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-26,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-27,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-28,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-07-29,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-07,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-08,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-09,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-10,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-11,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-12,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-13,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-23,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-24,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-25,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-26,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-27,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-28,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-08-29,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-18,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-19,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-20,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-21,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-22,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-09-23,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-01,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_7d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d",0.5
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-02,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-03,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_28d",0.2
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-04,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-05,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_7d_log1p, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-06,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_28d_log1p, daily_load_sum_7d_log1p, readiness_mean_prior_28d",0.2
+TeamA-5a5b135d-d146-4b4c-b3da-efcd4d203f95,2020-08-07,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_28d",0.2
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-08-29,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-08-30,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-08-31,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-09-01,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-09-02,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-09-03,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-82a0cc6a-a398-4c89-b5fb-34bc4b53dbea,2020-09-04,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-01,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-02,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-03,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-04,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-05,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-06,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-4051bba7-1170-4c43-b912-8c38815a7625,2020-11-07,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-09,"daily_load_sum_28d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d","daily_load_sum_7d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d",0.5
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-10,"daily_load_sum_28d_log1p, daily_load_sum_7d_log1p, readiness_mean_prior_28d","daily_load_sum_28d_log1p, daily_load_sum_7d_log1p, readiness_mean_prior_28d",1.0
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-11,"daily_load_sum_28d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d","daily_load_sum_28d_log1p, daily_load_sum_7d_log1p, readiness_mean_prior_28d",0.5
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-12,"fatigue_mean_prior_7d, readiness_lag1, readiness_mean_prior_28d","fatigue_mean_prior_7d, readiness_lag1, readiness_mean_prior_28d",1.0
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-13,"daily_load_sum_7d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d","daily_load_sum_7d_log1p, fatigue_mean_prior_7d, readiness_mean_prior_28d",1.0
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-14,"daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_28d","daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_28d",1.0
+TeamA-560cb066-a8ae-412f-b09f-0d2a6aa0cf05,2020-10-15,"daily_load_sum_7d_log1p, readiness_mean_prior_28d, readiness_mean_prior_7d","daily_load_sum_7d_log1p, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-15,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-16,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-17,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-18,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-19,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-20,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-3e5f6e2b-46b7-4890-84a9-3bbb2649af5a,2021-02-21,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-18,"fatigue_mean_prior_28d, fatigue_mean_prior_7d, readiness_lag1","fatigue_mean_prior_28d, readiness_lag1, readiness_mean_prior_7d",0.5
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-19,"fatigue_mean_prior_28d, readiness_lag1, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_lag1, readiness_mean_prior_7d",1.0
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-20,"fatigue_mean_prior_28d, readiness_lag1, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-21,"fatigue_mean_prior_28d, readiness_lag1, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-22,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-23,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-74afe68c-f348-414c-9754-6d6f9df12587,2021-03-24,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-07,"daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-08,"daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-09,"daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-10,"daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-11,"daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_log1p, daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-12,"daily_load_sum_28d_log1p, daily_load_sum_7d_log1p","daily_load_sum_28d_log1p, daily_load_sum_7d_log1p",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-13,"daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_7d","daily_load_sum_7d_log1p, fatigue_lag1, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-20,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-21,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-22,"fatigue_mean_prior_7d, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",0.5
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-23,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-24,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-25,"fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d","fatigue_mean_prior_28d, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0
+TeamA-c4ccf1a6-48c3-4a17-8d6c-eedd12e8680e,2021-01-26,"readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d","readiness_lag1, readiness_mean_prior_28d, readiness_mean_prior_7d",1.0

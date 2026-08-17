@@ -147,6 +147,64 @@ def alert_and_event_tables(
     return pl.DataFrame(alert_rows), pl.DataFrame(event_rows)
 
 
+def top_n_per_team_day_alert_and_event_tables(
+    *,
+    predictions: pl.DataFrame,
+    episodes: pl.DataFrame,
+    target: str,
+    horizon_days: int,
+    top_n_values: Sequence[int],
+    model_id: str,
+) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """Evaluate top-N-per-team-day review budgets and represented onset capture (`DEC-060`).
+
+    Ranking and selection happen within each team-day group, never globally, since the
+    cohort holds two squads and a global ranking could place every alert in one of them.
+    Ties are broken deterministically: predicted probability descending, then `player_id`
+    ascending. `alerts_per_100_player_days` is normalised against the same pooled
+    player-day count used by the percentile view, so both views are directly comparable.
+    """
+    alert_rows: list[dict[str, Any]] = []
+    event_rows: list[dict[str, Any]] = []
+    ranked = predictions.sort(
+        ["team_id", "prediction_date", "predicted_probability", "player_id"],
+        descending=[False, False, True, False],
+    ).with_columns(pl.int_range(pl.len()).over(["team_id", "prediction_date"]).alias("_rank"))
+    for n in top_n_values:
+        selected = ranked.filter(pl.col("_rank") < n).drop("_rank")
+        events = _event_capture(
+            selected=selected,
+            validation=predictions,
+            episodes=episodes,
+            horizon_days=horizon_days,
+            model_id=model_id,
+            review_rate=float(n),
+        )
+        for row in events:
+            row["top_n"] = n
+            del row["review_rate"]
+        event_rows.extend(events)
+        captured = sum(int(row["captured"]) for row in events)
+        positive_alerts = int(selected[target].sum())
+        alert_count = selected.height
+        false_alerts = alert_count - positive_alerts
+        alert_rows.append(
+            {
+                "model_id": model_id,
+                "top_n": n,
+                "eligible_player_days": predictions.height,
+                "alert_count": alert_count,
+                "alerts_per_100_player_days": 100 * alert_count / predictions.height,
+                "positive_alert_days": positive_alerts,
+                "represented_onsets": len(events),
+                "captured_onsets": captured,
+                "event_capture_rate": captured / len(events) if events else None,
+                "false_alerts_per_captured_onset": (false_alerts / captured if captured else None),
+            }
+        )
+    return pl.DataFrame(alert_rows), pl.DataFrame(event_rows)
+
+
 def _event_capture(
     *,
     selected: pl.DataFrame,

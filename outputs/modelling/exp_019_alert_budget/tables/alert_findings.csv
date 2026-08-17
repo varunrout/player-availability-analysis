@@ -1,0 +1,7 @@
+finding_id,status,domain,evidence
+ALERT-01,PASS,final_test_isolation,zero final-test predictions or performance metrics produced
+ALERT-02,PASS,top_n_scope,top-N selection never exceeds N players within any team-day group
+ALERT-03,PASS,false_alert_burden,every operating point reports false alerts per captured onset inline
+ALERT-04,PASS,event_count_reporting,every operating point carries represented-onset and player-day counts
+ALERT-05,PASS,one_day_gap_sensitivity,one-day-gap sensitivity present alongside the three-day headline
+ALERT-06,PASS,shared_prediction_set,percentile and top-N views are generated from the same pooled prediction set

@@ -1,0 +1,7 @@
+base_config: subjective_v1_m1_f1.yaml
+selected_regularisation_c: 0.001
+top_n_values: [1, 3, 5]
+capacity_sensitivity_rates: [0.05, 0.10, 0.20]
+one_day_gap_sensitivity: true
+posthoc_calibration_selection: false
+final_test_access: false
