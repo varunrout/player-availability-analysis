@@ -128,6 +128,7 @@ export interface DataQuality {
   player_coverage_range: PlayerCoverage[];
   onsets_by_year: OnsetsByYear[];
   onset_decline_note: string;
+  onset_reconciliation_note: string;
 }
 
 export interface CalibrationReference {

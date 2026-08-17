@@ -255,6 +255,8 @@ def data_quality(
     )
     onsets_by_year = [OnsetsByYear(**row) for row in onsets_by_year_table.iter_rows(named=True)]
     onset_decline_note = _onset_decline_note(onsets_by_year)
+    reference = get_model_health_reference()
+    onset_reconciliation_note = _onset_reconciliation_note(onsets_by_year, reference)
     return DataQualityResponse(
         team_id=team_id,
         as_at_date=as_at_date,
@@ -266,6 +268,7 @@ def data_quality(
         ],
         onsets_by_year=onsets_by_year,
         onset_decline_note=onset_decline_note,
+        onset_reconciliation_note=onset_reconciliation_note,
     )
 
 
@@ -287,6 +290,32 @@ def _onset_decline_note(onsets_by_year: list[OnsetsByYear]) -> str:
         "wellness reporting rises sharply on injury-onset days relative to ordinary "
         "days, so a decline in reported onsets reflects fewer players reporting, not "
         "fewer injuries occurring."
+    )
+
+
+def _onset_reconciliation_note(
+    onsets_by_year: list[OnsetsByYear], reference: ModelHealthReference
+) -> str:
+    """Reconcile the onset counts a reviewer sees across different screens.
+
+    Data quality, model health's EXP-019 evidence and model health's V1-P5
+    result each report a true but different onset count, since each describes
+    a different population after eligibility, burn-in and partitioning. Left
+    unreconciled, a reviewer moving between views sees two numbers with
+    nothing explaining the gap (`DEC-065` review finding).
+    """
+    total_onsets = sum(row.represented_onsets for row in onsets_by_year)
+    pooled_onsets = int(reference.operating_points[0]["represented_onsets"])
+    final_test_onsets = int(
+        next(iter(reference.held_out_operating_points.values()))["represented_onsets"]
+    )
+    return (
+        f"These are all {total_onsets} recorded onsets across the full period. "
+        "Evaluated subsets are smaller, "
+        f"{pooled_onsets} in the pooled rolling-origin evidence and {final_test_onsets} "
+        "in the final test, after eligibility, burn-in and partitioning. The decline "
+        "measured on frozen cohort partitions is steeper than the decline in the full "
+        "calendar shown here."
     )
 
 

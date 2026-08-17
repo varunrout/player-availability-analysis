@@ -106,6 +106,7 @@ class DataQualityResponse(BaseModel):
     player_coverage_range: list[PlayerCoverage]
     onsets_by_year: list[OnsetsByYear]
     onset_decline_note: str
+    onset_reconciliation_note: str
 
 
 class CalibrationReference(BaseModel):

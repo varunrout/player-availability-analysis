@@ -193,7 +193,7 @@ def _build_onset_calendar(episodes: pl.DataFrame, *, covered_players: pl.Series)
     return (
         episodes.select("player_id", "episode_start")
         .unique()
-        .filter(pl.col("player_id").is_in(covered_players.unique()))
+        .filter(pl.col("player_id").is_in(covered_players.unique().implode()))
         .rename({"episode_start": "onset_date"})
         .sort("player_id", "onset_date")
     )

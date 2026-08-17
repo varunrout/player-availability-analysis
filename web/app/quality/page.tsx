@@ -99,6 +99,7 @@ export default async function QualityPage({ searchParams }: QualityPageProps) {
               ))}
             </tbody>
           </table>
+          <p className="no-alerts-note">{quality.onset_reconciliation_note}</p>
 
           <h2>Coverage range across players</h2>
           {minCoverage !== null && maxCoverage !== null && (

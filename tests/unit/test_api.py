@@ -177,6 +177,10 @@ def test_data_quality_returns_coverage_series(client: TestClient) -> None:
     # 2020, two in 2021 across the whole cohort.
     assert represented_onsets.get(2020) == 1
     assert represented_onsets.get(2021) == 2
+    assert body["onset_reconciliation_note"]
+    assert "all 3 recorded onsets" in body["onset_reconciliation_note"]  # 1 + 2
+    assert "18 in the pooled rolling-origin evidence" in body["onset_reconciliation_note"]
+    assert "5 in the final test" in body["onset_reconciliation_note"]
 
 
 def test_model_health_reports_calibration_and_final_test_result(client: TestClient) -> None:
