@@ -2678,6 +2678,112 @@ V1-P6 input, model card content, portfolio claims
 
 ---
 
+## DEC-063
+
+**Decision ID:** DEC-063
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-062` registered three claims and authorised exactly one evaluation
+against the final-test partition, executed at commit `a27eced` following
+the pre-registration at commit `650f67e`. C1 and C2 were supported: ROC-AUC
+0.827204 against a development figure of 0.835537, and mean predicted risk
+0.014824 against an observed rate of 0.003957, a factor of 3.7 matching
+development exactly. C3 was not supported: the false-alert burden at the
+2.5% operating point was 135.0 per captured onset against a development
+figure of 34.8.
+
+**Decision:**
+Record the diagnosis of the C3 outcome below. It is not remediated. No
+further evaluation against the final-test partition is authorised, and the
+single-use access recorded under `DEC-062` remains spent.
+
+The V1-P5 notebook is retained committed and unexecuted. Executing it would
+call the same loader a second time, constituting a second final-test access
+under `DEC-062`, in exchange for no information the canonical script has not
+already produced. The implementation session identified this and declined
+to execute, which is ratified here. The notebook's code path is verified by
+its focused test against development fixtures.
+
+Authorise phase V1-P6.
+
+**Rationale:**
+The C3 outcome is arithmetically accounted for by two properties of the
+evaluation, neither of which is a failure of the champion.
+
+First, the final-test partition carries roughly half the onset density of
+the development partition: five represented onsets across 8,845 player-days,
+0.565 per thousand, against 18 across 16,815, 1.071 per thousand. This is
+the reporting-engagement decay documented from Stage 2 onward and quantified
+in `DEC-046`, where onsets fall roughly tenfold from 2020 to 2021 at flat
+player-days. Fewer onsets at a comparable alert volume raises false alerts
+per captured onset directly.
+
+Second, the frozen probability threshold of 0.033831, derived from the
+in-sample development prediction distribution as registered, realised an
+alert rate of 4.737% on the final-test partition rather than the intended
+2.5%. It issued 419 alerts across 8,845 player-days where 221 would have
+corresponded to the intended rate.
+
+The two effects multiply. Onset density falls by a factor of 1.90 and the
+realised alert rate rises by a factor of 1.89, giving roughly 3.6, and
+34.8 multiplied by 3.6 is approximately 125 against the observed 135. The
+remainder is accounted for by the difference in positive alert days.
+
+Recall was substantially unaffected, 0.600 on the final test against 0.611
+in development, so the ranking behaviour the operating point depends on
+transferred. What did not transfer was the threshold's calibration to a
+target alert rate.
+
+The threshold-derivation choice was the single ambiguity identified in
+`DEC-062` before execution, and was resolved to the in-sample distribution.
+In-sample predictions from the rows a model was fitted on are not the
+correct reference distribution for held-out behaviour. Out-of-fold
+predictions, already available from the pooled rolling-origin structure,
+would have been the better reference. This is recorded as a methodological
+finding of V1, not as an error to be corrected by spending the final test
+again.
+
+**Alternatives Considered:**
+Authorising a second final-test access to re-derive the thresholds from
+out-of-fold predictions and re-evaluate, rejected because `DEC-062` records
+in advance that no result changes the champion or the operating points, and
+because a second access taken specifically because the first was
+unflattering is the precise failure mode the single-use rule exists to
+prevent. Executing the V1-P5 notebook for completeness, rejected on the same
+grounds for no information gain. Recording C3's failure as a deficiency of
+the champion, rejected because recall transferred within one percentage
+point and the burden difference is fully accounted for by onset density and
+threshold realisation.
+
+**Consequences:**
+- The final-test access remains spent. No further access is authorised.
+- The model card, README and case study must state that the 2.5% operating
+  threshold realised a 4.737% alert rate on held-out data, and that operating
+  thresholds derived from in-sample predictions do not transfer reliably to
+  held-out periods.
+- Any V2 work deriving operating thresholds uses out-of-fold predictions as
+  the reference distribution. This is recorded now so the finding is not
+  lost.
+- The V1-P5 notebook remains committed and unexecuted, with the reason
+  recorded in the V1-P5 report.
+- The champion, predictor contract and operating points are unchanged.
+- V1-P6 is authorised: batch inference writing to `paa_product`, and the
+  dashboard covering squad overview, player detail, data quality and model
+  health, per `DEC-046` and `DEC-061`.
+- No V1 artefact may present the final-test figures as a performance claim.
+  They are cited as a confirmatory check with five-onset support stated
+  inline.
+
+**Affected Components:** V1-P5 closure, operating-threshold methodology,
+model card content, V2 backlog, V1-P6 authorisation
+
+**Supersedes:** none
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.
