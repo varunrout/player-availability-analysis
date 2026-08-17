@@ -2257,6 +2257,102 @@ pre-registration, model card content
 
 ---
 
+## DEC-059
+
+**Decision ID:** DEC-059
+**Date:** 2026-08-16
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-058` selected raw probabilities for the F1 champion and rejected Platt
+scaling on the grounds that its calibration-slope correction was bought at
+a Brier-score cost. That record also states the project's standing
+inferential rule, that a difference is claimed only where the paired
+interval excludes zero under both resampling schemes.
+
+Those two statements are inconsistent. Platt's Brier degradation against F1
+raw is [-0.000004, 0.003681] under player-cluster resampling, which
+includes zero, and [0.000844, 0.002004] under temporal week-block
+resampling, which excludes it. Under the stated rule the cost is not
+established, so it cannot carry the rejection. The position differs from
+F3, where the equivalent intervals were [0.000037, 0.002358] and
+[0.000553, 0.001306] and the cost cleared both schemes, which is why
+`DEC-052` was sound on the same reasoning.
+
+Isotonic is unaffected. Its degradation is [0.000320, 0.002238] and
+[0.000775, 0.001660], excluding zero under both schemes.
+
+**Decision:**
+The selection made in `DEC-058` stands. The F1 champion reports raw
+probabilities and the transform remains frozen ahead of V1-P5.
+
+Supersede the rationale of `DEC-058` and record the following grounds in
+its place.
+
+Platt does not correct F1's calibration. It exchanges one calibration
+defect for another. It improves the slope from 2.019474 to 1.044271 while
+worsening calibration in the large: mean predicted risk moves from 0.023012
+to 0.027420 against an observed rate of 0.006185, so overprediction rises
+from roughly 3.7 times to roughly 4.4 times, and the intercept moves from
+2.007319 to -1.482620. Log loss degrades from 0.042009 to 0.044835.
+
+Record as a standing rule that the two-scheme requirement applies
+symmetrically. A cost may not be treated as established on weaker evidence
+than a benefit.
+
+**Rationale:**
+For a decision-support product that displays a risk figure, error in the
+level of predicted risk is at least as consequential as error in its
+spread. `DEC-007` requires that a stated 20% risk mean approximately 20%,
+which is a statement about level. A transform that sharpens the slope while
+moving the average further from the observed rate does not serve that
+requirement, and this holds independently of any bootstrap interval.
+
+Log loss is not bootstrapped anywhere in this experiment suite, which
+carries intervals only for Brier score and average precision. Its
+degradation is therefore an unqualified point difference rather than an
+unestablished one, and it points the same way as the calibration-in-the-
+large result.
+
+The symmetry rule matters beyond this decision. Applied asymmetrically, the
+two-scheme requirement would make adoption hard and rejection easy, which
+would bias the programme toward whatever was selected first. Stating it
+explicitly removes that asymmetry from future gates.
+
+**Alternatives Considered:**
+Adopting Platt on the grounds that its Brier cost is not established,
+rejected because the calibration-in-the-large deterioration and the log
+loss degradation both point against it and neither depends on a contested
+interval. Leaving `DEC-058` standing unamended, rejected because the record
+would state an inferential rule and then not apply it symmetrically within
+the same document, in a programme whose headline evidence is methodological
+rigour and whose model card will be read against its own decision log.
+Re-running `EXP-009`, rejected because no new measurement is required; the
+existing evidence supports the corrected reasoning as it stands.
+
+**Consequences:**
+- The champion's probability transform is unchanged. No experiment,
+  evidence table, figure or report requires regeneration.
+- The rationale of `DEC-058` is superseded. Its decision, alternatives and
+  consequences stand.
+- The two-scheme requirement applies symmetrically to costs and benefits in
+  every future gate.
+- The absence of uncertainty intervals for log loss, calibration slope and
+  calibration intercept is recorded as a known limitation of the current
+  uncertainty suite. It is not remediated now, since Brier and average
+  precision carry intervals and the V1 conclusions do not rest on the
+  unbootstrapped metrics, but it must be stated in the model card.
+- V1-P4 remains authorised and unaffected.
+- The final-test lock is unaffected.
+
+**Affected Components:** DEC-058 rationale, inferential standard for all
+future gates, uncertainty-suite limitations, model card content
+
+**Supersedes:** `DEC-058`, in respect of rationale only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

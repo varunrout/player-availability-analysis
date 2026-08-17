@@ -1,16 +1,16 @@
 # Player Availability Analysis - Project State
 
-State Version: 54
-Last Updated UTC: 2026-08-16T23:30:00Z
+State Version: 55
+Last Updated UTC: 2026-08-16T23:45:00Z
 Coordination Session ID: PAA-IMPL-20260816-01
 Git Branch: main
-Git HEAD: 78f579f (pre-state-update commit; see State Synchronisation Status)
+Git HEAD: 53eb0ef (pre-state-update commit; see State Synchronisation Status)
 Current Milestone: V1 Delivery Programme - Phase V1-P4 In Progress: Champion Selection, Explanation Stability and Alert-Budget Utility
-Current Phase Status: `BOOT-01`, introduced under `DEC-056`, required paired-bootstrap sign agreement even where the interval included zero, producing a false failure on the razor-thin raw-versus-isotonic average-precision comparison. `DEC-057` reformulated `BOOT-01` to require agreement only where the interval excludes zero; the epsilon-based interim fix is removed. Reformulation applied across all four affected modules (calibration, ablation, survival, boosting) and regenerated live against GCS; all four pass. `EXP-009` is extended with F1 raw, Platt and isotonic arms under the existing identifier (F1 had never been calibrated; only its superseded F3 predecessor had), retaining the F3 arms as historical reference. `DEC-058` selects raw F1 probabilities for V1: both Platt and isotonic degrade Brier and log loss relative to raw, with the Brier degradation excluding zero under both resampling schemes for isotonic and under temporal week-block resampling for Platt; no calibrator is adopted. Phase V1-P4 is authorised and now begins against raw F1.
+Current Phase Status: `DEC-058`'s rejection of Platt scaling rested on a Brier-score cost that, under the record's own two-scheme interval-exclusion rule, was not established: the player-cluster interval [-0.000004, 0.003681] includes zero. `DEC-059` supersedes `DEC-058`'s rationale only; the selection itself (raw F1, no post-hoc calibrator) stands, now grounded in calibration-in-the-large deterioration (mean prediction moves further from the observed rate under Platt, overprediction rising from roughly 3.7x to roughly 4.4x) and a log loss degradation that is an unqualified point difference, since log loss is not bootstrapped in this suite. `DEC-059` also records a standing symmetry rule: the two-scheme interval-exclusion requirement applies equally to costs and to benefits. No code, evidence, figure or report changed; this is a rationale correction only.
 
 ## Current Objective
 
-Execute phase V1-P4: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against raw F1 probabilities per `DEC-058`.
+Execute phase V1-P4: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against raw F1 probabilities per `DEC-058`/`DEC-059`.
 
 ## V1 Delivery Context
 
@@ -241,6 +241,13 @@ State v53 to v54, under coordination session `PAA-IMPL-20260816-01`.
 - Checked the pre-registered stop condition before proceeding: no F1 calibration method improved Brier or log loss at all (all four figures are worse than raw), so the interval-exclusion condition was moot and the stop condition did not trigger.
 - Accepted `DEC-058`: selected raw probabilities for the F1 champion. No post-hoc calibrator is adopted for V1; the finding that no calibration method is distinguishable from raw at this support is now recorded against the champion itself rather than transferred by argument from the superseded F3 candidate. The binding constraint remains 104 pooled positive player-days fitted fold-wise, a property of the cohort rather than of any candidate, and the result reproduces the pattern already recorded for F3 under `DEC-052`. The probability transform is now frozen ahead of V1-P5. Phase V1-P4 begins against raw F1.
 
+State v54 to v55, under coordination session `PAA-IMPL-20260816-01`.
+
+- Identified that `DEC-058`'s rejection of Platt scaling was internally inconsistent with the record's own stated inferential rule: a difference is claimed only where the paired interval excludes zero under both resampling schemes, but Platt's Brier cost was cited without meeting that bar. The player-cluster interval [-0.000004, 0.003681] includes zero; only the temporal week-block interval [0.000844, 0.002004] excludes it. F3's equivalent Platt-vs-raw Brier intervals, by contrast, cleared both schemes ([0.000037, 0.002358] and [0.000553, 0.001306]), which is why `DEC-052`'s parallel reasoning was sound. Isotonic's rejection is unaffected: its Brier degradation excludes zero under both schemes.
+- Accepted `DEC-059`: the selection made in `DEC-058` stands unchanged, raw F1 probabilities with no post-hoc calibrator, but its rationale is superseded. The corrected grounds are calibration-in-the-large: Platt's mean prediction moves from 0.023012 to 0.027420 against an observed rate of 0.006185, so overprediction rises from roughly 3.7x to roughly 4.4x, and log loss degrades from 0.042009 to 0.044835, an unqualified point difference since log loss is not bootstrapped anywhere in this experiment suite. No code, evidence, figure or report was regenerated; this is a rationale correction recorded against already-measured figures.
+- `DEC-059` records a standing symmetry rule: the two-scheme interval-exclusion requirement applies equally to costs and to benefits, so a cost may not be treated as established on weaker evidence than a benefit would require for adoption. It also records the absence of uncertainty intervals for log loss, calibration slope and calibration intercept as a known limitation of the current uncertainty suite, to be stated in the model card.
+- Process note: `DEC-057` was committed alongside its implementation and regenerated evidence at `78f579f` rather than in a control-only commit; going forward, decision records and `PROJECT_STATE.md` updates are committed in the control-update commit only, separate from implementation and evidence commits.
+
 ## Current Repository State
 
 ```text
@@ -303,7 +310,7 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` originally selected raw F3 probabilities per `DEC-052`; its average-precision claim was superseded by `DEC-056`'s bootstrap correction and its razor-thin `BOOT-01` failure was resolved by `DEC-057`'s interval-exclusion reformulation. `EXP-009` was then extended with F1 raw/Platt/isotonic arms and, under `DEC-058`, **raw F1 probabilities are selected for V1**: both Platt and isotonic degrade Brier and log loss, with the degradation excluding zero under both resampling schemes for isotonic and under temporal week-block resampling for Platt; no post-hoc calibrator is adopted and the probability transform is now frozen ahead of V1-P5. **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic. **`EXP-008` boosted classification is rejected for V1 under `DEC-056`**: Brier favours boosted with both paired intervals excluding zero, but AP and ROC-AUC favour F1 on three of four views and the corrected AP intervals now include zero under both schemes; the training-to-validation AP gap (0.256 against 0.013) is the pre-registered overfitting signature. **Phase V1-P4 is in progress**: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against raw F1. Final-test performance remains blocked until V1-P5.
+EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` originally selected raw F3 probabilities per `DEC-052`; its average-precision claim was superseded by `DEC-056`'s bootstrap correction and its razor-thin `BOOT-01` failure was resolved by `DEC-057`'s interval-exclusion reformulation. `EXP-009` was then extended with F1 raw/Platt/isotonic arms and, under `DEC-058`, **raw F1 probabilities are selected for V1**: no post-hoc calibrator is adopted and the probability transform is now frozen ahead of V1-P5. `DEC-059` corrects `DEC-058`'s rationale: isotonic's Brier cost excludes zero under both resampling schemes and stands, but Platt's Brier cost excludes zero under temporal week-block resampling only and does not meet the record's own two-scheme bar, so Platt's rejection instead rests on calibration-in-the-large deterioration (overprediction rising from roughly 3.7x to roughly 4.4x) and an unbootstrapped log loss degradation; the selection itself is unchanged. **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic. **`EXP-008` boosted classification is rejected for V1 under `DEC-056`**: Brier favours boosted with both paired intervals excluding zero, but AP and ROC-AUC favour F1 on three of four views and the corrected AP intervals now include zero under both schemes; the training-to-validation AP gap (0.256 against 0.013) is the pre-registered overfitting signature. **Phase V1-P4 is in progress**: champion selection, `EXP-018` explanation stability and `EXP-019` alert-budget simulation, against raw F1. Final-test performance remains blocked until V1-P5.
 
 ## Current Product State
 
@@ -336,6 +343,7 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-048` retains the three-day episode gap as primary with the one-day gap as a mandatory pre-registered sensitivity on every V1 headline result.
 - `DEC-057` reformulates `BOOT-01` to require paired-bootstrap sign agreement only where the interval excludes zero, and extends `EXP-009` with F1 raw/Platt/isotonic arms under the existing identifier, retaining F3 as historical reference.
 - `DEC-058` selects raw probabilities for the F1 champion; no post-hoc calibrator is adopted for V1, and the probability transform is frozen ahead of V1-P5.
+- `DEC-059` supersedes `DEC-058`'s rationale only, grounding the raw-F1 selection in calibration-in-the-large and log loss rather than an unestablished Brier cost; the two-scheme interval-exclusion requirement applies symmetrically to costs and benefits in every future gate.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
@@ -374,6 +382,7 @@ Resolved since the previous revision: the `BOOT-01` false-failure question on th
 - Resolved by `DEC-056`: the paired-bootstrap population mismatch for average precision. `paired_prediction_bootstrap_differences` resampled the full pooled population while the point estimate uses only the discrimination-eligible subset; corrected across all four affected modules with `BOOT-01` added, retained evidence regenerated. `DEC-052`'s isotonic-vs-raw claim, the case that surfaced the defect, is superseded; the corrected week-block interval is [-0.036918, 0.017755], including zero.
 - Resolved by `DEC-057`: `BOOT-01`'s razor-thin raw-vs-isotonic average-precision failure was a specification defect, not an estimator defect. `BOOT-01` required sign agreement even where the interval included zero and no direction was claimed; reformulated to check sign only where the interval excludes zero, and the epsilon-based interim fix is removed.
 - Resolved by `DEC-058`: F1's calibration was previously untraceable to a measured result, since `DEC-054` promoted F1 to champion after `EXP-009` had only run F3's arms. `EXP-009` now carries F1 raw/Platt/isotonic arms; both Platt and isotonic degrade Brier and log loss relative to raw, and no calibrator is adopted.
+- Not remediated by design, recorded under `DEC-059`: log loss, calibration slope and calibration intercept carry no uncertainty interval anywhere in the current bootstrap suite, which is built only for Brier score and average precision. V1 conclusions do not rest on these unbootstrapped metrics, but the limitation must be stated in the model card whenever they are cited as evidence.
 
 ## Blockers
 
@@ -509,6 +518,7 @@ No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007` and `EXP-008` 
 | BOOT-01 interval-exclusion reformulation | RESOLVED | `DEC-057`; committed at `78f579f`; regenerated for CAL/ABL/COX/BST, all four PASS |
 | EXP-009 F1 calibration arms | PASS | committed at `78f579f`; F1 raw/Platt/isotonic added under the existing identifier, F3 retained as historical reference |
 | EXP-009 F1 results review | RESOLVED | `DEC-058`; raw selected, no post-hoc calibrator adopted, probability transform frozen ahead of V1-P5 |
+| DEC-058 rationale correction | RESOLVED | `DEC-059`; Platt's rejection rests on calibration-in-the-large and log loss, not an unestablished Brier cost; selection unchanged; symmetry rule recorded |
 | Modelling | V1-P4 IN PROGRESS | F1 is champion (`DEC-054`/`DEC-055`/`DEC-056`/`DEC-058`); `EXP-007`, `EXP-008` and `EXP-009` F1 calibration all closed; final test locked until V1-P5 |
 
 Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 95 files, strict mypy clean across 73 source files, `105 passed` with one expected ZIP warning, and `poetry check --lock` passing.
@@ -517,12 +527,12 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v54, 2026-08-16T23:30:00Z | v54, 2026-08-16T23:30:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-058 | DEC-001 to DEC-058 |
+| `PROJECT_STATE.md` | v55, 2026-08-16T23:45:00Z | v55, 2026-08-16T23:45:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-059 | DEC-001 to DEC-059 |
 | `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | unchanged this revision; sections 5, 5 E3, 5A, 5 F1 and 5 F2 as previously revised | unchanged this revision; sections 5, 5 E3, 5A, 5 F1 and 5 F2 as previously revised |
 
 Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-057` and `DEC-058`, and its Open Decisions section is updated; doc 19 is unchanged this revision, since both the `BOOT-01` reformulation and the F1 calibration extension are code, evidence and decision changes rather than specification changes; `PROJECT_STATE.md` advances to v54, covering the `BOOT-01` reformulation, the `EXP-009` F1 calibration extension and outcome, and the start of phase V1-P4. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `78f579f`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-059`, superseding `DEC-058`'s rationale only; doc 19 is unchanged this revision, since `DEC-059` is a rationale correction against already-measured evidence, not a specification, code or evidence change; `PROJECT_STATE.md` advances to v55, covering `DEC-059`, the standing symmetry rule and the unbootstrapped-metrics limitation. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `53eb0ef`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
