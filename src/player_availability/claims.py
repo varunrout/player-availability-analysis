@@ -94,14 +94,6 @@ def _archive_bucket_gb(path: Path) -> float:
 CLAIMS: tuple[Claim, ...] = (
     # --- README.md ---
     Claim(
-        id="readme-final-test-roc-auc",
-        claim="V1-P5 confirmatory ROC-AUC",
-        location="README.md",
-        location_text="ROC-AUC 0.827",
-        source="outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv",
-        source_text="0.8272044754337603",
-    ),
-    Claim(
         id="readme-overprediction-ratio",
         claim="V1-P5 confirmatory overprediction ratio (~3.7x)",
         location="README.md",
@@ -457,6 +449,39 @@ CLAIMS: tuple[Claim, ...] = (
         location_text="realised a 4.737% alert rate",
         source="outputs/modelling/v1_p5_final_test/tables/operating_point_results.csv",
         source_text="4.737139626907857",
+    ),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class ForbiddenClaim:
+    """A figure that must never appear bare (without its governing context).
+
+    `DEC-063` permits the V1-P5 confirmatory ROC-AUC only alongside its
+    five-onset support; the README is prose, not a table, so that support
+    cannot be attached to a bare number the way the model card's table
+    attaches it. The fix is to state what transferred without naming the
+    figure at all in the README, and to guard the figure by name so it
+    cannot silently reappear.
+    """
+
+    id: str
+    reason: str
+    location: str
+    forbidden_text: str
+
+
+FORBIDDEN_CLAIMS: tuple[ForbiddenClaim, ...] = (
+    ForbiddenClaim(
+        id="readme-no-bare-final-test-roc-auc",
+        reason=(
+            "DEC-063 permits the V1-P5 confirmatory ROC-AUC only reported "
+            "alongside its five-onset support. README.md is prose, not the "
+            "model card's table, so the figure is described qualitatively "
+            "there instead and must not reappear bare."
+        ),
+        location="README.md",
+        forbidden_text="0.827",
     ),
 )
 

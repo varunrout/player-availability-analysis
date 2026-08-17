@@ -13,7 +13,7 @@ import math
 
 import pytest
 
-from player_availability.claims import CLAIMS, Claim, resolve
+from player_availability.claims import CLAIMS, FORBIDDEN_CLAIMS, Claim, ForbiddenClaim, resolve
 
 
 def _normalized(text: str) -> str:
@@ -46,6 +46,16 @@ def test_claim_is_traceable(entry: Claim) -> None:
             f"{entry.id}: computed {actual} (rounded {round(actual, entry.round_ndigits)}) "
             f"!= expected {entry.expected} from {entry.source}"
         )
+
+
+@pytest.mark.parametrize("entry", FORBIDDEN_CLAIMS, ids=[c.id for c in FORBIDDEN_CLAIMS])
+def test_forbidden_claim_does_not_appear(entry: ForbiddenClaim) -> None:
+    location_path = resolve(entry.location)
+    assert location_path.is_file(), f"{entry.id}: {entry.location} does not exist"
+    content = location_path.read_text(encoding="utf-8")
+    assert entry.forbidden_text not in content, (
+        f"{entry.id}: {entry.forbidden_text!r} must not appear in {entry.location} ({entry.reason})"
+    )
 
 
 def test_every_claim_id_is_unique() -> None:

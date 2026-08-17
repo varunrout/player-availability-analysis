@@ -2,11 +2,10 @@
 
 Every factual claim in `README.md`, `docs/MODEL_CARD.md`, and the hardcoded interpretive text in the dashboard's API layer, mapped to the committed artefact that measures it. This table is generated from `src/player_availability/claims.py`; `tests/unit/test_claim_traceability.py` checks every row mechanically on every test run — a literal claim must appear verbatim (whitespace-normalised) in both its citing document and its source artefact, and a computed claim must reproduce its stated figure from the source artefact's own values. If a figure changes in either place without the other being updated, the gate fails.
 
-**Coverage: 43 claims, 43 traced, 0 untraceable.**
+**Coverage: 42 claims, 42 traced, 0 untraceable.**
 
 | Claim | Stated in | Source artefact | Figure |
 |---|---|---|---|
-| V1-P5 confirmatory ROC-AUC | `README.md` | `outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv` | `0.8272044754337603` |
 | V1-P5 confirmatory overprediction ratio (~3.7x) | `README.md` | `outputs/modelling/v1_p5_final_test/tables/final_test_metrics.csv` | `computed = 3.7 (rounded to 1 dp)` |
 | 73 recorded onsets under the primary 3-day gap rule | `README.md` | `outputs/analysis/01_outcome_eda/tables/episode_gap_sensitivity.csv` | `3,162,306,299,7,147,73,33,55,92,1.0,24` |
 | 18 represented onsets in pooled rolling-origin development evidence | `README.md` | `outputs/modelling/exp_019_alert_budget/tables/alert_budget_results.csv` | `percentile,0.025,16815,16815,421,2.503716919417187,38,0.0...` |
@@ -51,3 +50,11 @@ Every factual claim in `README.md`, `docs/MODEL_CARD.md`, and the hardcoded inte
 | Dashboard C3 explanation cites the realised 4.737% held-out alert rate | `src/player_availability/api/app.py` | `outputs/modelling/v1_p5_final_test/tables/operating_point_results.csv` | `4.737139626907857` |
 
 Entries with a computed figure (sums, ratios, differences) are not a literal substring in the source artefact; the test derives the value from the source's own columns and checks it against the stated figure.
+
+## Forbidden claims
+
+Figures that must never appear bare, without their governing context, in a given document. Checked by the same test suite (`test_forbidden_claim_does_not_appear`).
+
+| Guard | Location | Forbidden text | Reason |
+|---|---|---|---|
+| `readme-no-bare-final-test-roc-auc` | `README.md` | `0.827` | DEC-063 permits the V1-P5 confirmatory ROC-AUC only reported alongside its five-onset support. README.md is prose, not the model card's table, so the figure is described qualitatively there instead and must not reappear bare. |
