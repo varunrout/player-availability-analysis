@@ -2444,6 +2444,117 @@ specifications, dashboard operating point, model card content
 
 ---
 
+## DEC-061
+
+**Decision ID:** DEC-061
+**Date:** 2026-08-17
+**Status:** ACCEPTED
+
+**Context:**
+`DEC-060` adopted top-N-per-team-day as the product-facing operating point
+for the V1 dashboard, on the grounds that a fixed review count is
+interpretable at the point of use while a review rate is not. That decision
+was taken before `EXP-019` measured the cost of each operating point.
+
+`EXP-019` has now measured them against raw F1 over 16,815 pooled
+rolling-origin player-days containing 18 represented onsets. Top-1 per
+team-day issues 674 alerts, captures nine onsets and costs 71.1 false alerts
+per captured onset. Top-3 issues 2,022 alerts, captures 13 and costs 150.8.
+Top-5 issues 3,370 alerts, captures 13 and costs 253.9. The 2.5% review rate
+issues 421 alerts, captures 11 and costs 34.8. The 5% rate issues 841
+alerts, captures 13 and costs 60.4.
+
+Every top-N operating point is dominated. Top-3 and the 5% rate capture the
+same 13 onsets, but top-3 issues 2.4 times as many alerts. The 2.5% rate
+beats top-1 on both axes simultaneously, capturing more onsets from fewer
+alerts at less than half the burden.
+
+**Decision:**
+Separate the display ordering from the alerting rule. Supersede `DEC-060` in
+respect of the product-facing operating point only; its champion freeze and
+its authorisation of `EXP-018` and `EXP-019` stand.
+
+The dashboard presents each team's squad ranked by risk every day. Ranking
+is a display ordering and issues no alert.
+
+The alerting rule is percentile-based. The default operating point is the
+2.5% review rate. The 5% rate is selectable. Both display their measured
+false-alert burden alongside the alert. No other operating point is offered
+in V1.
+
+Top-N is retained nowhere as an alerting rule.
+
+**Rationale:**
+Top-N alerts a fixed number of players every day regardless of whether
+anyone is elevated, so it spends its budget uniformly across days while risk
+is not uniform across days. A percentile rule allows alerts to concentrate
+on the days that warrant them and to issue none on the days that do not.
+That is the whole of the measured difference and it is a property of the
+rule, not of the model.
+
+A system that flags someone every single day also teaches its users to
+disregard it. Days on which no player is flagged are a feature of an honest
+alerting rule, not a failure of it.
+
+The interpretability argument that motivated `DEC-060` is preserved in full
+by the ranked squad view, which is what a practitioner reads. It does not
+require that the ranking also determine who is alerted.
+
+Both the 2.5% and 5% rates are offered because review capacity varies and
+neither dominates the other: 5% captures two further onsets for 420
+additional alerts, which is 210 additional alerts per additional onset
+caught. That is a capacity judgement belonging to the practitioner, not a
+modelling judgement, and `DEC-060` already requires the burden to be
+displayed alongside every operating point offered.
+
+The 1% rate is not offered. It captures only two onsets and its burden of
+80.5 false alerts per captured onset is higher than the 2.5% rate's 34.8.
+This non-monotonicity is a small-support artefact of 18 represented onsets
+rather than a property of the ranking, and it is recorded as such.
+
+The residual burden is high at every operating point. At the default, a
+practitioner reviews roughly 421 alerts across 16,815 player-days, about one
+player per squad per day, to capture 11 of 18 onsets. This is a consequence
+of 104 positive player-days and 18 represented onsets and is not remediable
+by choice of operating point. It must be stated plainly wherever an
+operating point is cited, including in the interface and the model card.
+
+**Alternatives Considered:**
+Retaining top-N as the alerting rule, rejected on the measured dominance
+above. Offering the 5% rate as the default, rejected because the 2.5% rate
+has the lowest measured burden and the highest precision of any point, and a
+practitioner can select the wider rate when capacity allows. Offering the
+10% and 20% capacity sensitivities, rejected because their burdens of 115.6
+and 218.8 exceed every offered point while capturing at most two further
+onsets. Deferring the operating-point choice to V1-P6, rejected because the
+dashboard specification depends on it and `DEC-046` requires material design
+changes to be recorded before the work, not after.
+
+**Consequences:**
+- The dashboard presents a daily ranked squad view per team, with alerts
+  issued by percentile rule at a 2.5% default and a selectable 5% rate.
+- Days with no alert are expected and are displayed as such rather than
+  padded to a fixed count.
+- Every operating point displays its measured false-alert burden.
+- The `DEC-060` champion freeze and experiment authorisations are unaffected.
+- `DEC-036`'s frozen percentile budgets remain the cross-experiment
+  comparison basis and are now also the product alerting basis, so no
+  divergence between evidence and product remains.
+- No experiment, evidence table, figure or report requires regeneration.
+  `EXP-019` already measures every point named here.
+- No alert threshold is a medical threshold, a clearance decision or
+  participation advice, in any artefact or interface.
+- The final-test lock is unaffected.
+
+**Affected Components:** dashboard operating point, V1-P6 specification,
+alert-rule governance, model card content
+
+**Supersedes:** `DEC-060`, in respect of the product-facing operating point
+only
+**Superseded By:** none
+
+---
+
 ## Open Decisions Awaiting Resolution
 
 Recorded for visibility. Each becomes a numbered decision when resolved. None has been silently chosen.

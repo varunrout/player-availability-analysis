@@ -1,12 +1,12 @@
 # Player Availability Analysis - Project State
 
-State Version: 56
-Last Updated UTC: 2026-08-17T00:30:00Z
+State Version: 57
+Last Updated UTC: 2026-08-17T01:00:00Z
 Coordination Session ID: PAA-IMPL-20260816-01
 Git Branch: main
-Git HEAD: a66e812 (pre-state-update commit; see State Synchronisation Status)
-Current Milestone: V1 Delivery Programme - Phase V1-P4 Measured: Champion Selection Closed, Explanation Stability and Alert-Budget Utility Complete
-Current Phase Status: `DEC-060` closed the V1-P4 champion selection gate (F1 raw, per `DEC-054`/`DEC-058`/`DEC-059`; no further candidate evaluated in V1), authorised `EXP-018` and `EXP-019`, and adopted top-N-per-team-day as the product-facing operating point alongside the frozen `DEC-036` percentile basis, both reported from the same predictions. `EXP-019` translated raw F1 pooled rolling-origin predictions into review operating points; `ALERT-01` to `ALERT-06` all pass. `EXP-018` measured F1 coefficient sign, magnitude and rank stability across every estimable rolling-origin and leave-one-player-out fold, with exact attribution (`EXPL-03` reproduces the model's own logit to floating-point precision); 1 of 9 predictors (`daily_load_log1p`) shows unstable sign, well short of the pre-registered stop condition (a majority, 5 of 9), so no stop was triggered and no further decision record is required for either result. Phase V1-P4 is complete; V1-P5 (single-use final-test spend) is not begun.
+Git HEAD: 18fbab3 (pre-state-update commit; see State Synchronisation Status)
+Current Milestone: V1 Delivery Programme - Phase V1-P4 Closed: Champion Selection, Explanation Stability, Alert-Budget Utility and Operating-Point Choice Complete
+Current Phase Status: Project-owner review of the already-measured `EXP-019` evidence found every top-N-per-team-day operating point dominated by a percentile point: top-3 and the 5% rate both capture 13 of 18 represented onsets, but top-3 costs 150.8 false alerts per captured onset against the 5% rate's 60.4; the 2.5% rate beats top-1 on both alert volume and capture simultaneously. `DEC-061` supersedes `DEC-060` in respect of the product-facing operating point only: the dashboard separates a daily ranked squad view (display ordering, issues no alert) from the alerting rule (percentile-based, 2.5% default, 5% selectable, both with their measured false-alert burden displayed inline); top-N is retained nowhere as an alerting rule. `DEC-060`'s champion freeze and its authorisation of `EXP-018`/`EXP-019` are unaffected. No code, evidence, figure or report was regenerated; `EXP-019` already measured every point named. Phase V1-P4 is closed. V1-P5 (single-use final-test spend) is not begun.
 
 ## Current Objective
 
@@ -256,6 +256,12 @@ State v55 to v56, under coordination session `PAA-IMPL-20260816-01`.
 - Checked the pre-registered stop condition: a majority of the nine predictors (5 or more) would need unstable sign to trigger it; only 1 does, so the stop condition did not trigger. No further decision record is required for either result, per the standing instruction that these are measurements feeding V1-P6, not adopt-or-reject gates.
 - Noted, not load-bearing: `DEC-059` was recorded with a Date field of 2026-08-16; it was in fact recorded on 2026-08-17. The date is not load-bearing to the decision's content and no superseding record is required.
 
+State v56 to v57, under coordination session `PAA-IMPL-20260816-01`.
+
+- Accepted `DEC-061`: project-owner review of the already-measured `EXP-019` evidence found every top-N-per-team-day operating point dominated by a percentile point over 16,815 pooled rolling-origin player-days and 18 represented onsets. Top-1 (674 alerts, 9 captured, 71.1 false/captured) is beaten on both axes by the 2.5% rate (421 alerts, 11 captured, 34.8 false/captured). Top-3 and top-5 (2,022 and 3,370 alerts) capture the same 13 onsets as the 5% rate (841 alerts) at 2.4x and 4.0x its false-alert burden respectively.
+- `DEC-061` supersedes `DEC-060` in respect of the product-facing operating point only; the champion freeze and the `EXP-018`/`EXP-019` authorisations stand. The dashboard now separates display from alerting: a daily ranked squad view per team (display ordering, issues no alert) and a percentile alerting rule (2.5% default, 5% selectable, both display their measured false-alert burden inline). Top-N is retained nowhere as an alerting rule. The 1% rate is not offered: its 80.5 false-alerts-per-captured-onset burden exceeds the 2.5% rate's, a non-monotonicity attributed to the 18-onset support rather than to the ranking itself.
+- No code, evidence, figure or report was regenerated; `EXP-019`'s existing measurements already covered every operating point named in `DEC-061`.
+
 ## Current Repository State
 
 ```text
@@ -318,11 +324,11 @@ Active Stage 0 through Stage 8 and M0/M1 assets follow the shared module/script/
 
 ## Current Modelling State
 
-EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` originally selected raw F3 probabilities per `DEC-052`; its average-precision claim was superseded by `DEC-056`'s bootstrap correction and its razor-thin `BOOT-01` failure was resolved by `DEC-057`'s interval-exclusion reformulation. `EXP-009` was then extended with F1 raw/Platt/isotonic arms and, under `DEC-058`, **raw F1 probabilities are selected for V1**: no post-hoc calibrator is adopted and the probability transform is now frozen ahead of V1-P5. `DEC-059` corrects `DEC-058`'s rationale: isotonic's Brier cost excludes zero under both resampling schemes and stands, but Platt's Brier cost excludes zero under temporal week-block resampling only and does not meet the record's own two-scheme bar, so Platt's rejection instead rests on calibration-in-the-large deterioration (overprediction rising from roughly 3.7x to roughly 4.4x) and an unbootstrapped log loss degradation; the selection itself is unchanged. **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic. **`EXP-008` boosted classification is rejected for V1 under `DEC-056`**: Brier favours boosted with both paired intervals excluding zero, but AP and ROC-AUC favour F1 on three of four views and the corrected AP intervals now include zero under both schemes; the training-to-validation AP gap (0.256 against 0.013) is the pre-registered overfitting signature. **Phase V1-P4 is complete under `DEC-060`**: the champion selection gate is closed on F1 raw; `EXP-018` found 8 of 9 predictors eligible for driver display (constant sign across every estimable fold, mean top-3 contributor Jaccard overlap 0.899 between rolling-origin and leave-one-player-out fits) with `daily_load_log1p` excluded; `EXP-019` measured top-N-per-team-day and percentile operating points side by side, all with a high false-alert burden reflecting the cohort's 104-positive-day support. Neither result required a decision record; the stop condition on explanation stability did not trigger. Final-test performance remains blocked until V1-P5, which is not yet begun.
+EXP-002 M0 remains the minimum benchmark. The full raw M1 feature ladder is complete. `DEC-043` is superseded in respect of candidate selection by `DEC-054`: **F1 is the V1 champion**, selected on `EXP-016` dominance evidence and its unseen-player lead over F3, not on statistical significance. F3 and arm C are not carried forward. `EXP-009` originally selected raw F3 probabilities per `DEC-052`; its average-precision claim was superseded by `DEC-056`'s bootstrap correction and its razor-thin `BOOT-01` failure was resolved by `DEC-057`'s interval-exclusion reformulation. `EXP-009` was then extended with F1 raw/Platt/isotonic arms and, under `DEC-058`, **raw F1 probabilities are selected for V1**: no post-hoc calibrator is adopted and the probability transform is now frozen ahead of V1-P5. `DEC-059` corrects `DEC-058`'s rationale: isotonic's Brier cost excludes zero under both resampling schemes and stands, but Platt's Brier cost excludes zero under temporal week-block resampling only and does not meet the record's own two-scheme bar, so Platt's rejection instead rests on calibration-in-the-large deterioration (overprediction rising from roughly 3.7x to roughly 4.4x) and an unbootstrapped log loss degradation; the selection itself is unchanged. **`EXP-007` survival framing is rejected for V1 under `DEC-055`**: the apparent unseen-player lead (AP 0.1045, ROC-AUC 0.8179) was a gap-time-clock leakage artefact that collapsed to AP 0.0193/ROC-AUC 0.5769, both below F1, under a pre-registered reset-clock diagnostic. **`EXP-008` boosted classification is rejected for V1 under `DEC-056`**: Brier favours boosted with both paired intervals excluding zero, but AP and ROC-AUC favour F1 on three of four views and the corrected AP intervals now include zero under both schemes; the training-to-validation AP gap (0.256 against 0.013) is the pre-registered overfitting signature. **Phase V1-P4 is closed under `DEC-060`/`DEC-061`**: the champion selection gate is closed on F1 raw; `EXP-018` found 8 of 9 predictors eligible for driver display (constant sign across every estimable fold, mean top-3 contributor Jaccard overlap 0.899 between rolling-origin and leave-one-player-out fits) with `daily_load_log1p` excluded; `EXP-019` measured top-N-per-team-day and percentile operating points side by side, and project-owner review of that evidence found every top-N point dominated by a percentile point, so `DEC-061` moved the product-facing alerting rule from top-N to percentile (2.5% default, 5% selectable), separated from a daily ranked-squad display view. Final-test performance remains blocked until V1-P5, which is not yet begun.
 
 ## Current Product State
 
-No API, dashboard, product table or inference service is implemented. The intended product remains practitioner decision support, never diagnosis, clearance or participation advice.
+No API, dashboard, product table or inference service is implemented. The intended product remains practitioner decision support, never diagnosis, clearance or participation advice. The dashboard's alerting design is specified under `DEC-061`: a daily ranked squad view per team (display only, issues no alert) plus a percentile-based alerting rule at a 2.5% default and a selectable 5% rate, each displaying its measured false-alert burden inline; top-N is not used as an alerting rule.
 
 ## Locked Decisions
 
@@ -352,7 +358,8 @@ No API, dashboard, product table or inference service is implemented. The intend
 - `DEC-057` reformulates `BOOT-01` to require paired-bootstrap sign agreement only where the interval excludes zero, and extends `EXP-009` with F1 raw/Platt/isotonic arms under the existing identifier, retaining F3 as historical reference.
 - `DEC-058` selects raw probabilities for the F1 champion; no post-hoc calibrator is adopted for V1, and the probability transform is frozen ahead of V1-P5.
 - `DEC-059` supersedes `DEC-058`'s rationale only, grounding the raw-F1 selection in calibration-in-the-large and log loss rather than an unestablished Brier cost; the two-scheme interval-exclusion requirement applies symmetrically to costs and benefits in every future gate.
-- `DEC-060` closes the V1-P4 champion selection gate on F1 raw; authorises `EXP-018` and `EXP-019`; adopts top-N-per-team-day as the product-facing dashboard operating point without superseding the frozen `DEC-036` percentile comparison basis.
+- `DEC-060` closes the V1-P4 champion selection gate on F1 raw; authorises `EXP-018` and `EXP-019`. Its product-facing operating-point choice is superseded by `DEC-061`.
+- `DEC-061` supersedes `DEC-060`'s operating-point choice only: the dashboard's alerting rule is percentile-based (2.5% default, 5% selectable, frozen `DEC-036` basis), separated from a daily ranked-squad display view; top-N is retained nowhere as an alerting rule.
 - Git remains local-only unless the project owner explicitly requests otherwise.
 - Random row-level splitting is prohibited for headline evaluation.
 - No objective/GPS processing begins during the subjective pre-model analysis programme.
@@ -360,9 +367,9 @@ No API, dashboard, product table or inference service is implemented. The intend
 
 ## Open Decisions
 
-None outstanding from this revision. Phase V1-P4 is complete. V1-P5 (single-use final-test spend) is authorised to begin per the delivery plan but is not yet started in this revision.
+None outstanding from this revision. Phase V1-P4 is closed. V1-P5 (single-use final-test spend) is authorised to begin per the delivery plan but is not yet started in this revision.
 
-Resolved since the previous revision: the champion selection gate (`DEC-060`, F1 raw, closed; no further V1 candidate); the `EXP-018` explanation-stability question (measured, not an adopt-or-reject gate — 1 of 9 predictors unstable, stop condition not triggered); the `EXP-019` alert-budget question (measured, not an adopt-or-reject gate — operating points and their false-alert burdens recorded for project-owner dashboard selection). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
+Resolved since the previous revision: the dashboard operating-point choice (`DEC-061`, percentile alerting at 2.5% default/5% selectable supersedes `DEC-060`'s top-N choice, on the strength of `EXP-019`'s own measured dominance; no code, evidence or report change required). Resolved previously: the champion selection gate (`DEC-060`, F1 raw, closed; no further V1 candidate); the `EXP-018` explanation-stability question (measured — 1 of 9 predictors unstable, stop condition not triggered). The outcome-support limitation remains an accepted, quantified dataset property that constrains every V1 claim and is designed around rather than resolved.
 
 ## Known Issues / Technical Debt
 
@@ -393,7 +400,8 @@ Resolved since the previous revision: the champion selection gate (`DEC-060`, F1
 - Resolved by `DEC-058`: F1's calibration was previously untraceable to a measured result, since `DEC-054` promoted F1 to champion after `EXP-009` had only run F3's arms. `EXP-009` now carries F1 raw/Platt/isotonic arms; both Platt and isotonic degrade Brier and log loss relative to raw, and no calibrator is adopted.
 - Not remediated by design, recorded under `DEC-059`: log loss, calibration slope and calibration intercept carry no uncertainty interval anywhere in the current bootstrap suite, which is built only for Brier score and average precision. V1 conclusions do not rest on these unbootstrapped metrics, but the limitation must be stated in the model card whenever they are cited as evidence.
 - `daily_load_log1p` is the one F1 predictor with unstable coefficient sign across estimable folds (`EXP-018`) and also carries the smallest coefficient magnitude of the nine; it may not be displayed as a driver in the dashboard, per `DEC-060`'s gate. The other eight predictors are eligible.
-- False-alert burden is high at every measured operating point (`EXP-019`): from 34.8 false alerts per captured onset at the 2.5% review rate to 253.9 at top-5-per-team-day, on 104 pooled positive days. This is a property of the cohort's outcome support, not of the operating-point rule; the project owner's choice of dashboard operating point must be made with this burden stated alongside it.
+- False-alert burden is high at every measured operating point (`EXP-019`): 34.8 false alerts per captured onset at the `DEC-061` default 2.5% rate, rising to 60.4 at the selectable 5% rate. This is a property of the cohort's outcome support (104 positive player-days, 18 represented onsets), not of the operating-point rule, and must be stated plainly in the interface and the model card.
+- The 1% review rate is not offered as a dashboard operating point (`DEC-061`): its false-alert burden (80.5 per captured onset) exceeds the 2.5% rate's despite the narrower alert volume, a non-monotonicity attributed to the 18-onset support rather than to the ranking. It remains in experiment evidence as the `DEC-036` comparison basis.
 
 ## Blockers
 
@@ -403,12 +411,12 @@ Standing analytical constraint, not a blocker: effective outcome support is 104 
 
 ## Work In Progress
 
-No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `EXP-018` and `EXP-019` are all implemented, executed and committed. Phase V1-P4 is closed under `DEC-060`. No other control session is known to be modifying the working tree.
+No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `EXP-018` and `EXP-019` are all implemented, executed and committed. Phase V1-P4 is closed under `DEC-060`/`DEC-061`. No other control session is known to be modifying the working tree.
 
 ## Immediate Next Actions
 
-1. Project owner reviews the `EXP-019` operating points and their false-alert burdens, and records which the dashboard will offer; reviews the `EXP-018` stable-predictor list for driver display.
-2. Begin V1-P5: complete the pre-registration checklist and, once complete, spend the single-use final test exactly once.
+1. Begin V1-P5: complete the pre-registration checklist and, once complete, spend the single-use final test exactly once.
+2. Carry the `DEC-061` dashboard operating-point specification (percentile alerting, 2.5% default/5% selectable, separate ranked-squad display) and the `EXP-018` stable-predictor list into the V1-P6 dashboard specification.
 3. Before V1-P7 containerisation, record and act on the `lifelines`/numpy/scipy dependency constraint; it is a removal candidate now that survival framing is rejected for V1.
 4. Keep final-test predictions and performance locked until V1-P5's checklist is complete.
 
@@ -537,14 +545,15 @@ No implementation is in progress. `EXP-009`, `EXP-016`, `EXP-007`, `EXP-008`, `E
 | EXP-019 development run | PASS | 104 pooled positive days; top-N and percentile operating points from the same predictions; `ALERT-01` to `ALERT-06` all PASS |
 | EXP-019 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-019 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
-| EXP-019 results | MEASURED | operating points and false-alert burdens recorded; no decision record required (not an adopt-or-reject gate) |
+| EXP-019 results | MEASURED | operating points and false-alert burdens recorded |
+| Dashboard operating-point choice | RESOLVED | `DEC-061`; percentile alerting (2.5% default, 5% selectable) supersedes `DEC-060`'s top-N choice on measured dominance; no regeneration required |
 | EXP-018 specification | AUTHORISED | doc 19 section 5 D3, new specification; authorised under `DEC-060` |
 | EXP-018 implementation | PASS | committed at `a66e812`; shared module, canonical job, notebook, retained evidence, tests |
 | EXP-018 development run | PASS | 4 rolling-origin + 50 leave-one-player-out estimable folds; exact attribution (`EXPL-03` zero error); `EXPL-01` to `EXPL-05` all PASS |
 | EXP-018 final-test isolation | PASS | zero final-test predictions and zero performance access |
 | EXP-018 notebook execution | PASS | executed against GCS with zero errors; committed notebook remains output-free |
 | EXP-018 results | MEASURED | 1 of 9 predictors (`daily_load_log1p`) unstable sign; stop condition (majority unstable) not triggered; no decision record required |
-| Modelling | V1-P4 COMPLETE | F1 is champion (`DEC-054`/`DEC-055`/`DEC-056`/`DEC-058`/`DEC-059`/`DEC-060`); `EXP-007`, `EXP-008`, `EXP-009`, `EXP-018` and `EXP-019` all closed or measured; final test locked until V1-P5 |
+| Modelling | V1-P4 CLOSED | F1 is champion (`DEC-054`/`DEC-055`/`DEC-056`/`DEC-058`/`DEC-059`/`DEC-060`); dashboard alerting is percentile-based (`DEC-061`); `EXP-007`, `EXP-008`, `EXP-009`, `EXP-018` and `EXP-019` all closed or measured; final test locked until V1-P5 |
 
 Gate results recorded in this revision were reproduced independently rather than carried forward: Ruff clean, format clean across 101 files, strict mypy clean across 77 source files, `111 passed` with one expected ZIP warning, and `poetry check --lock` passing.
 
@@ -552,12 +561,12 @@ Gate results recorded in this revision were reproduced independently rather than
 
 | Item | Local | Drive |
 |---|---|---|
-| `PROJECT_STATE.md` | v56, 2026-08-17T00:30:00Z | v56, 2026-08-17T00:30:00Z |
-| `DECISION_LOG.md` | DEC-001 to DEC-060 | DEC-001 to DEC-060 |
-| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | section 5 D2 replaced with the full `EXP-019` specification; section 5 D3 added for `EXP-018` | section 5 D2 replaced with the full `EXP-019` specification; section 5 D3 added for `EXP-018` |
+| `PROJECT_STATE.md` | v57, 2026-08-17T01:00:00Z | v57, 2026-08-17T01:00:00Z |
+| `DECISION_LOG.md` | DEC-001 to DEC-061 | DEC-001 to DEC-061 |
+| `19_ANALYSIS_AND_EXPERIMENT_EXECUTION_PLAN.md` | unchanged this revision; section 5 D2/D3 as previously revised | unchanged this revision; section 5 D2/D3 as previously revised |
 
 Mirrored document set, per `DEC-050`: the two control documents plus doc 19, which now carries specification content. Drive holds the numbered planning corpus plus these three; no non-numbered documents beyond the two control files.
 
 Status: **SYNCHRONISED**
 
-Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-060`, closing the champion selection gate and authorising `EXP-018`/`EXP-019`; doc 19 section 5 D2 is replaced with the full `EXP-019` specification and section 5 D3 is added for `EXP-018`; `PROJECT_STATE.md` advances to v56, covering `DEC-060` and both experiment results. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `a66e812`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
+Both copies were reconciled during session `PAA-IMPL-20260816-01`. `DECISION_LOG.md` gains `DEC-061`, superseding `DEC-060`'s product-facing operating-point choice only; doc 19 is unchanged this revision, since `DEC-061` is a product-design decision against already-measured `EXP-019` evidence, not a specification, code or evidence change; `PROJECT_STATE.md` advances to v57, covering `DEC-061` and the `EXP-019` operating-point evidence that motivated it. All three pairs hash-match under LF normalisation. Drive mirrors are written in place at the mounted folder under `DEC-016`. The state records `18fbab3`, the committed tree before this control-document update; the commit containing the control update will be one commit later by design.
