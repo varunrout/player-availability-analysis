@@ -35,6 +35,7 @@ import polars as pl
 import yaml
 from google.cloud.storage import Client  # type: ignore[import-untyped]
 from matplotlib.figure import Figure
+from sklearn.pipeline import Pipeline  # type: ignore[import-untyped]
 
 from player_availability.analysis.stage_00_data_audit import SOURCE_PREFIX
 from player_availability.analysis.stage_07_prospective_protocol import (
@@ -139,6 +140,31 @@ def load_v1_p5_from_gcp(
     )
 
 
+def fit_champion_and_thresholds(
+    *, development: pl.DataFrame, target: str, max_iterations: int
+) -> tuple[Pipeline, dict[float, float]]:
+    """Fit the frozen F1 champion on development and freeze `DEC-061` operating thresholds.
+
+    Shared by the V1-P5 governance gate and V1-P6 batch inference (`DEC-064`), so both
+    read the champion's own development-partition predictions the same way and reach
+    byte-identical thresholds. Thresholds are derived in-sample, from the fitted
+    model's own predictions on the rows it was fitted on, per the resolution recorded
+    against `DEC-062`'s pre-registration ambiguity.
+    """
+    development_targets = _targets(development, target)
+    pipeline = build_feature_pipeline(
+        regularisation_c=SELECTED_REGULARISATION_C, max_iterations=max_iterations
+    )
+    pipeline.fit(_matrix(development), development_targets)
+    development_probabilities = _positive_probabilities(pipeline, development)
+    development_series = pl.Series("predicted_probability", development_probabilities)
+    thresholds = {
+        rate: cast(float, development_series.quantile(1.0 - rate, "linear"))
+        for rate in OPERATING_POINT_RATES
+    }
+    return pipeline, thresholds
+
+
 def run_v1_p5_final_test(
     *, features: pl.DataFrame, episodes: pl.DataFrame, config: V1P5FinalTestConfig
 ) -> V1P5FinalTestResult:
@@ -157,21 +183,12 @@ def run_v1_p5_final_test(
     )
     embargo_register = _embargo_register(cohort)
 
-    # Step 1: fit once on development only (FINAL-03).
+    # Steps 1-2: fit once on development only and freeze operating-point thresholds
+    # from this model's own development predictions (FINAL-03, FINAL-04).
     development_targets = _targets(development, config.target)
-    pipeline = build_feature_pipeline(
-        regularisation_c=SELECTED_REGULARISATION_C, max_iterations=config.max_iterations
+    pipeline, thresholds = fit_champion_and_thresholds(
+        development=development, target=config.target, max_iterations=config.max_iterations
     )
-    pipeline.fit(_matrix(development), development_targets)
-
-    # Step 2: freeze operating-point thresholds from this model's own development
-    # predictions, before the final test is read (FINAL-04).
-    development_probabilities = _positive_probabilities(pipeline, development)
-    development_series = pl.Series("predicted_probability", development_probabilities)
-    thresholds = {
-        rate: cast(float, development_series.quantile(1.0 - rate, "linear"))
-        for rate in OPERATING_POINT_RATES
-    }
     thresholds_frozen_at_utc = datetime.now(UTC).isoformat()
 
     # Step 3: read the final-test partition exactly once (FINAL-01). Nothing above
