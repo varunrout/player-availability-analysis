@@ -38,8 +38,6 @@ def test_batch_inference_scores_every_eligible_player_day() -> None:
     assert (predictions["rank_within_team_day"] >= 1).all()
     assert "alert_bp250" in predictions.columns
     assert "alert_bp500" in predictions.columns
-    assert "is_onset_date" in predictions.columns
-    assert predictions["is_onset_date"].dtype == pl.Boolean
     # Rank within team-day never exceeds the number of players in that team-day.
     team_day_sizes = predictions.group_by(["team_id", "prediction_date"]).agg(
         pl.len().alias("size")
@@ -48,6 +46,25 @@ def test_batch_inference_scores_every_eligible_player_day() -> None:
     assert (joined["rank_within_team_day"] <= joined["size"]).all()
     # BigQuery column names may not contain a period (BadRequest on load otherwise).
     assert all("." not in column for column in predictions.columns)
+
+
+def test_onset_calendar_reports_true_onset_dates_not_scored_day_flags() -> None:
+    """The onset day itself is always ineligible for scoring (active episode), so
+    onset dates must be read from `episode_start` directly, not from a flag joined
+    onto the scored predictions (which would always be false)."""
+    features, episodes = _inputs()
+
+    result = run_batch_inference(
+        features=features, episodes=episodes, config=_batch_inference_config()
+    )
+
+    assert result.onset_calendar.height == episodes.select("player_id", "episode_start").n_unique()
+    assert set(result.onset_calendar["onset_date"].to_list()) == set(
+        episodes["episode_start"].to_list()
+    )
+    assert set(result.onset_calendar["player_id"].to_list()) <= set(
+        result.predictions["player_id"].to_list()
+    )
 
 
 def test_batch_inference_reconciliation_passes_for_identical_frames() -> None:

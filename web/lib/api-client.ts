@@ -92,7 +92,6 @@ export interface RiskSeriesPoint {
   prediction_date: string;
   predicted_probability: number;
   alert: boolean;
-  is_onset_date: boolean;
 }
 
 export interface PlayerDetail {
@@ -101,6 +100,7 @@ export interface PlayerDetail {
   as_at_date: string;
   operating_point: OperatingPointInForce;
   risk_series: RiskSeriesPoint[];
+  onset_dates: string[];
   driver_contributions: DriverContribution[];
   data_completeness: number;
 }

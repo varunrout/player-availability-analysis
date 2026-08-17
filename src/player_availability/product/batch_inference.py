@@ -78,6 +78,7 @@ class BatchInferenceResult:
     """Scored player-days and metadata, before any write."""
 
     predictions: pl.DataFrame
+    onset_calendar: pl.DataFrame
     thresholds: dict[float, float]
     summary: dict[str, Any]
     source_metadata: dict[str, Any]
@@ -122,12 +123,12 @@ def run_batch_inference(
         pl.Series("data_completeness", completeness),
         *[pl.Series(f"driver_{driver}", contributions[driver]) for driver in DISPLAYABLE_DRIVERS],
     )
-    predictions = _mark_onset_dates(predictions, episodes)
     predictions = _add_rank_within_team_day(predictions)
     for rate, threshold in thresholds.items():
         predictions = predictions.with_columns(
             (pl.col("predicted_probability") >= threshold).alias(alert_column_name(rate))
         )
+    onset_calendar = _build_onset_calendar(episodes, covered_players=predictions["player_id"])
 
     summary = {
         "model_id": MODEL_ID,
@@ -141,7 +142,11 @@ def run_batch_inference(
         "generated_at_utc": datetime.now(UTC).isoformat(),
     }
     return BatchInferenceResult(
-        predictions=predictions, thresholds=thresholds, summary=summary, source_metadata={}
+        predictions=predictions,
+        onset_calendar=onset_calendar,
+        thresholds=thresholds,
+        summary=summary,
+        source_metadata={},
     )
 
 
@@ -172,22 +177,26 @@ def _predictor_contributions(pipeline: Any, matrix: Any) -> dict[str, Any]:
     return contributions
 
 
-def _mark_onset_dates(predictions: pl.DataFrame, episodes: pl.DataFrame) -> pl.DataFrame:
-    """Flag player-days that are an injury episode's own start date.
+def _build_onset_calendar(episodes: pl.DataFrame, *, covered_players: pl.Series) -> pl.DataFrame:
+    """Every episode's own start date, independent of scored-day eligibility.
 
-    Used by the player-detail view to mark onsets on the risk-over-time series
-    (`DEC-064`). Distinct from `actual_label`, which marks days that *precede* an
-    onset within the forward label horizon, not the onset day itself.
+    Used by the player-detail view to mark onsets on the risk-over-time series and
+    by the data-quality view for the onset-decline finding (`DEC-064`). This cannot
+    be derived by flagging `is_onset_date` on the scored predictions: the frozen
+    Stage 7 eligibility rule marks a day ineligible for scoring whenever
+    `episode_start <= prediction_date <= episode_end`, which means the onset day
+    itself is *never* a scored player-day, by construction. A join against the
+    scored rows therefore always returns false and silently reports zero onsets,
+    a real defect this calendar exists to avoid: it is read from `episode_start`
+    directly, restricted to players who appear in the scored cohort.
     """
-    onset_dates = (
+    return (
         episodes.select("player_id", "episode_start")
         .unique()
-        .rename({"episode_start": "prediction_date"})
-        .with_columns(pl.lit(True).alias("is_onset_date"))
+        .filter(pl.col("player_id").is_in(covered_players.unique()))
+        .rename({"episode_start": "onset_date"})
+        .sort("player_id", "onset_date")
     )
-    return predictions.join(
-        onset_dates, on=["player_id", "prediction_date"], how="left"
-    ).with_columns(pl.col("is_onset_date").fill_null(False))
 
 
 def _add_rank_within_team_day(predictions: pl.DataFrame) -> pl.DataFrame:
@@ -259,6 +268,7 @@ def load_batch_inference_from_gcp(
     )
     return BatchInferenceResult(
         predictions=result.predictions,
+        onset_calendar=result.onset_calendar,
         thresholds=result.thresholds,
         summary=result.summary,
         source_metadata={
@@ -312,6 +322,13 @@ def write_batch_inference_outputs(
     blob = bucket.blob("product/paa_product_serving_artifact.parquet")
     blob.upload_from_string(buffer.getvalue(), content_type="application/octet-stream")
 
+    onset_calendar_buffer = BytesIO()
+    result.onset_calendar.write_parquet(onset_calendar_buffer)
+    onset_calendar_blob = bucket.blob("product/paa_product_onset_calendar.parquet")
+    onset_calendar_blob.upload_from_string(
+        onset_calendar_buffer.getvalue(), content_type="application/octet-stream"
+    )
+
     manifest_blob = bucket.blob("product/paa_product_serving_manifest.json")
     manifest_blob.upload_from_string(
         json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n",
@@ -319,6 +336,9 @@ def write_batch_inference_outputs(
     )
 
     artifact_rows.write_parquet(directories["tables"] / "paa_product_serving_artifact.parquet")
+    result.onset_calendar.write_parquet(
+        directories["tables"] / "paa_product_onset_calendar.parquet"
+    )
     (directories["tables"] / "paa_product_serving_manifest.json").write_text(
         json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
     )
@@ -329,6 +349,7 @@ def write_batch_inference_outputs(
         "bq_live_row_count": written_table.num_rows,
         "bq_live_row_count_matches": live_row_count_matches,
         "gcs_artifact_uri": f"gs://{artifacts_bucket}/{blob.name}",
+        "gcs_onset_calendar_uri": f"gs://{artifacts_bucket}/{onset_calendar_blob.name}",
         "gcs_manifest_uri": f"gs://{artifacts_bucket}/{manifest_blob.name}",
         "written_at_utc": datetime.now(UTC).isoformat(),
     }

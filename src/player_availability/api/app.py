@@ -197,10 +197,12 @@ def player_detail(
             prediction_date=row["prediction_date"],
             predicted_probability=row["predicted_probability"],
             alert=bool(row[alert_column]),
-            is_onset_date=bool(row["is_onset_date"]),
         )
         for row in history.iter_rows(named=True)
     ]
+    onset_dates = sorted(
+        artifact.onset_calendar.filter(pl.col("player_id") == player_id)["onset_date"].to_list()
+    )
     driver_contributions = [
         DriverContribution(predictor=driver, contribution=selected_row[f"driver_{driver}"])
         for driver in DISPLAYABLE_DRIVERS
@@ -211,6 +213,7 @@ def player_detail(
         as_at_date=as_at_date,
         operating_point=operating_point,
         risk_series=risk_series,
+        onset_dates=onset_dates,
         driver_contributions=driver_contributions,
         data_completeness=selected_row["data_completeness"],
     )
@@ -235,13 +238,19 @@ def data_quality(
         .agg(pl.col("data_completeness").mean().alias("mean_data_completeness"))
         .sort("player_id")
     )
-    onsets_by_year_table = (
+    onsets_per_year = (
+        artifact.onset_calendar.with_columns(pl.col("onset_date").dt.year().alias("year"))
+        .group_by("year")
+        .agg(pl.len().alias("represented_onsets"))
+    )
+    player_days_per_year = (
         artifact.predictions.with_columns(pl.col("prediction_date").dt.year().alias("year"))
         .group_by("year")
-        .agg(
-            pl.col("is_onset_date").sum().alias("represented_onsets"),
-            pl.len().alias("player_days"),
-        )
+        .agg(pl.len().alias("player_days"))
+    )
+    onsets_by_year_table = (
+        player_days_per_year.join(onsets_per_year, on="year", how="left")
+        .with_columns(pl.col("represented_onsets").fill_null(0))
         .sort("year")
     )
     onsets_by_year = [OnsetsByYear(**row) for row in onsets_by_year_table.iter_rows(named=True)]

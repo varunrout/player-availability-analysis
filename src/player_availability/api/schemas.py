@@ -55,17 +55,23 @@ class RiskSeriesPoint(BaseModel):
     prediction_date: date
     predicted_probability: float
     alert: bool
-    is_onset_date: bool
 
 
 class PlayerDetailResponse(BaseModel):
-    """One player's risk history, drivers for the selected date, and completeness."""
+    """One player's risk history, drivers for the selected date, and completeness.
+
+    `onset_dates` is carried separately from `risk_series` rather than as a
+    per-point flag: an onset day is never itself a scored player-day (the frozen
+    Stage 7 eligibility rule excludes any day within an active episode), so no
+    point in `risk_series` could ever be flagged true.
+    """
 
     player_id: str
     team_id: str
     as_at_date: date
     operating_point: OperatingPointInForce
     risk_series: list[RiskSeriesPoint]
+    onset_dates: list[date]
     driver_contributions: list[DriverContribution]
     data_completeness: float
 

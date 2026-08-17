@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -21,6 +22,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
         config=BatchInferenceConfig(base_config=_config()),
     )
     result.predictions.write_parquet(tmp_path / "paa_product_serving_artifact.parquet")
+    result.onset_calendar.write_parquet(tmp_path / "paa_product_onset_calendar.parquet")
     (tmp_path / "paa_product_serving_manifest.json").write_text(
         json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n"
     )
@@ -119,6 +121,43 @@ def test_player_detail_returns_series_and_displayable_drivers_only(client: TestC
     assert len(driver_names) == 8
 
 
+def test_player_detail_reports_onset_dates_absent_from_risk_series() -> None:
+    """P1's fixture episodes (2020-08-10, 2021-09-10) must appear as onset_dates
+    even though neither date is ever a scored player-day (DEC-064 fix: the onset
+    day itself is always ineligible for scoring)."""
+    from player_availability.api.app import app, get_artifact, get_model_health_reference
+    from player_availability.product.batch_inference import (
+        BatchInferenceConfig,
+        run_batch_inference,
+    )
+
+    features, episodes = _inputs()
+    result = run_batch_inference(
+        features=features, episodes=episodes, config=BatchInferenceConfig(base_config=_config())
+    )
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            result.predictions.write_parquet(tmp_path / "paa_product_serving_artifact.parquet")
+            result.onset_calendar.write_parquet(tmp_path / "paa_product_onset_calendar.parquet")
+            (tmp_path / "paa_product_serving_manifest.json").write_text(
+                json.dumps(result.summary, indent=2, sort_keys=True, default=str) + "\n"
+            )
+            monkeypatch.setenv("PAA_SERVING_ARTIFACT_DIR", str(tmp_path))
+            get_artifact.cache_clear()
+            get_model_health_reference.cache_clear()
+            local_client = TestClient(app)
+
+            response = local_client.get("/player-detail", params={"player_id": "P1"})
+            assert response.status_code == 200
+            body = response.json()
+            assert set(body["onset_dates"]) == {"2020-08-10", "2021-09-10"}
+            risk_series_dates = {point["prediction_date"] for point in body["risk_series"]}
+            assert risk_series_dates.isdisjoint(body["onset_dates"])
+    get_artifact.cache_clear()
+    get_model_health_reference.cache_clear()
+
+
 def test_data_quality_returns_coverage_series(client: TestClient) -> None:
     from player_availability.api.app import get_artifact
 
@@ -133,6 +172,11 @@ def test_data_quality_returns_coverage_series(client: TestClient) -> None:
     assert len(body["player_coverage_range"]) > 0
     assert len(body["onsets_by_year"]) > 0
     assert body["onset_decline_note"]
+    represented_onsets = {row["year"]: row["represented_onsets"] for row in body["onsets_by_year"]}
+    # Fixture episodes (test_stage_07_prospective_protocol._inputs): one onset in
+    # 2020, two in 2021 across the whole cohort.
+    assert represented_onsets.get(2020) == 1
+    assert represented_onsets.get(2021) == 2
 
 
 def test_model_health_reports_calibration_and_final_test_result(client: TestClient) -> None:

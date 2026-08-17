@@ -32,6 +32,7 @@ class ServingArtifact:
     """The scored predictions plus the metadata needed to serve them."""
 
     predictions: pl.DataFrame
+    onset_calendar: pl.DataFrame
     thresholds: dict[float, float]
     covered_date_start: date
     covered_date_end: date
@@ -53,8 +54,9 @@ class ModelHealthReference:
 def load_serving_artifact_from_path(directory: Path) -> ServingArtifact:
     """Load the artefact and its manifest from a local directory (tests, local dev)."""
     predictions = pl.read_parquet(directory / "paa_product_serving_artifact.parquet")
+    onset_calendar = pl.read_parquet(directory / "paa_product_onset_calendar.parquet")
     manifest = json.loads((directory / "paa_product_serving_manifest.json").read_text())
-    return _build_artifact(predictions, manifest)
+    return _build_artifact(predictions, onset_calendar, manifest)
 
 
 def load_serving_artifact_from_gcs(*, project_id: str, bucket_name: str) -> ServingArtifact:
@@ -64,18 +66,25 @@ def load_serving_artifact_from_gcs(*, project_id: str, bucket_name: str) -> Serv
     predictions_bytes = bucket.blob(
         "product/paa_product_serving_artifact.parquet"
     ).download_as_bytes()
+    onset_calendar_bytes = bucket.blob(
+        "product/paa_product_onset_calendar.parquet"
+    ).download_as_bytes()
     manifest_bytes = bucket.blob("product/paa_product_serving_manifest.json").download_as_bytes()
     predictions = pl.read_parquet(BytesIO(predictions_bytes))
+    onset_calendar = pl.read_parquet(BytesIO(onset_calendar_bytes))
     manifest = json.loads(manifest_bytes)
-    return _build_artifact(predictions, manifest)
+    return _build_artifact(predictions, onset_calendar, manifest)
 
 
-def _build_artifact(predictions: pl.DataFrame, manifest: dict[str, Any]) -> ServingArtifact:
+def _build_artifact(
+    predictions: pl.DataFrame, onset_calendar: pl.DataFrame, manifest: dict[str, Any]
+) -> ServingArtifact:
     thresholds = {
         float(rate): float(value) for rate, value in manifest["operating_point_thresholds"].items()
     }
     return ServingArtifact(
         predictions=predictions,
+        onset_calendar=onset_calendar,
         thresholds=thresholds,
         covered_date_start=_parse_date(manifest["covered_date_start"]),
         covered_date_end=_parse_date(manifest["covered_date_end"]),

@@ -94,12 +94,14 @@ export default async function PlayerPage({ searchParams }: PlayerPageProps) {
           <h2>Risk over time</h2>
           <RiskSeriesChart
             series={detail.risk_series}
+            onsetDates={detail.onset_dates}
             threshold={detail.operating_point.probability_threshold}
           />
           <p className="no-alerts-note">
             Solid line: predicted probability. Vertical black lines: onset dates (the day an
-            injury episode actually started). Red dots: days flagged at the operating point in
-            force. Dashed red line: the operating threshold.
+            injury episode actually started; never itself a scored day, since a day inside an
+            active episode is not eligible for scoring). Red dots: days flagged at the operating
+            point in force. Dashed red line: the operating threshold.
           </p>
 
           <h2>Drivers on {asAtDate}</h2>
